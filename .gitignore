@@ -1,0 +1,44 @@
+# Eclipse-related files
+.classpath
+.project
+.settings/
+
+# Compiled Java classes
+bin/
+
+# Compiled JavaScript files
+*.js
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# Maven specific files
+target/
+
+# Node.js dependencies
+node_modules/
+
+# Vue.js specific files
+/dist/
+npm-debug.log
+yarn-error.log
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+*.h2.db
+
+# Temporary files
+*.tmp
+*.swp
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
