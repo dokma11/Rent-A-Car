@@ -11,14 +11,14 @@ public class User {
 	private String name;
 	private String surname;
 	private String gender;
-	private Date dateOfBirth;
+	private String dateOfBirth;
 	private UserRole role; //not so sure about this one
 	
 	public User() {
 
 	}
 	
-	public User(int id, String username, String password, String name, String surname, String gender, Date dateOfBirth,
+	public User(String username, String password, String name, String surname, String gender, String dateOfBirth,
 			UserRole role) {
 		super();
 		this.username = username;
@@ -78,11 +78,11 @@ public class User {
 		this.gender = gender;
 	}
 
-	public Date getDateOfBirth() {
+	public String getDateOfBirth() {
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 
