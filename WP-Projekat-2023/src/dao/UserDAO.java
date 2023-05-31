@@ -12,9 +12,9 @@ public class UserDAO {
 	public UserDAO(String context) {
 		users = new HashMap<Integer, User>();
 		
-		User u1 = new User("dokma11", "legenda11", "Vukasin", "Dokmanovic", "Male", "11-02-2002", UserRole.BUYER);
+		User u1 = new User("dokma11", "legenda11", "Vukasin", "Dokmanovic", "Male", "02/11/2002", UserRole.BUYER);
 		u1.setId(0);
-		User u2 = new User("dokma112", "legenda112", "Vukasin2", "Dokmanovic2", "Male", "11-02-2002", UserRole.BUYER);
+		User u2 = new User("dokma112", "legenda112", "Vukasin2", "Dokmanovic2", "Male", "03/12/2001", UserRole.BUYER);
 		u2.setId(1);
 		
 		users.put(u1.getId(), u1);
@@ -30,7 +30,7 @@ public class UserDAO {
 		return users.get(i);
 	}
 	
-	public void edit(String id, User user) {
+	public User edit(String id, User user) {
 		int i = Integer.parseInt(id);
 		User toEdit = users.get(i);
 		
@@ -40,6 +40,10 @@ public class UserDAO {
 		toEdit.setSurname(user.getSurname());
 		toEdit.setGender(user.getGender());
 		toEdit.setDateOfBirth(user.getDateOfBirth());
-		toEdit.setRole(user.getRole());
+		
+		System.out.println(user.getName());
+		System.out.println(toEdit.getName());
+		
+		return toEdit;
 	}
 }

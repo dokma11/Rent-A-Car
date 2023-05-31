@@ -28,9 +28,10 @@ public class UserService {
 	
 	@PostConstruct
 	public void init() {
-		if(ctx.getAttribute("userDAO") == null);
+		if(ctx.getAttribute("userDAO") == null) {
 		String contextPath = ctx.getRealPath("");
 		ctx.setAttribute("userDAO", new UserDAO(contextPath));
+		}
 	}
 	
 	@GET
@@ -54,9 +55,9 @@ public class UserService {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void editUser(@PathParam("id") String id, User editedUser) {
+	public User editUser(@PathParam("id") String id, User editedUser) {
 		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
-		dao.edit(id, editedUser);
+		return dao.edit(id, editedUser);
 	}
 
 }

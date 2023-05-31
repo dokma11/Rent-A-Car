@@ -90,7 +90,13 @@ public class User {
 		return role;
 	}
 
-	public void setRole(UserRole role) {
-		this.role = role;
+	public void setRole(String role) {
+		if(role.equals(UserRole.BUYER.toString())) {
+			this.role = UserRole.BUYER;
+		}else if(role.equals(UserRole.ADMINISTRATOR.toString())) {
+			this.role = UserRole.ADMINISTRATOR;
+		}else {
+			this.role = UserRole.MANAGER;
+		}
 	}
 }
