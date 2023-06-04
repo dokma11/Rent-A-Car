@@ -34,17 +34,17 @@ Vue.component("usersRegistration", {
 	    				<td><input type = "date" name="dateOfBirth" v-model="user.dateOfBirth" /></td>
 	    			</tr>
 	    			<tr>
-	    				<td><label>Uloga: </label></td>
-	    				<td>
-	    					<select name="role" v-model="user.role">
-	    						<option>Kupac</option>
-	    						<option>Menadzer</option>
-	    						<option>Administrator</option>
-	    					</select>
-	    				</td>
-	    			</tr>
+                        <td><label>Uloga: </label></td>
+                        <td>
+                            <select name="role" v-model="user.role">
+                                <option>Kupac</option>
+                                <option>Menadzer</option>
+                                <option>Administrator</option>
+                            </select>
+                        </td>
+                    </tr>
 	    			<tr>
-	    				<td><input type="submit" v-on:click="edit(user.id)" /></td>
+	    				<td><input type="submit" v-on:click="create()" /></td>
 	    			</tr>
 	    		</table>
 	    		</form>
@@ -52,12 +52,10 @@ Vue.component("usersRegistration", {
 	    	</div>
     `,
      mounted () {
-        //let p = this.$route.params.id
-        axios.get('rest/users/').then(response => this.user = response.data);
+        axios.get('rest/users/')
     },
     methods: {
-        edit : function(id) {
-			let p = this.$route.params.id;
+        create : function() {
 			event.preventDefault();
 			let valid = true;
 			this.notValid = false;
@@ -126,7 +124,7 @@ Vue.component("usersRegistration", {
 			}
 			
 			if(valid){
-				axios.post('rest/users/' + p, this.user).then(response => router.push(`/usersProfile/` + p))
+				axios.post('rest/users/', this.user).then(response => router.push(` `))
 			}
         }
     }

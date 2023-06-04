@@ -105,4 +105,11 @@ public class UserDAO {
             e.printStackTrace();
         } 
 	}
+	
+	public void add(User user) {
+        @SuppressWarnings("unlikely-arg-type")
+        User last = users.get(users.size() - 1);
+        user.setId(last.getId() + 1);
+        users.put(user.getId(), user);
+    }
 }
