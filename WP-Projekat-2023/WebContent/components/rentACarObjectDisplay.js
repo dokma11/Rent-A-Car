@@ -22,7 +22,7 @@ Vue.component("rentACarObjectDisplay", {
 	    				<td>{{r.grade}}</td>
 	    			</tr>
 	    		</table>
-	    		<button v-on:click="displayProfile">Prikazi profil</button>
+	    		<button v-on:click="registration">Registracija</button>
 	    	</div>
 	    `,
 	mounted () {
@@ -30,8 +30,8 @@ Vue.component("rentACarObjectDisplay", {
         axios.get('rest/rentACars/').then(response => (this.rentACar = response.data))
     },   
     methods: {
-    	displayProfile : function() {
-			axios.post('rest/users/').router.push(`/usersProfile`)
+    	registration : function() {
+			router.push(`/usersRegistration`);
     	}
     }
 });
