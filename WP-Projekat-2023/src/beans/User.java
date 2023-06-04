@@ -1,6 +1,7 @@
 package beans;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import beans.Enum.UserRole;
 
@@ -11,14 +12,14 @@ public class User {
 	private String name;
 	private String surname;
 	private String gender;
-	private String dateOfBirth;
-	private UserRole role; //not so sure about this one
+	private LocalDate dateOfBirth;
+	private UserRole role;
 	
 	public User() {
 
 	}
 	
-	public User(String username, String password, String name, String surname, String gender, String dateOfBirth,
+	public User(String username, String password, String name, String surname, String gender, LocalDate dateOfBirth,
 			UserRole role) {
 		super();
 		this.username = username;
@@ -79,11 +80,12 @@ public class User {
 	}
 
 	public String getDateOfBirth() {
-		return dateOfBirth;
+		return dateOfBirth.toString();
 	}
 
 	public void setDateOfBirth(String dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    this.dateOfBirth = LocalDate.parse(dateOfBirth,formatter);
 	}
 
 	public UserRole getRole() {
