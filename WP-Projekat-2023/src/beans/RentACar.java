@@ -14,20 +14,30 @@ public class RentACar {
 	private String logoPath;//needs to be a picture so i thought to save only the patrh of the picture 
 	private int grade;
 
-	public RentACar() {
-
-	}
+	
 
 	public RentACar(String name, ArrayList<Vehicle> availableVehicles, String workingHours,
-			RentACarStatus status, Location location, String logo, int grade) {
+			RentACarStatus status, Location location, String logoPath, int grade) {
 		super();
 		this.name = name;
 		this.availableVehicles = availableVehicles;
 		this.workingHours = workingHours;
 		this.status = status;
 		this.location = location;
-		this.logoPath = logo;
+		this.logoPath = logoPath;
 		this.grade = grade;
+	}
+
+	
+	
+	public RentACar(String name, String workingHours, RentACarStatus status,int grade) {
+		
+		this.name = name;
+		this.workingHours = workingHours;
+		this.status = status;
+		this.grade = grade;
+		
+		
 	}
 
 	public int getId() {
@@ -78,12 +88,12 @@ public class RentACar {
 		this.location = location;
 	}
 
-	public String getLogo() {
+	public String getLogoPath() {
 		return logoPath;
 	}
 
-	public void setLogo(String logo) {
-		this.logoPath = logo;
+	public void setLogoPath(String logoPath) {
+		this.logoPath = logoPath;
 	}
 
 	public int getGrade() {
