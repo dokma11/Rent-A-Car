@@ -21,19 +21,11 @@ public class UserDAO {
 	
 	private Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 	
+	private String ctx;
+	
 	public UserDAO(String ContextPath) {
 	    users = new HashMap<String, User> ();
-	/*    
-	    User u1 = new User("dokma11", "legenda11", "Vukasin", "Dokmanovic", "Male", LocalDate.of(2002,1,21), UserRole.BUYER);
-		u1.setId("0");
-		
-		User u2 = new User("dokma112", "legenda112", "Vukasin2", "Dokmanovic2", "Male", LocalDate.of(2002,3,22), UserRole.BUYER);
-		u2.setId("1");
-		
-		users.put(u1.getId(), u1);
-		users.put(u2.getId(), u2);
-	    */
-	    System.out.println(ContextPath);
+	    ctx = ContextPath;
 	    loadDataFromJson(ContextPath);
 	}
 	
@@ -73,12 +65,14 @@ public class UserDAO {
 	        if (user.getDateOfBirth() != null) {
 	            toEdit.setDateOfBirth(user.getDateOfBirth());
 	        }
-
+	        
+	        saveToJson(ctx);
+	        
 	        return toEdit;
 	        
 	    }
 
-	    return null; // User with the specified ID does not exist
+	    return null;
 	}
 	
 	public void saveToJson(String contextPath) {
@@ -94,22 +88,25 @@ public class UserDAO {
 	private void loadDataFromJson(String contextPath) {
         try (FileReader reader = new FileReader(contextPath + "/users.txt")) {
             Type type = new TypeToken<HashMap<String, User>>(){}.getType();
-            Map<String, User> myObjectMap = gson.fromJson(reader, type);
-
-            for (Map.Entry<String, User> entry : myObjectMap.entrySet()) {
-                String key = entry.getKey();
-                User value = entry.getValue();
-                this.users.put(key, value);
-            }
+            this.users = gson.fromJson(reader, type);
         } catch (IOException e) {
             e.printStackTrace();
         } 
 	}
 	
 	public void add(User user) {
-        @SuppressWarnings("unlikely-arg-type")
-        User last = users.get(users.size() - 1);
-        user.setId(last.getId() + 1);
+		
+		Integer maximum = -1;
+		for (String key : users.keySet()) {
+			int temp = Integer.parseInt(key);
+			if(maximum < temp) {
+				maximum = temp;
+			}
+		}
+				
+        user.setId((++maximum).toString());
         users.put(user.getId(), user);
+        
+        saveToJson(ctx);
     }
 }

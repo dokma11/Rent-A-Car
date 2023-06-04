@@ -37,14 +37,14 @@ Vue.component("usersRegistration", {
                         <td><label>Uloga: </label></td>
                         <td>
                             <select name="role" v-model="user.role">
-                                <option>Kupac</option>
-                                <option>Menadzer</option>
-                                <option>Administrator</option>
+                                <option>BUYER</option>
+                                <option>MANAGER</option>
+                                <option>ADMINISTRATOR</option>
                             </select>
                         </td>
                     </tr>
 	    			<tr>
-	    				<td><input type="submit" v-on:click="create()" /></td>
+	    				<td><input type="submit" v-on:click="create" /></td>
 	    			</tr>
 	    		</table>
 	    		</form>
@@ -52,10 +52,12 @@ Vue.component("usersRegistration", {
 	    	</div>
     `,
      mounted () {
+        //let p = this.$route.params.id
         axios.get('rest/users/')
     },
     methods: {
         create : function() {
+			let p = this.$route.params.id;
 			event.preventDefault();
 			let valid = true;
 			this.notValid = false;
@@ -115,16 +117,16 @@ Vue.component("usersRegistration", {
 			}
 			
 			if(!this.user.role){
-				valid = false;
-				this.notValid = true;
-				document.getElementsByName("role")[0].style.border = "2px solid red";
-			}
-			else{
-				document.getElementsByName("role")[0].style.border = "2px solid black";
-			}
+                valid = false;
+                this.notValid = true;
+                document.getElementsByName("role")[0].style.border = "2px solid red";
+            }
+            else{
+                document.getElementsByName("role")[0].style.border = "2px solid black";
+            }
 			
-			if(valid){
-				axios.post('rest/users/', this.user).then(response => router.push(` `))
+			if (valid){
+			  axios.post('rest/users/', this.user).then(response => router.push(`/`));
 			}
         }
     }

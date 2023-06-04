@@ -7,7 +7,7 @@ import beans.Enum.UserRole;
 
 public class User {
 	private String id;
-	private String username; //has to be unique
+	private String username; 
 	private String password;
 	private String name;
 	private String surname;
@@ -93,9 +93,9 @@ public class User {
 	}
 
 	public void setRole(String role) {
-		if(role.equals(UserRole.BUYER.toString())) {
+		if(role.equals("BUYER")) {
 			this.role = UserRole.BUYER;
-		}else if(role.equals(UserRole.ADMINISTRATOR.toString())) {
+		}else if(role.equals("ADMINISTRATOR")) {
 			this.role = UserRole.ADMINISTRATOR;
 		}else {
 			this.role = UserRole.MANAGER;
