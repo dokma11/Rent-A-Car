@@ -25,7 +25,7 @@ public class Vehicle {
 
 	}
 	
-	public Vehicle(String brand, String model, int price, GearBoxType gearBoxType, RentACar rentACarsPosession,
+	public Vehicle(String brand, String model, int price, GearBoxType gearBoxType, int rentACarsPosession,
 			VehicleType vehicleType, FuelType fuelType, String consumption, int doorsNumber, int passangerCapacity,
 			String description, String picture, VehicleStatus status) {
 		super();
@@ -33,7 +33,7 @@ public class Vehicle {
 		this.model = model;
 		this.price = price;
 		this.gearBoxType = gearBoxType;
-		this.owner = rentACarsPosession;
+		this.owner.setId(rentACarsPosession);
 		this.vehicleType = vehicleType;
 		this.fuelType = fuelType;
 		this.consumption = consumption;
