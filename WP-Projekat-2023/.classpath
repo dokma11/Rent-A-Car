@@ -44,5 +44,6 @@
 			<attribute name="owner.project.facets" value="jst.web"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/HP Pavilion/wp-projekat-2023/WP-Projekat-2023/WebContent/WEB-INF/lib/gson-2.2.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

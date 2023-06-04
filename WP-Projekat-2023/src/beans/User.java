@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import beans.Enum.UserRole;
 
 public class User {
-	private int id;
+	private String id;
 	private String username; //has to be unique
 	private String password;
 	private String name;
@@ -31,11 +31,11 @@ public class User {
 		this.role = role;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

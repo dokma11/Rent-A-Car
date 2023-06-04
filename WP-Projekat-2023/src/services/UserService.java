@@ -37,7 +37,7 @@ public class UserService {
 	@GET
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
-	public HashMap<Integer, User> getAll(){
+	public HashMap<String, User> getAll(){
 		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
 		return dao.getAll();
 	}
