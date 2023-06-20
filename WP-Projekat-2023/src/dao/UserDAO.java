@@ -75,6 +75,33 @@ public class UserDAO {
 	    return null;
 	}
 	
+	public void add(User user) {
+		
+		Integer maximum = -1;
+		for (String key : users.keySet()) {
+			int temp = Integer.parseInt(key);
+			if(maximum < temp) {
+				maximum = temp;
+			}
+		}
+				
+        user.setId((++maximum).toString());
+        users.put(user.getId(), user);
+        
+        saveToJson(ctx);
+    }
+	
+	public User logIn(String username, String password) {
+		if (!users.containsKey(username)) {
+			return null;
+		}
+		User user = users.get(username);
+		if (!user.getPassword().equals(password)) {
+			return null;
+		}
+		return user;
+	}
+	
 	public void saveToJson(String contextPath) {
 		String json = gson.toJson(users);
 
@@ -93,20 +120,4 @@ public class UserDAO {
             e.printStackTrace();
         } 
 	}
-	
-	public void add(User user) {
-		
-		Integer maximum = -1;
-		for (String key : users.keySet()) {
-			int temp = Integer.parseInt(key);
-			if(maximum < temp) {
-				maximum = temp;
-			}
-		}
-				
-        user.setId((++maximum).toString());
-        users.put(user.getId(), user);
-        
-        saveToJson(ctx);
-    }
 }

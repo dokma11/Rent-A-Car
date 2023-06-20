@@ -1,8 +1,18 @@
 package dao;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.HashMap;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import beans.RentACar;
+import beans.User;
 import beans.Vehicle;
 import beans.Enum.FuelType;
 import beans.Enum.GearBoxType;
@@ -11,25 +21,61 @@ import beans.Enum.VehicleStatus;
 import beans.Enum.VehicleType;
 
 public class VehicleDAO {
-	private HashMap<Integer, Vehicle> vehicles;
+	
+	private HashMap<String, Vehicle> vehicles;
+	
+	private Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+	
+	private String ctx;
+	
 	public VehicleDAO(String context) {
-		vehicles = new HashMap<Integer, Vehicle>();
-		
-		Vehicle v1 = new Vehicle("Mercedes","c200",400,GearBoxType.MANUAL,1,VehicleType.CAR,FuelType.DIESEL,"nzm",4,5,"lol","cap",VehicleStatus.AVAILABLE);
-		v1.setId(0);
-		
-		Vehicle v2 = new Vehicle("Cap","7-14",300,GearBoxType.AUTOMATIC,1,VehicleType.MINIBUS,FuelType.HYBRID,"k",3,5,"m","l",VehicleStatus.RENTED);
-		v2.setId(1);
-		
-		vehicles.put(v1.getId(), v1);
-		vehicles.put(v2.getId(), v2);
+		vehicles = new HashMap<String, Vehicle>();
+		ctx = context;
+	    loadDataFromJson(context);
 	}
-	public HashMap<Integer, Vehicle> getAll(){
+	
+	public HashMap<String, Vehicle> getAll(){
 		return vehicles;
 	}
 	
 	public Vehicle getById(String id) {
-		int VehicleId = Integer.parseInt(id);
-		return vehicles.get(VehicleId);
+		return vehicles.get(id);
+	}
+	
+	public void add(Vehicle vehicle) {
+		
+		System.out.println("usao u add za vehicle konacno");
+		
+		Integer maximum = -1;
+		for (String key : vehicles.keySet()) {
+			int temp = Integer.parseInt(key);
+			if(maximum < temp) {
+				maximum = temp;
+			}
+		}
+				
+        vehicle.setId((++maximum).toString());
+        vehicles.put(vehicle.getId(), vehicle);
+        
+        saveToJson(ctx);
+    }
+	
+	public void saveToJson(String contextPath) {
+		String json = gson.toJson(vehicles);
+
+        try (FileWriter writer = new FileWriter(contextPath + "/vehicles.txt")) {
+            writer.write(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	  
+	private void loadDataFromJson(String contextPath) {
+        try (FileReader reader = new FileReader(contextPath + "/vehicles.txt")) {
+            Type type = new TypeToken<HashMap<String, User>>(){}.getType();
+            this.vehicles = gson.fromJson(reader, type);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
 	}
 }

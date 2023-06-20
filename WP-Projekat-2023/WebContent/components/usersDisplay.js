@@ -23,6 +23,10 @@ Vue.component("usersProfileDisplay", {
 	    			</tr>
 	    		</table>
 	    		<button v-on:click="editProfileClick(user.id)">Izmeni profil</button>
+	    		<br></br>
+	    		<button v-on:click="rentalReview(user.id)">Pregled iznajmljivanja</button>
+	    		<br></br>
+	    		<button v-on:click="order(user.id)">Nova porudzbina</button>
 	    	</div>
 	    `,
     mounted () {
@@ -32,6 +36,14 @@ Vue.component("usersProfileDisplay", {
     methods: {
     	editProfileClick : function(id) {
 			router.push(`/usersProfile/edit/` + id);
-    	}
+    	},
+    	
+    	rentalReview: function(id) {
+			router.push(`/usersProfile/rentalReview/` + id);
+		},
+		
+		order: function(id) {
+			router.push(`/usersProfile/newOrder/` + id);
+		}
     }
 });

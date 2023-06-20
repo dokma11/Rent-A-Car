@@ -2,30 +2,31 @@ package beans;
 
 import beans.Enum.FuelType;
 import beans.Enum.GearBoxType;
+import beans.Enum.UserRole;
 import beans.Enum.VehicleStatus;
 import beans.Enum.VehicleType;
 
 public class Vehicle {
-	private int id;
+	private String id;
 	private String brand;
 	private String model;
 	private int price;
 	private GearBoxType gearBoxType;
-	private RentACar owner;//do i need a better name?
+	private RentACar owner;
 	private VehicleType vehicleType;
 	private FuelType fuelType;
 	private String consumption;
 	private int doorsNumber;
-	private int passangerCapacity;
+	private int passengerCapacity;
 	private String description;
-	private String picturePath;//will save only the path for now
+	private String picturePath;
 	private VehicleStatus status;
 	
 	public Vehicle() {
 
 	}
 	
-	public Vehicle(String brand, String model, int price, GearBoxType gearBoxType, int rentACarsPosession,
+	public Vehicle(String brand, String model, int price, GearBoxType gearBoxType, String rentACarsPosession,
 			VehicleType vehicleType, FuelType fuelType, String consumption, int doorsNumber, int passangerCapacity,
 			String description, String picture, VehicleStatus status) {
 		super();
@@ -38,17 +39,36 @@ public class Vehicle {
 		this.fuelType = fuelType;
 		this.consumption = consumption;
 		this.doorsNumber = doorsNumber;
-		this.passangerCapacity = passangerCapacity;
+		this.passengerCapacity = passangerCapacity;
 		this.description = description;
 		this.picturePath = picture;
 		this.status = status;
 	}
 
-	public int getId() {
+	public Vehicle(String brand, String model, int price, GearBoxType gearBoxType, RentACar rentACarsPosession,
+			VehicleType vehicleType, FuelType fuelType, String consumption, int doorsNumber, int passangerCapacity,
+			String description, String picture, VehicleStatus status) {
+		super();
+		this.brand = brand;
+		this.model = model;
+		this.price = price;
+		this.gearBoxType = gearBoxType;
+		this.owner = rentACarsPosession;
+		this.vehicleType = vehicleType;
+		this.fuelType = fuelType;
+		this.consumption = consumption;
+		this.doorsNumber = doorsNumber;
+		this.passengerCapacity = passangerCapacity;
+		this.description = description;
+		this.picturePath = picture;
+		this.status = status;
+	}
+	
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -80,8 +100,12 @@ public class Vehicle {
 		return gearBoxType;
 	}
 
-	public void setGearBoxType(GearBoxType gearBoxType) {
-		this.gearBoxType = gearBoxType;
+	public void setGearBoxType(String gearBoxType) {
+		if(gearBoxType.equals("MANUAL")) {
+			this.gearBoxType = GearBoxType.MANUAL;
+		}else{
+			this.gearBoxType = GearBoxType.AUTOMATIC;
+		}
 	}
 
 	public RentACar getRentACarsPosession() {
@@ -96,16 +120,34 @@ public class Vehicle {
 		return vehicleType;
 	}
 
-	public void setVehicleType(VehicleType vehicleType) {
-		this.vehicleType = vehicleType;
+	public void setVehicleType(String vehicleType) {
+		if(vehicleType.equals("CAR")) {
+			this.vehicleType = VehicleType.CAR;
+		}else if(vehicleType.equals("VAN")) {
+			this.vehicleType = VehicleType.VAN;
+		}else if(vehicleType.equals("MINIBUS")) {
+			this.vehicleType = VehicleType.MINIBUS;
+		}else if(vehicleType.equals("RV")) {
+			this.vehicleType = VehicleType.RV;
+		}else {
+			this.vehicleType = VehicleType.MOTORHOME;
+		}
 	}
 
 	public FuelType getFuelType() {
 		return fuelType;
 	}
 
-	public void setFuelType(FuelType fuelType) {
-		this.fuelType = fuelType;
+	public void setFuelType(String fuelType) {
+		if(fuelType.equals("DIESEL")) {
+			this.fuelType = FuelType.DIESEL;
+		}else if(fuelType.equals("GASOLINE")) {
+			this.fuelType = FuelType.GASOLINE;
+		}else if(fuelType.equals("HYBRID")) {
+			this.fuelType = FuelType.HYBRID;
+		}else {
+			this.fuelType = FuelType.ELECTRIC;
+		}
 	}
 
 	public String getConsumption() {
@@ -124,12 +166,12 @@ public class Vehicle {
 		this.doorsNumber = doorsNumber;
 	}
 
-	public int getPassangerCapacity() {
-		return passangerCapacity;
+	public int getPassengerCapacity() {
+		return passengerCapacity;
 	}
 
-	public void setPassangerCapacity(int passangerCapacity) {
-		this.passangerCapacity = passangerCapacity;
+	public void setPassengerCapacity(int passengerCapacity) {
+		this.passengerCapacity = passengerCapacity;
 	}
 
 	public String getDescription() {
@@ -152,7 +194,11 @@ public class Vehicle {
 		return status;
 	}
 
-	public void setStatus(VehicleStatus status) {
-		this.status = status;
+	public void setStatus(String status) {
+		if(status.equals("RENTED")) {
+			this.status = VehicleStatus.RENTED;
+		}else if(status.equals("AVAILABLE")) {
+			this.status = VehicleStatus.AVAILABLE;
+		}
 	}	
 }
