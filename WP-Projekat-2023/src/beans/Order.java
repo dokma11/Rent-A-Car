@@ -1,17 +1,17 @@
 package beans;
 
-import java.util.Date;
-
 import beans.Enum.RentalStatus;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Order {
-	private int id;
+	private String id;
 	private String uniqueId;//come back to this (do i need the regular id, maybe for json files)
 	private ArrayList<Vehicle> rentedVehicles;
 	private RentACar rentACarFacility;
-	private Date rentalDate; //Date or String?
+	private LocalDate rentalDate; 
 	private int rentalDuration; //should check
 	private int price;
 	private User buyer;//it says name and surname in specification only idk
@@ -21,7 +21,7 @@ public class Order {
 		
 	}
 	
-	public Order(String uniqueId, ArrayList<Vehicle> rentedVehicles, RentACar rentACarFacility, Date rentalDate,
+	public Order(String uniqueId, ArrayList<Vehicle> rentedVehicles, RentACar rentACarFacility, LocalDate rentalDate,
 			int rentalDuration, int price, User buyer, RentalStatus status) {
 		super();
 		this.uniqueId = uniqueId;
@@ -34,11 +34,11 @@ public class Order {
 		this.status = status;
 	}
 	
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	
@@ -66,12 +66,13 @@ public class Order {
 		this.rentACarFacility = rentACarFacility;
 	}
 	
-	public Date getRentalDate() {
-		return rentalDate;
+	public String getRentalDate() {
+		return rentalDate.toString();
 	}
-	
-	public void setRentalDate(Date rentalDate) {
-		this.rentalDate = rentalDate;
+
+	public void setRentalDate(String RentalDate) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    this.rentalDate = LocalDate.parse(RentalDate,formatter);
 	}
 	
 	public int getRentalDuration() {

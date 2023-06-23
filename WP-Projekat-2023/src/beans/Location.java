@@ -1,7 +1,7 @@
 package beans;
 
 public class Location {
-	private int id;
+	private String id;
 	private double geographicalLength;
 	private double geographicalWidth;
 	private String address;//keep an eye for format
@@ -17,11 +17,11 @@ public class Location {
 		this.address = address;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

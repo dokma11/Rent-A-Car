@@ -2,16 +2,17 @@ package beans;
 
 import java.util.ArrayList;
 
+import beans.Enum.GearBoxType;
 import beans.Enum.RentACarStatus;
 
 public class RentACar {
-	private int id;
+	private String id;
 	private String name;
 	private ArrayList<Vehicle> availableVehicles;
-	private String workingHours; //for example(8-22)?
+	private String workingHours;
 	private RentACarStatus status;
 	private Location location;
-	private String logoPath;//needs to be a picture so i thought to save only the patrh of the picture 
+	private String logoPath;
 	private int grade;
 
 	
@@ -28,8 +29,6 @@ public class RentACar {
 		this.grade = grade;
 	}
 
-	
-	
 	public RentACar(String name, String workingHours, RentACarStatus status,int grade) {
 		
 		this.name = name;
@@ -40,11 +39,11 @@ public class RentACar {
 		
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -76,8 +75,12 @@ public class RentACar {
 		return status;
 	}
 
-	public void setStatus(RentACarStatus status) {
-		this.status = status;
+	public void setStatus(String status) {
+		if(status.equals("WORKING")) {
+			this.status = RentACarStatus.WORKING;
+		}else{
+			this.status = RentACarStatus.CLOSED;
+		}
 	}
 
 	public Location getLocation() {

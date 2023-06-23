@@ -23,15 +23,33 @@ Vue.component("usersProfileDisplay", {
 	    			</tr>
 	    		</table>
 	    		<button v-on:click="editProfileClick(user.id)">Izmeni profil</button>
+	    		<br></br>
+	    		<button v-if="user.role === 'BUYER'" v-on:click="rentalReview(user.id)">Pregled korisnikovih iznajmljivanja</button>
+	    		<br></br>
+	    		<button v-if="user.role === 'BUYER'" v-on:click="order(user.id)">Nova porudzbina</button>
+	    		<br></br>
+	    		<button v-if="user.role === 'ADMINISTRATOR'" v-on:click="display">Pregled svih registrovanih korisnika</button>
 	    	</div>
 	    `,
     mounted () {
 		let p = this.$route.params.id;
-        axios.get('rest/users/' + p).then(response => (this.user = response.data))
+        axios.get('rest/users/' + p).then(response => (this.user = response.data));
     },
     methods: {
     	editProfileClick : function(id) {
 			router.push(`/usersProfile/edit/` + id);
-    	}
+    	},
+    	
+    	rentalReview: function(id) {
+			router.push(`/usersProfile/rentalReview/` + id);
+		},
+		
+		order: function(id) {
+			router.push(`/usersProfile/newOrder/` + id);
+		},
+		
+		display: function(){
+			router.push(`/allUsersProfiles`);
+		}
     }
 });
