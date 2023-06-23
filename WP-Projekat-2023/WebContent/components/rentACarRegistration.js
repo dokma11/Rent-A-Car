@@ -1,3 +1,8 @@
+/*import { Map, View } from '.../assets/ol';
+import TileLayer from 'ol/layer/Tile';
+import OSM from 'ol/source/OSM';
+*/
+
 Vue.component("rentACarRegistration", { 
 	data: function () {
 	    return {
@@ -8,7 +13,7 @@ Vue.component("rentACarRegistration", {
 	    }
 	},
 	    template: `
-	    	<div>
+	    	<div id="map-container">
 	    		<label>Registracija Rent A Car objekta</label>
 	    		<table>
 	    			<tr>
@@ -25,7 +30,7 @@ Vue.component("rentACarRegistration", {
 	    			</tr>
 	    			<tr>
 	    				<td><label>Postavite logo: </label></td>
-	    				<td><input type="text" name="picturePath" v-model="rentACar.picturePath" /></td>
+	    				<td><input type="text" name="logoPath" v-model="rentACar.logoPath" /></td>
 	    			</tr>
 	    			<tr>
 	    				<td><label>Unesite zaduzenog menadzera: </label></td>
@@ -41,7 +46,18 @@ Vue.component("rentACarRegistration", {
 	    	</div>
 	    `,
     mounted () {
-        
+        /*const map = new Map({
+	    target: 'map-container', // Provide the ID or class of the DOM element where the map should be displayed
+	    layers: [
+	      new TileLayer({
+	        source: new OSM(),
+	      }),
+	    ],
+	    view: new View({
+	      center: [0, 0], // Set the initial center coordinates of the map
+	      zoom: 2, // Set the initial zoom level of the map
+	    }),
+	  });*/
     },
     methods: {
     	addManager : function() {
@@ -84,17 +100,17 @@ Vue.component("rentACarRegistration", {
                 document.getElementsByName("workingHours")[0].style.border = "2px solid black";
             }
             
-            if(!this.rentACar.picturePath){
+            if(!this.rentACar.logoPath){
                 valid = false;
                 this.notValid = true;
-                document.getElementsByName("picturePath")[0].style.border = "2px solid red";
+                document.getElementsByName("logoPath")[0].style.border = "2px solid red";
             }
             else{
-                document.getElementsByName("picturePath")[0].style.border = "2px solid black";
+                document.getElementsByName("logoPath")[0].style.border = "2px solid black";
             }
 			
 			if(valid){
-				//this.rentACar.location.address = this.address;
+				this.rentACar.location.address = this.address;
 				axios.post('rest/rentACars/', this.rentACar).then(response => router.push(`/rentACar`)).catch(error => console.log(error));
 			}
 		}

@@ -45,6 +45,8 @@ public class RentACarService {
 			String contextPath=ctx.getRealPath("");
 			ctx.setAttribute("locationDAO", new LocationDAO(contextPath));
 		} */
+		
+		System.out.println("Usao u init");
 	}
 	
 	@GET
@@ -71,5 +73,6 @@ public class RentACarService {
     public void add(RentACar r) {
         RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
         dao.add(r);
+        System.out.println("usao u post");
     }
 }

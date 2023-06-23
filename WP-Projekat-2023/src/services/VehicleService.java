@@ -7,15 +7,14 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import beans.RentACar;
 import beans.Vehicle;
-import dao.RentACarDAO;
 import dao.VehicleDAO;
 
 @Path("/vehicles")
@@ -61,5 +60,14 @@ public class VehicleService {
 		System.out.println("usao u vehicle post servis stagod");
 		VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
 		dao.add(v);
+	}
+	
+	@PUT
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Vehicle editVehicle(@PathParam("id") String id, Vehicle v) {
+		VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+		return dao.edit(id, v);
 	}
 }

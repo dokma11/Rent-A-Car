@@ -92,7 +92,9 @@ public class Vehicle {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(int price/* String price*/) {
+		//int p = Integer.parseInt(price);
+		//this.price = p;
 		this.price = price;
 	}
 
@@ -108,11 +110,11 @@ public class Vehicle {
 		}
 	}
 
-	public RentACar getRentACarsPosession() {
+	public RentACar getOwner() {
 		return owner;
 	}
 
-	public void setRentACarsPosession(RentACar rentACarsPosession) {
+	public void setOwner(RentACar rentACarsPosession) {
 		this.owner = rentACarsPosession;
 	}
 
@@ -162,7 +164,9 @@ public class Vehicle {
 		return doorsNumber;
 	}
 
-	public void setDoorsNumber(int doorsNumber) {
+	public void setDoorsNumber(int doorsNumber/* String doorsNumber*/) {
+		//int p = Integer.parseInt(doorsNumber);
+		//this.doorsNumber = p;
 		this.doorsNumber = doorsNumber;
 	}
 
@@ -170,7 +174,9 @@ public class Vehicle {
 		return passengerCapacity;
 	}
 
-	public void setPassengerCapacity(int passengerCapacity) {
+	public void setPassengerCapacity(int passengerCapacity /*String passengerCapacity*/) {
+		//int p = Integer.parseInt(passengerCapacity);
+		//this.passengerCapacity = p;
 		this.passengerCapacity = passengerCapacity;
 	}
 
@@ -182,11 +188,11 @@ public class Vehicle {
 		this.description = description;
 	}
 
-	public String getPicture() {
+	public String getPicturePath() {
 		return picturePath;
 	}
 
-	public void setPicture(String picture) {
+	public void setPicturePath(String picture) {
 		this.picturePath = picture;
 	}
 

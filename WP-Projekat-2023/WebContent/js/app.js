@@ -1,5 +1,6 @@
 const RentACarsDisplay = { template: '<rentACarsDisplay></rentACarsDisplay>' }
 const UsersProfileDisplay = { template: '<usersProfileDisplay></usersProfileDisplay>'}
+const AllUsersProfilesDisplay = { template: '<allUsersProfilesDisplay></allUsersProfilesDisplay>'}
 const UsersProfileEditDisplay = { template: '<usersProfileEditDisplay></usersProfileEditDisplay>'}
 const RegistrationUser = {template: '<usersRegistration></usersRegistration>'}
 const RegistrationRentACar = {template: '<rentACarRegistration></rentACarRegistration>'}
@@ -15,6 +16,7 @@ const router = new VueRouter({
 		{ path: '/rentaCar', name: 'home', component: RentACarsDisplay},
 		{ path: '/rentaCar/rentACarObjectDisplay/:id', name: 'rentACarObjectDisplay', component: RentACarObjectDisplay},
 		{ path: '/usersProfile/:id', name: 'userhome', component: UsersProfileDisplay},
+		{ path: '/allUsersProfiles', name: 'allusershome', component: AllUsersProfilesDisplay},
 		{ path: '/usersProfile/edit/:id', name: 'userhome1', component: UsersProfileEditDisplay},
 		{ path: '/usersRegistration', name: 'registration', component: RegistrationUser},	
 		{ path: '/rentACarRegistration', name: 'rentACarRegistration', component: RegistrationRentACar},	

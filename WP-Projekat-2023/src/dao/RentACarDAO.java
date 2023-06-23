@@ -28,10 +28,6 @@ public class RentACarDAO {
 	private Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 	private String ctx;
 
-	private VehicleDAO vehicleDAO;
-	private LocationDAO locationDAO;
-	//private HashMap<Integer, Vehicle> vehicles = vehicleDao.getAll();
-	//private HashMap<Integer, Location> locations = locationDAO.getAll();
 	private HashMap<String, RentACar> rentACars;
 	
 	public RentACarDAO(String context) {
@@ -63,6 +59,14 @@ public class RentACarDAO {
 		}
 				
 		rentACar.setId((++maximum).toString());
+		
+		ArrayList<Vehicle> emptyVehicleList = new ArrayList<Vehicle>();
+		rentACar.setAvailableVehicles(emptyVehicleList);
+		
+		rentACar.setStatus("WORKING");
+		
+		rentACar.setGrade(0);
+		
         rentACars.put(rentACar.getId(), rentACar);
         
         saveToJson(ctx);

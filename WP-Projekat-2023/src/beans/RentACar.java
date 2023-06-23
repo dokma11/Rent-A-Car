@@ -9,10 +9,10 @@ public class RentACar {
 	private String id;
 	private String name;
 	private ArrayList<Vehicle> availableVehicles;
-	private String workingHours; //for example(8-22)?
+	private String workingHours;
 	private RentACarStatus status;
 	private Location location;
-	private String logoPath;//needs to be a picture so i thought to save only the patrh of the picture 
+	private String logoPath;
 	private int grade;
 
 	

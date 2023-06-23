@@ -175,7 +175,8 @@ Vue.component("newVehicle", {
 			
 			if(!this.notValid){
 				this.vehicle.owner = this.rentACar;
-				axios.post('rest/vehicles/', this.vehicle).then(response => router.push(`/rentaCar/rentACarObjectDisplay/${this.rentACar.id}`)).catch(error => console.log(error));
+				this.vehicle.status = 'AVAILABLE';
+				axios.post('rest/vehicles/', this.vehicle).then(response => router.push(`/`)); //router.push(`/rentaCar/rentACarObjectDisplay/${this.rentACar.id}`)).catch(error => console.log(error));
 			}
     	}
     }

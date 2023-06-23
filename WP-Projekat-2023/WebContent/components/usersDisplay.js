@@ -24,14 +24,16 @@ Vue.component("usersProfileDisplay", {
 	    		</table>
 	    		<button v-on:click="editProfileClick(user.id)">Izmeni profil</button>
 	    		<br></br>
-	    		<button v-on:click="rentalReview(user.id)">Pregled iznajmljivanja</button>
+	    		<button v-if="user.role === 'BUYER'" v-on:click="rentalReview(user.id)">Pregled korisnikovih iznajmljivanja</button>
 	    		<br></br>
-	    		<button v-on:click="order(user.id)">Nova porudzbina</button>
+	    		<button v-if="user.role === 'BUYER'" v-on:click="order(user.id)">Nova porudzbina</button>
+	    		<br></br>
+	    		<button v-if="user.role === 'ADMINISTRATOR'" v-on:click="display">Pregled svih registrovanih korisnika</button>
 	    	</div>
 	    `,
     mounted () {
 		let p = this.$route.params.id;
-        axios.get('rest/users/' + p).then(response => (this.user = response.data))
+        axios.get('rest/users/' + p).then(response => (this.user = response.data));
     },
     methods: {
     	editProfileClick : function(id) {
@@ -44,6 +46,10 @@ Vue.component("usersProfileDisplay", {
 		
 		order: function(id) {
 			router.push(`/usersProfile/newOrder/` + id);
+		},
+		
+		display: function(){
+			router.push(`/allUsersProfiles`);
 		}
     }
 });

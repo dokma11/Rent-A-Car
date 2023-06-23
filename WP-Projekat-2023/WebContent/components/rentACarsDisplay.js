@@ -1,7 +1,7 @@
 Vue.component("rentACarsDisplay", { 
 	data: function () {
 	    return {
-			rentACar: [],
+			rentACar: new Map(),
 			rentACarSearch: [],
 			notValid: null,
 			sortOption: "" 
@@ -88,44 +88,20 @@ Vue.component("rentACarsDisplay", {
   			let entered = false;
   			this.notValid = false;
   			
-  			if(this.rentACarSearch.name){
-				entered = true;	
-				for (let i = 0; i < count; i++) {
-  					let item = temp[i];
-  					if(item.name == this.rentACarSearch.name){
-						this.rentACar.push(item);  
-					}	
-  				}  
-			}
+  			if (this.rentACarSearch.name || this.rentACarSearch.vehicleType || this.rentACarSearch.grade || this.rentACarSearch.location) {
+			  
+			  for (let i = 0; i < count; i++) {
+			    let item = temp[i];
 			
-			if(this.rentACarSearch.vehicleType){
-				entered = true;
-				for (let i = 0; i < count; i++) {
-  					let item = temp[i];
-  					if(item.vehicleType == this.rentACarSearch.vehicleType){
-						this.rentACar.push(item);	  
-					}	
-  				}  
-			}
-			
-			if(this.rentACarSearch.location){
-				entered = true;	
-				for (let i = 0; i < count; i++) {
-  					let item = temp[i];
-  					if(item.location.address == this.rentACarSearch.location){
-						this.rentACar.push(item);
-					}	
-  				}  
-			}
-			
-			if(this.rentACarSearch.grade){
-				entered = true;	  
-				for (let i = 0; i < count; i++) {
-  					let item = temp[i];
-  					if(item.grade == this.rentACarSearch.grade){
-						this.rentACar.push(item);
-					}	
-  				}  
+			    if ((!this.rentACarSearch.name || item.name.toLowerCase() === this.rentACarSearch.name.toLowerCase()) &&
+				    (!this.rentACarSearch.vehicleType || item.vehicleType.toLowerCase() === this.rentACarSearch.vehicleType.toLowerCase()) &&
+				    (!this.rentACarSearch.grade || item.grade.toLowerCase() === this.rentACarSearch.grade.toLowerCase()) && 
+				    (!this.rentACarSearch.location || item.location.toLowerCase() === this.rentACarSearch.location.toLowerCase())) {
+			      
+			      this.rentACar.push(item);
+			      entered = true;
+			    }
+			  }
 			}
 			
 			if(!entered){
@@ -140,15 +116,27 @@ Vue.component("rentACarsDisplay", {
 		},
 		
 		sortRentACar: function() {
-			let temp = [];
-			temp = this.rentACar;
+			//let temp = new Map();
+			//temp = this.rentACar;
 			//let temp = Array.from(this.rentACar);
-			//let temp = [...this.rentACar]; // Create a new array using the spread operator
+			/*if(Array.isArray(this.rentACar)){
+				let temp = [...this.rentACar]; // Create a new array using the spread operator
+			}*/
 			//let temp = this.rentACar.slice(); // Create a shallow copy of rentACar
-			this.rentACar = [];	
+			if (this.rentACar.size > 0) {
+				let temp = new Map(this.rentACar);
+			}
+			this.rentACar = new Map();	
 			
       		if (this.sortOption === "gradeAscending") {
-        		this.rentACar = Array.from(temp).sort((a, b) => a.grade - b.grade);
+        		//this.rentACar = Array.from(temp).sort((a, b) => a.grade - b.grade);
+        		temp.sort(function (x, y){
+					return x[1].grade - y[1].grade;
+				}); 
+				//const temp2 = new Map([...temp].sort((a, b) => a[1].grade - b[1].grade));
+				//const sortedArray = Array.from(temp).sort((a, b) => a[1].grade - b[1].grade);
+				//const temp2 = new Map(sortedArray);
+  				//this.rentACar = temp2;
       		} 
       		
       		else if (this.sortOption === "gradeDescending") {
