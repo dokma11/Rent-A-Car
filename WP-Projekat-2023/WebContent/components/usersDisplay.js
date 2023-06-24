@@ -5,8 +5,9 @@ Vue.component("usersProfileDisplay", {
 	    }
 	},
 	    template: `
-	    	<div>
-	    		<table border="1">
+	    	<div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
+	    		<label><b>Pregled profila</b></label>
+	    		<table border="1" class="tab">
 	    			<tr>
 	    				<th>Username</th>
 	    				<th>Name</th>
@@ -22,13 +23,12 @@ Vue.component("usersProfileDisplay", {
 	    				<td>{{user.dateOfBirth}}</td>
 	    			</tr>
 	    		</table>
-	    		<button v-on:click="editProfileClick(user.id)">Izmeni profil</button>
-	    		<br></br>
-	    		<button v-if="user.role === 'BUYER'" v-on:click="rentalReview(user.id)">Pregled korisnikovih iznajmljivanja</button>
-	    		<br></br>
-	    		<button v-if="user.role === 'BUYER'" v-on:click="order(user.id)">Nova porudzbina</button>
-	    		<br></br>
-	    		<button v-if="user.role === 'ADMINISTRATOR'" v-on:click="display">Pregled svih registrovanih korisnika</button>
+	    		<div style="display: flex; justify-content: center;">
+		    		<button v-on:click="editProfileClick(user.id)">Izmeni profil</button>
+		    		<button v-if="user.role === 'BUYER'" v-on:click="rentalReview(user.id)">Pregled korisnikovih iznajmljivanja</button>
+		    		<button v-if="user.role === 'BUYER'" v-on:click="order(user.id)">Nova porudzbina</button>
+		    		<button v-if="user.role === 'ADMINISTRATOR'" v-on:click="display">Pregled svih registrovanih korisnika</button>
+		    	</div>
 	    	</div>
 	    `,
     mounted () {

@@ -8,7 +8,7 @@ Vue.component("newVehicle", {
 	    }
 	},
 	    template: `
-	    	<div>
+	    	<div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
 	    		<label><b>Registacija novog vozila</b></label>
 	    		<br></br>
 	    		<table>
@@ -176,7 +176,7 @@ Vue.component("newVehicle", {
 			if(!this.notValid){
 				this.vehicle.owner = this.rentACar;
 				this.vehicle.status = 'AVAILABLE';
-				axios.post('rest/vehicles/', this.vehicle).then(response => router.push(`/`)); //router.push(`/rentaCar/rentACarObjectDisplay/${this.rentACar.id}`)).catch(error => console.log(error));
+				axios.post('rest/vehicles/', this.vehicle).then(response => router.push(`/rentACar`)); //router.push(`/rentaCar/rentACarObjectDisplay/${this.rentACar.id}`)).catch(error => console.log(error));
 			}
     	}
     }

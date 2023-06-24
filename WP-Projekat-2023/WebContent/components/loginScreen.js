@@ -4,13 +4,13 @@ Vue.component("loginScreen", {
       username: null,
       password: null,
       notValid: null,
+      link: 'http://localhost:8080/WebShopREST/#/usersRegistration'
     };
   },
   template: `
-    <div>
-      <label>Dobrodosli!</label>
-      <br></br>
-      <label>Popunite polja kako biste se prijavili na nalog</label>
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">	
+      <label><b>Dobrodosli!</b></label>
+      <label><b>Popunite polja kako biste se prijavili na nalog</b></label>
       <br></br>
       <table class="app">
         <tr>
@@ -26,40 +26,33 @@ Vue.component("loginScreen", {
           <td><input type="password" name="password" v-model="password"/></td>
         </tr>
         <tr>
-          <td></td>
-          <td><input type="submit" v-on:click="login" value="login"/></td>
+          <td><input type="submit" v-on:click="login" value="Prijavi se"/></td>
         </tr>
         <tr>
           <td>Nemate nalog?</td>
-          <td>Registrujte se(treba link da bude)</td>
+          <td><a v-bind:href="link">Registrujte se</a></td>
         </tr>
       </table>
       <p v-if="notValid">Molimo Vas popunite sva polja</p>
     </div>
   `,
-  methods: {
+ methods: {
     login: function () {
-      event.preventDefault();
       this.notValid = false;
 
       if (this.username && this.password) {
-        const url = `rest/users/login/${encodeURIComponent(
-          this.username
-        )}&${encodeURIComponent(this.password)}`;
+        const url = 'rest/login/';
+        const data = { username: this.username, password: this.password };
+
         axios
-          .post(url)
+          .post(url, data)
           .then((response) => {
-            // Assuming the response contains a redirect URL or token for authentication
-            if (response.status === 200) {
-              router.push(`/rentACar`);
-            } else {
-              // Handle any other status codes if needed
-              console.log(response);
-            }
+            $('#success').text('Korisnik je uspesno prijavljen.');
+            $("#success").show().delay(3000).fadeOut();
           })
           .catch((error) => {
-            // Handle any error response here
-            console.log(error);
+            $('#error').text(error.response.data);
+            $("#error").show().delay(3000).fadeOut();
           });
       } else {
         this.notValid = true;

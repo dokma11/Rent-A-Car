@@ -6,10 +6,10 @@ Vue.component("rentACarObjectDisplay", {
 	    }
 	},
 	    template: `
-	    	<div>
+	    	<div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
 	    		<label><b>Prikaz Rent A Car objekta</b></label>
 	    		<br></br>
-	    		<table border="1">
+	    		<table border="1" class="tab"> 
 	    			<tr>
 	    				<th>Naziv</th>
 	    				<th>Radno vreme</th>
@@ -31,8 +31,7 @@ Vue.component("rentACarObjectDisplay", {
 	    		</table>
 	    		<br></br>
 	    		<label><b>Prikaz komentara Rent A Car objekta</b></label>
-	    		<br></br>
-	    		<table border="1">
+	    		<table border="1" class="tab">
 	    			<tr>
 	    				<th>Korisnicko ime</th>
 	    				<th>Tekst</th>
@@ -46,8 +45,7 @@ Vue.component("rentACarObjectDisplay", {
 	    		</table>
 	    		<br></br>
 	    		<label><b>Prikaz svih vozila Rent A Car objekta</b></label>
-	    		<br></br>
-	    		<table border="1">
+	    		<table border="1" class="tab"> 
 	    			<tr>
 	    				<th>Marka</th>
 	    				<th>Model</th>

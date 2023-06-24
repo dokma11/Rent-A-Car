@@ -7,12 +7,13 @@ Vue.component("rentalReview", {
 			endDate: null,
 			startPrice: null,
 			endPrice: null,
-			notValid: null
+			notValid: null,
+			sortOption: ''
 	    }
 	},
 	    template: `
 	    	<div>
-	    		<table border="1">
+	    		<table border="1" class="tab">
 	    			<th>
 	    				<td>Datum iznajmljivanja</td>
 	    				<td>Trajanje najma</td>
@@ -58,15 +59,16 @@ Vue.component("rentalReview", {
 	    				<td><input type="text" name="endDate" v-model="endDate" /></td>	    			
 	    			</tr>
 	    		</table>
-				<button v-on:click="search()">Pretrazi</button>	    
+				<button v-on:click="search">Pretrazi</button>	    
 				<br></br>
 				<label>Sortiraj prema: </label>
-				<select>
-					<option>Cena rastuce</option>
-					<option>Cena opadajuce</option>
-					<option>Najskorije</option>
-					<option>Najstarije</option>
-					<option>Imenu</option>
+				<select v-model="sortOption" @change="sort">
+					<option value="priceAscending">Cena rastuce</option>
+					<option value="priceDescending">Cena opadajuce</option>
+					<option value="earliest">Najskorije</option>
+					<option value="oldest">Najstarije</option>
+					<option value="nameAscending">Naziv objekta A-Z</option>
+					<option value="nameDescending">Naziv objekta Z-A</option>
 				</select>
 				<p v-if="notValid">Molimo Vas da popunite makar jedno polje za pretragu</p>	
 			</div>
@@ -77,14 +79,110 @@ Vue.component("rentalReview", {
     methods: {
     	search : function() {
 			event.preventDefault();
-			this.notValid = false;
-			
-			if(this.startDate != null || this.endDate != null || this.startPrice != null || this.endPrice != null || this.searchOrder.rentACarFacility != null){
-				//ide pretraga
+			let temp = [];
+			temp = this.orders;
+			this.orders = [];	
+  			let count = 0;
+			for (const _ in temp) {
+  				count++;
 			}
-			else{
+  			let entered = false;
+  			this.notValid = false;
+  			
+  			if (this.searchOrder.rentACarFacility || this.startDate|| this.endDate || this.startPrice || this.endPrice) {
+			  for (let i = 0; i < count; i++) {
+			    let item = temp[i];
+			    let rentACarFacilityMatch = !this.searchOrder.rentACarFacility || item.rentACarFacility.toLowerCase().includes(this.searchOrder.rentACarFacility.toLowerCase());
+			    let endPriceMatch = !this.endPrice || item.price < endPrice;
+			    let startPriceMatch = !this.startPrice || item.price > startPrice;
+				let endDateMatch = !this.endDate || item.rentalDate < endDate;
+			    let startDateMatch = !this.startDate || item.rentalDate > startDate ;			  
+			    if (rentACarFacilityMatch && endPriceMatch && startPriceMatch && endDateMatch && startDateMatch) {
+			      this.orders.push(item);
+			      entered = true;
+			    }
+			  }
+			}
+
+			if(!entered){
+				this.orders = temp;
 				this.notValid = true;
 			}
-    	}
+    	},
+    	
+    	sort: function(){
+			event.preventDefault();
+			let count = 0;
+			for (const _ in this.rentACar) {
+  				count++;
+			}	
+			
+      		if (this.sortOption === "priceAscending") {
+				for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.orders[j].price > this.orders[j + 1].price ) {
+				        
+				        [this.orders[j], this.orders[j + 1]] = [this.orders[j + 1], this.orders[j]];
+				      
+				      }
+				    }
+				}
+      		} 
+      		else if (this.sortOption === "priceDescending") {
+				for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.orders[j].price < this.orders[j + 1].price ) {
+				        
+				        [this.orders[j], this.orders[j + 1]] = [this.orders[j + 1], this.orders[j]];
+				      
+				      }
+				    }
+				}     		
+			}
+      		else if (this.sortOption === "nameAscending") {
+        		for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.orders[j].rentACarFacility > this.orders[j + 1].rentACarFacility ) {
+				        
+				        [this.orders[j], this.orders[j + 1]] = [this.orders[j + 1], this.orders[j]];
+				      
+				      }
+				    }
+				}
+      		}
+      		else if (this.sortOption === "nameDescending") {
+        		for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.orders[j].rentACarFacility < this.orders[j + 1].rentACarFacility ) {
+				        
+				        [this.orders[j], this.orders[j + 1]] = [this.orders[j + 1], this.orders[j]];
+				      
+				      }
+				    }
+				}
+      		}
+      		else if (this.sortOption === "earliest") {
+        		for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.orders[j].rentalDate > this.orders[j + 1].rentalDate ) {
+				        
+				        [this.orders[j], this.orders[j + 1]] = [this.orders[j + 1], this.orders[j]];
+				      
+				      }
+				    }
+				}
+      		}
+      		else if(this.sortOption === "oldest") {
+        		for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.orders[j].rentalDate < this.orders[j + 1].rentalDate ) {
+				        
+				        [this.orders[j], this.orders[j + 1]] = [this.orders[j + 1], this.orders[j]];
+				      
+				      }
+				    }
+				}
+      		}
+		}
     }
 });

@@ -1,10 +1,8 @@
 package dao;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import beans.User;
-import beans.Enum.UserRole;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

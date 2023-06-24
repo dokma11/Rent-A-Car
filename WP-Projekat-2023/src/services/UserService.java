@@ -71,19 +71,32 @@ public class UserService {
         UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
         dao.add(u);
     }
-	/*
+	
 	@POST
-	@Path("/login/{username}&{password}")
+	@Path("/login")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response login(@PathParam("username") String username, @PathParam("password") String password, @Context HttpServletRequest request) {
+	public Response login(User user, @Context HttpServletRequest request) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("userDAO");
-		User loggedUser = userDao.logIn(username, password);
+		User loggedUser = userDao.logIn(user.getUsername(), user.getPassword());
 		if (loggedUser == null) {
 			return Response.status(400).entity("Invalid username and/or password").build();
 		}
 		request.getSession().setAttribute("user", loggedUser);
 		return Response.status(200).build();
 	}
-	*/
+	
+	@POST
+	@Path("/logout")
+	public void logout(@Context HttpServletRequest request) {
+		request.getSession().invalidate();
+	}
+	
+	@GET
+	@Path("/currentUser")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public User login(@Context HttpServletRequest request) {
+		return (User) request.getSession().getAttribute("user");
+	}
 }

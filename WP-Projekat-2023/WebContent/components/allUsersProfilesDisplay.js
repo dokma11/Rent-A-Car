@@ -21,7 +21,7 @@ Vue.component("allUsersProfilesDisplay", {
 	    		<input type="text" name="name" v-model="userSearch.name" />
 	    		<input type="text" name="surname" v-model="userSearch.surname" />
 	    		<input type="text" name="username" v-model="userSearch.username" />
-	    		<select v-model="sortOption" @change="search">
+	    		<select v-model="sortOption" @change="sort">
 				  <option value="">Sortiraj po:</option>
 				  <option value="nameAsc">Imenu A-Z</option>
 				  <option value="nameDesc">Imenu Z-A</option>
@@ -32,17 +32,18 @@ Vue.component("allUsersProfilesDisplay", {
 				  <option value="pointsAsc">Broju sakupljenih bodova rastuce</option>
 				  <option value="pointsDesc">Broju sakupljenih bodova opadajuce</option>
 				</select>
-				<select v-model="filterOption" @change="search">
+				<select v-model="filterOption" @change="filter">
 				  <option value="">Filtriraj po:</option>
-				  <option value="managerRole">Menadzer</option>
-				  <option value="administratorRole">Administrator</option>
-				  <option value="buyerRole">Kupac</option>
-				  <option value="goldUserType">Zlatni kupac</option>
-				  <option value="silverUserType">Srebrni kupac</option>
-				  <option value="bronzeUserType">Bronzani kupac</option>
+				  <option value="managerRole">Ulozi: Menadzer</option>
+				  <option value="administratorRole">Ulozi: Administrator</option>
+				  <option value="buyerRole">Ulozi: Kupac</option>
+				  <option value="goldUserType">Tipu kupca: Zlatni</option>
+				  <option value="silverUserType">Tipu kupca: Srebrni</option>
+				  <option value="bronzeUserType">Tipu kupca: Bronzani</option>
 				</select>
 	    		<button v-on:click="search">Pretrazi</button>
-	    		<table border="1">
+	    		<button v-on:click="reset">Resetuj</button>
+	    		<table border="1" class="tab">
 	    			<tr>
 	    				<th>Username</th>
 	    				<th>Name</th>
@@ -83,14 +84,13 @@ Vue.component("allUsersProfilesDisplay", {
   			let entered = false;
   			
 			if (this.userSearch.name || this.userSearch.surname || this.userSearch.username) {
-			  
 			  for (let i = 0; i < count; i++) {
 			    let item = temp[i];
-			
-			    if ((!this.userSearch.name || item.name.toLowerCase() === this.userSearch.name.toLowerCase()) &&
-			        (!this.userSearch.surname || item.surname.toLowerCase() === this.userSearch.surname.toLowerCase()) &&
-			        (!this.userSearch.username || item.username.toLowerCase() === this.userSearch.username.toLowerCase())) {
-			      
+			    let nameMatch = !this.userSearch.name || item.name.toLowerCase().includes(this.userSearch.name.toLowerCase());
+			    let surnameMatch = !this.userSearch.surname || item.surname.toLowerCase().includes(this.userSearch.surname.toLowerCase());
+			    let usernameMatch = !this.userSearch.username || item.username.toLowerCase().includes(this.userSearch.username.toLowerCase());
+			  
+			    if (nameMatch && surnameMatch && usernameMatch) {
 			      this.users.push(item);
 			      entered = true;
 			    }
@@ -99,29 +99,170 @@ Vue.component("allUsersProfilesDisplay", {
 			
 			if(!entered){
 				this.users = temp;
+				this.notValid = true;
+			}
+		},
+		
+		sort: function(){
+			event.preventDefault();
+			let count = 0;
+			for (const _ in this.users) {
+  				count++;
 			}
 			
 			if (this.sortOption === 'nameAsc') {
-			    this.users.sort((a, b) => a.name.localeCompare(b.name));
-			  } else if (this.sortOption === 'nameDesc') {
-			    this.users.sort((a, b) => b.name.localeCompare(a.name));
-			  } else if (this.sortOption === 'surnameAsc') {
-			    this.users.sort((a, b) => a.surname.localeCompare(b.surname));
-			  } else if (this.sortOption === 'surnameDesc') {
-			    this.users.sort((a, b) => b.surname.localeCompare(a.surname));
-			  } else if (this.sortOption === 'usernameAsc') {
-			    this.users.sort((a, b) => a.username.localeCompare(b.username));
-			  } else if (this.sortOption === 'usernameDesc') {
-			    this.users.sort((a, b) => b.username.localeCompare(a.username));
-			  } else if (this.sortOption === 'pointsAsc') {
-			    this.users.sort((a, b) => a.collectedPointsNumber - b.collectedPointsNumber);
-			  } else if (this.sortOption === 'pointsDesc') {
-			    this.users.sort((a, b) => b.collectedPointsNumber - a.collectedPointsNumber);
-			  }
-			  
-			if(!entered && this.sortOption === ''){
-				this.users = temp;
-				this.notValid = true;
+			    for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.users[j].name > this.users[j + 1].name ) {
+				        
+				        [this.users[j], this.users[j + 1]] = [this.users[j + 1], this.users[j]];
+				      
+				      }
+				    }
+				}
+			}
+			else if (this.sortOption === 'nameDesc') {
+			    for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.users[j].name < this.users[j + 1].name ) {
+				        
+				        [this.users[j], this.users[j + 1]] = [this.users[j + 1], this.users[j]];
+				      
+				      }
+				    }
+				}
+			} 
+			else if (this.sortOption === 'surnameAsc') {
+			    for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.users[j].surname > this.users[j + 1].surname ) {
+				        
+				        [this.users[j], this.users[j + 1]] = [this.users[j + 1], this.users[j]];
+				      
+				      }
+				    }
+				}
+			} 
+			else if (this.sortOption === 'surnameDesc') {
+			    for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.users[j].surname < this.users[j + 1].surname ) {
+				        
+				        [this.users[j], this.users[j + 1]] = [this.users[j + 1], this.users[j]];
+				      
+				      }
+				    }
+				}
+			} 
+			else if (this.sortOption === 'usernameAsc') {
+			    for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.users[j].username > this.users[j + 1].username ) {
+				        
+				        [this.users[j], this.users[j + 1]] = [this.users[j + 1], this.users[j]];
+				      
+				      }
+				    }
+				}
+			} 
+			else if (this.sortOption === 'usernameDesc') {
+			    for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.users[j].username < this.users[j + 1].username ) {
+				        
+				        [this.users[j], this.users[j + 1]] = [this.users[j + 1], this.users[j]];
+				      
+				      }
+				    }
+				}
+			} 
+			//will have to change alter on probably
+			else if (this.sortOption === 'pointsAsc') {
+			    for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.users[j].points > this.users[j + 1].points ) {
+				        
+				        [this.users[j], this.users[j + 1]] = [this.users[j + 1], this.users[j]];
+				      
+				      }
+				    }
+				}
+			}
+			else if (this.sortOption === 'pointsDesc') {
+			    for (let i = 0; i < count - 1; i++) {
+				    for (let j = 0; j < count - i - 1; j++) {
+				      if (this.users[j].points < this.users[j + 1].points ) {
+				        
+				        [this.users[j], this.users[j + 1]] = [this.users[j + 1], this.users[j]];
+				      
+				      }
+				    }
+				}
+			}
+		},
+		
+		reset: function(){
+			event.preventDefault();
+			location.reload();
+		},
+		
+		filter: function(){
+			event.preventDefault();
+			let count = 0;
+			for (const _ in this.users) {
+  				count++;
+			}
+			let temp = [];
+			temp = this.users;
+			this.users = [];
+			
+			if(this.filterOption === "managerRole"){
+				for (let i = 0; i < count - 1; i++) {
+					if(temp[i].role == "MANAGER"){
+						this.users.push(temp[i]);
+					}
+				}
+			}
+			else if(this.filterOption === "administratorRole"){
+				for (let i = 0; i < count - 1; i++) {
+					if(temp[i].role == "ADMINISTRATOR"){
+						this.users.push(temp[i]);
+					}
+				}
+			}
+			else if(this.filterOption === "buyerRole"){
+				for (let i = 0; i < count - 1; i++) {
+					if(temp[i].role == "BUYER"){
+						this.users.push(temp[i]);
+					}
+				}
+			}
+			else if(this.filterOption === "goldUserType"){
+				for (let i = 0; i < count - 1; i++) {
+					if(temp[i].role == "BUYER"){
+						if(temp[i].buyerType == "GOLD"){
+							this.users.push(temp[i]);
+						}
+					}
+				}
+			}
+			else if(this.filterOption === "silverUserType"){
+				for (let i = 0; i < count - 1; i++) {
+					if(temp[i].role == "BUYER"){
+						if(temp[i].buyerType == "SILVER"){
+							this.users.push(temp[i]);
+						}
+					}
+				}
+			}
+			else if(this.filterOption === "bronzeUserType"){
+				for (let i = 0; i < count - 1; i++) {
+					if(temp[i].role == "BUYER"){
+						if(temp[i].buyerType == "BRONZE"){
+							this.users.push(temp[i]);
+						}
+					}
+				}
 			}
 		}
     }
