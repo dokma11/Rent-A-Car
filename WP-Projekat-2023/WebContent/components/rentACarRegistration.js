@@ -110,7 +110,7 @@ Vue.component("rentACarRegistration", {
             }
 			
 			if(valid){
-				this.rentACar.location.address = this.address;
+				//this.rentACar.location.address = this.address;
 				axios.post('rest/rentACars/', this.rentACar).then(response => router.push(`/rentACar`)).catch(error => console.log(error));
 			}
 		}

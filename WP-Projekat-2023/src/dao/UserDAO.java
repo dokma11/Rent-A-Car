@@ -1,10 +1,8 @@
 package dao;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import beans.User;
-import beans.Enum.UserRole;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,9 +34,9 @@ public class UserDAO {
 	public User getById(String id) {
 		return users.get(id);
 	}
-	
+
 	public User edit(String id, User user) {
-		
+
 	    if (users.containsKey(id)) {
 	        User toEdit = users.get(id);
 
@@ -66,10 +64,11 @@ public class UserDAO {
 	            toEdit.setDateOfBirth(user.getDateOfBirth());
 	        }
 	        
+	        toEdit.setBlocked(user.isBlocked());
+	        
 	        saveToJson(ctx);
 	        
 	        return toEdit;
-	        
 	    }
 
 	    return null;
@@ -86,6 +85,9 @@ public class UserDAO {
 		}
 				
         user.setId((++maximum).toString());
+        user.setBlocked(false);
+        user.setSuspicious(false);
+        user.setCollectedPointsNumber(0);
         users.put(user.getId(), user);
         
         saveToJson(ctx);
@@ -99,6 +101,9 @@ public class UserDAO {
 		if (!user.getPassword().equals(password)) {
 			return null;
 		}
+		
+		System.out.println("usao login u dao");
+
 		return user;
 	}
 	

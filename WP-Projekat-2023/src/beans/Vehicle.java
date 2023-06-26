@@ -2,7 +2,6 @@ package beans;
 
 import beans.Enum.FuelType;
 import beans.Enum.GearBoxType;
-import beans.Enum.UserRole;
 import beans.Enum.VehicleStatus;
 import beans.Enum.VehicleType;
 

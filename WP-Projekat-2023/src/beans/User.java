@@ -2,6 +2,7 @@ package beans;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import beans.Enum.UserRole;
 
@@ -14,6 +15,15 @@ public class User {
 	private String gender;
 	private LocalDate dateOfBirth;
 	private UserRole role;
+	//Manager attributes
+	private String rentACarObject;
+	//Buyer attributes
+	private ArrayList<Order> allRentals; 
+	private String shoppingCart;
+	private int collectedPointsNumber;
+	private BuyersType buyerType;
+	private boolean suspicious;
+	private boolean blocked;
 	
 	public User() {
 
@@ -29,6 +39,22 @@ public class User {
 		this.gender = gender;
 		this.dateOfBirth = dateOfBirth;
 		this.role = role;
+	}
+	
+	public boolean isBlocked() {
+		return blocked;
+	}
+
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
+	}
+	
+	public boolean isSuspicious() {
+		return suspicious;
+	}
+
+	public void setSuspicious(boolean suspicious) {
+		this.suspicious = suspicious;
 	}
 
 	public String getId() {
@@ -100,5 +126,47 @@ public class User {
 		}else {
 			this.role = UserRole.MANAGER;
 		}
+	}
+	
+	//Manager getters and setters
+	public String getRentACarObject() {
+		return rentACarObject;
+	}
+
+	public void setRentACarObject(String rentACarObject) {
+		this.rentACarObject = rentACarObject;
+	}
+	
+	//Buyer getters and setters
+	public ArrayList<Order> getAllRentals() {
+		return allRentals;
+	}
+	
+	public void setAllRentals(ArrayList<Order> allRentals) {
+		this.allRentals = allRentals;
+	}
+	
+	public String getShoppingCart() {
+		return shoppingCart;
+	}
+	
+	public void setShoppingCart(String shoppingCart) {
+		this.shoppingCart = shoppingCart;
+	}
+	
+	public int getCollectedPointsNumber() {
+		return collectedPointsNumber;
+	}
+	
+	public void setCollectedPointsNumber(int collectedPointsNumber) {
+		this.collectedPointsNumber = collectedPointsNumber;
+	}
+	
+	public BuyersType getBuyerType() {
+		return buyerType;
+	}
+	
+	public void setBuyerType(BuyersType buyerType) {
+		this.buyerType = buyerType;
 	}
 }

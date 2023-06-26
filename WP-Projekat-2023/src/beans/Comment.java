@@ -1,22 +1,40 @@
 package beans;
 
+import beans.Enum.CommentStatus;
+
 public class Comment {
-	private int id;
+	private String id;
 	private User user;
 	private RentACar rentACar;
 	private String text;
 	private int grade;//on a scale 1-5
+	private CommentStatus status;
 	
 	public Comment() {
 
 	}
 
-	public Comment(User user, RentACar rentACar, String text, int grade) {
+	public Comment(User user, RentACar rentACar, String text, int grade, CommentStatus status) {
 		super();
 		this.user = user;
 		this.rentACar = rentACar;
 		this.text = text;
 		this.grade = grade;
+		this.status = status;
+	}	
+
+	public CommentStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		if(status.equals("PENDING")) {
+			this.status = CommentStatus.PENDING;
+		}else if(status.equals("ACCEPTED")){
+			this.status = CommentStatus.ACCEPTED;
+		}else {
+			this.status = CommentStatus.DECLINED;
+		}
 	}
 
 	public User getUser() {
@@ -51,11 +69,11 @@ public class Comment {
 		this.grade = grade;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 }

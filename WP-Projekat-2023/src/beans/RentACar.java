@@ -2,7 +2,6 @@ package beans;
 
 import java.util.ArrayList;
 
-import beans.Enum.GearBoxType;
 import beans.Enum.RentACarStatus;
 
 public class RentACar {

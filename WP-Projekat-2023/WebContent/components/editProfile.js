@@ -6,8 +6,10 @@ Vue.component("usersProfileEditDisplay", {
 		}
 	},
 	    template: `
-	    	<div>
+	    	<div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
 	    	<form>
+	    		<label><b>Izmena profila</b></label>
+	    		<br></br>
 	    		<table>
 	    			<tr>
 	    				<td><label>Korisnicko ime: </label></td>
@@ -34,6 +36,7 @@ Vue.component("usersProfileEditDisplay", {
 	    				<td><input type = "date" name="dateOfBirth" v-model="user.dateOfBirth" /></td>
 	    			</tr>
 	    			<tr>
+	    				<td></td>
 	    				<td><input type="submit" v-on:click="edit(user.id)" /></td>
 	    			</tr>
 	    		</table>

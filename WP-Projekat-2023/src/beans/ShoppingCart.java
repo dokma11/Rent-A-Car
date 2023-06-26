@@ -3,7 +3,7 @@ package beans;
 import java.util.ArrayList;
 
 public class ShoppingCart {
-	private int id;
+	private String id;
 	private User responsibleUser;
 	private ArrayList<Vehicle> vehiclesInCart;
 	private int price;
@@ -43,11 +43,11 @@ public class ShoppingCart {
 		this.price = price;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 }

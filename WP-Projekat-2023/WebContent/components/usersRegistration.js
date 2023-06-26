@@ -2,11 +2,14 @@ Vue.component("usersRegistration", {
     data: function () {
         return {
             user: {id: null, username: null, password: null, name: null, surname: null, gender: null, dateOfBirth: null, role:null},
-			notValid: null
+			notValid: null,
+			repeatedPassword: null
         }
     },
     template: `
-        <div>
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
+			<label><b>Registacija korisnika</b></label>
+			<br></br>
 	    	<form>
 	    		<table>
 	    			<tr>
@@ -14,8 +17,12 @@ Vue.component("usersRegistration", {
 	    				<td><input type = "text" name="username" v-model="user.username" /></td>
 	    			</tr>
 	    			<tr>
-	    				<td><label>Sifra: </label></td>
+	    				<td><label>Lozinka: </label></td>
 	    				<td><input type = "password" name="password" v-model="user.password" /></td>
+	    			</tr>
+	    			<tr>
+	    				<td><label>Ponovite lozinku: </label></td>
+	    				<td><input type = "password" name="repeatedPassword" v-model="repeatedPassword" /></td>
 	    			</tr>
 	    			<tr>
 	    				<td><label>Ime: </label></td>
@@ -44,6 +51,7 @@ Vue.component("usersRegistration", {
                         </td>
                     </tr>
 	    			<tr>
+	    				<td></td>
 	    				<td><input type="submit" v-on:click="create" /></td>
 	    			</tr>
 	    		</table>
@@ -78,6 +86,15 @@ Vue.component("usersRegistration", {
 			}
 			else{
 				document.getElementsByName("password")[0].style.border = "2px solid black";
+			}
+			
+			if(!this.repeatedPassword){
+				valid = false;
+				this.notValid = true;
+				document.getElementsByName("repeatedPassword")[0].style.border = "2px solid red";
+			}
+			else{
+				document.getElementsByName("repeatedPassword")[0].style.border = "2px solid black";
 			}
 			
 			if(!this.user.name){
@@ -124,6 +141,13 @@ Vue.component("usersRegistration", {
             else{
                 document.getElementsByName("role")[0].style.border = "2px solid black";
             }
+			
+			if(this.repeatedPassword != this.user.password){
+				valid = false;
+				this.notValid = true;
+				document.getElementsByName("repeatedPassword")[0].style.border = "2px solid red";
+				document.getElementsByName("password")[0].style.border = "2px solid red";
+			}
 			
 			if (valid){
 			  axios.post('rest/users/', this.user).then(response => router.push(`/`));
