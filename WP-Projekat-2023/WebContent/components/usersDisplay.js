@@ -28,6 +28,7 @@ Vue.component("usersProfileDisplay", {
 		    		<button v-if="user.role === 'BUYER'" v-on:click="rentalReview(user.id)">Pregled korisnikovih iznajmljivanja</button>
 		    		<button v-if="user.role === 'BUYER'" v-on:click="order(user.id)">Nova porudzbina</button>
 		    		<button v-if="user.role === 'ADMINISTRATOR'" v-on:click="display">Pregled svih registrovanih korisnika</button>
+		    		<button v-if="user.role === 'MANAGER'" v-on:click="displayRentACar(user.id)">Pregled Rent A Car objekta</button>
 		    	</div>
 	    	</div>
 	    `,
@@ -50,6 +51,10 @@ Vue.component("usersProfileDisplay", {
 		
 		display: function(){
 			router.push(`/allUsersProfiles`);
+		},
+		
+		displayRentACar: function(id){
+			router.push(`/usersProfile/usersRentACarObject/` + id);
 		}
     }
 });

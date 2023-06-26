@@ -82,10 +82,11 @@ public class UserService {
 		if (loggedUser == null) {
 			return Response.status(400).entity("Invalid username and/or password").build();
 		}
+		System.out.println("usao login u servis");
 		request.getSession().setAttribute("user", loggedUser);
 		return Response.status(200).build();
 	}
-	
+
 	@POST
 	@Path("/logout")
 	public void logout(@Context HttpServletRequest request) {

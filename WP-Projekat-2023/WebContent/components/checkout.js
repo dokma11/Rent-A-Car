@@ -21,7 +21,11 @@ Vue.component("checkout", {
 	    				<td>{{v.model}}</td>
 	    				<td>{{v.price}}</td>
 	    				<td>{{v.picturePath}}</td>
-	    				<td></td>	
+	    				<td>
+					        <button v-on:click="decrementItem(v.id)">-</button>
+					        <input type="number" v-model="v.count">
+					        <button v-on:click="incrementItem(v.id)">+</button>
+					    </td>	
 	    			</tr>
 	    		</table>
 	    		<label>Ukupna cena korpe je {{shoppingCart.price}}</label>
@@ -35,7 +39,31 @@ Vue.component("checkout", {
     },
     methods: {
     	rent : function() {
+			event.preventDefault();
+			
 			axios.post('rest/orders/' + this.shoppingCart).then(reponse => (router.push(`/`)));
-    	}
+    	},
+    	
+    	decrementItem : function(id) {
+			event.preventDefault();
+			
+	        if (this.shoppingCart.vehiclesInCart[id].count > 1) {
+	            this.shoppingCart.vehiclesInCart[id].count--;
+	        }
+	        
+	        this.shoppingCart.price += this.shoppingCart.vehiclesInCart[id].price;
+	        
+	        location.reload();
+	    },
+	    
+	    incrementItem : function(id) {
+	        event.preventDefault();
+	        
+	        this.shoppingCart.vehiclesInCart[id].count++;
+	        
+	        this.shoppingCart.price -= this.shoppingCart.vehiclesInCart[id].price;
+	        
+	        location.reload();
+	    }
     }
 });

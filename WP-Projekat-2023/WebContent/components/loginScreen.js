@@ -4,7 +4,11 @@ Vue.component("loginScreen", {
       username: null,
       password: null,
       notValid: null,
-      link: 'http://localhost:8080/WebShopREST/#/usersRegistration'
+	  isBlocked: false,
+      link: 'http://localhost:8080/WebShopREST/#/usersRegistration',
+      userToLogIn: [],
+      users: [],
+      notExisting: false
     };
   },
   template: `
@@ -34,11 +38,17 @@ Vue.component("loginScreen", {
         </tr>
       </table>
       <p v-if="notValid">Molimo Vas popunite sva polja</p>
+      <p v-if="isBlocked">Vas korisnicki nalog je blokiran samim time se vise ne mozete prijaviti na svoj nalog</p>
+      <p v-if="notExisting">Korisnicki nalog sa unetim kredencijalima ne postoji</p>
     </div>
   `,
+ mounted () {
+	axios.get(`rest/users/`).then(response => this.users = response.data) 
+ },
  methods: {
     login: function () {
-      this.notValid = false;
+		event.preventDefault();
+     /* this.notValid = false;
 
       if (this.username && this.password) {
         const url = 'rest/login/';
@@ -56,7 +66,32 @@ Vue.component("loginScreen", {
           });
       } else {
         this.notValid = true;
-      }
+      }*/
+      let count = 0;
+	  for (const _ in this.users) {
+  		  count++;
+	  }
+			
+	  let entered = false;
+	  for(let i=0; i < count; i++){
+		  if(this.users[i].username == this.username && this.users[i].password == this.password){
+			  this.userToLogIn = this.users[i];
+			  entered = true;
+			  break;
+		  }
+	  }
+	  
+	  if(entered){
+		if(this.userToLogIn.blocked === false){
+		  axios.post('rest/users/login/', this.userToLogIn).then(response => router.push(`/rentACar`));
+	  	}
+      	else{
+		  this.isBlocked = true;
+	  	}  
+	  }
+	  else{
+		  this.notExisting = true;
+	  }		
     },
   },
 });

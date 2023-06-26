@@ -10,6 +10,7 @@ const RentalReview = {template: '<rentalReview></rentalReview>'}
 const NewOrder = {template: '<newOrder></newOrder>'}
 const NewVehicle = {template: '<newVehicle></newVehicle>'}
 const RentACarObjectDisplay = {template: '<rentACarObjectDisplay></rentACarObjectDisplay>'}
+const UsersRentACarObjectDisplay = {template: '<usersRentACarObjectDisplay></usersRentACarObjectDisplay>'}
 const Checkout = {template: '<checkout></checkout>'}
 
 const router = new VueRouter({
@@ -24,6 +25,7 @@ const router = new VueRouter({
 		{ path: '/usersRegistration', name: 'registration', component: RegistrationUser},	
 		{ path: '/rentACarRegistration', name: 'rentACarRegistration', component: RegistrationRentACar},	
 		{ path: '/usersProfile/rentalReview/:id', name: 'rentalReviewhome', component: RentalReview},
+		{ path: '/usersProfile/usersRentACarObject/:id', name: 'usersRentACarObject', component: UsersRentACarObjectDisplay},
 		{ path: '/usersProfile/newOrder/:id', name: 'newOrderHome', component: NewOrder},
 		{ path: '/newVehicle/:id', name: 'newVehicleHome', component: NewVehicle},
 		{ path: '/login', name: 'loginscreen', component: LoginScreen},

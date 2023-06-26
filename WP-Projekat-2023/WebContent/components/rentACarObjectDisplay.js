@@ -38,11 +38,52 @@ Vue.component("rentACarObjectDisplay", {
 	    				<th>Ocena</th>
 	    			</tr>
 	    			<tr v-for="(c, index) in comments">
+	    				<td v-if="c.status != 'PENDING'">{{c.user.username}}</td>
+	    				<td v-if="c.status != 'PENDING'">{{c.text}}</td>
+	    				<td v-if="c.status != 'PENDING'">{{c.grade}}</td>
+	    			</tr>
+	    		</table>
+	    		<br></br>
+	    		
+	    		<!--   			FOR LATER ON
+	    		
+	    		THIS IS DISPLAY FOR USERS(THE YCAN ONLY SEE ACCEPTED COMMENTS WHILE OTHERS CAN SEE ACCEPTED AND DECLINED):
+	    		<label><b>Prikaz komentara Rent A Car objekta</b></label>
+	    		<table border="1" class="tab">
+	    			<tr>
+	    				<th>Korisnicko ime</th>
+	    				<th>Tekst</th>
+	    				<th>Ocena</th>
+	    			</tr>
+	    			<tr v-for="(c, index) in comments">
+	    				<td v-if="user.role=='BUYER' && c.status=='ACCEPTED'">{{c.user.username}}</td>
+	    				<td v-if="user.role=='BUYER' && c.status=='ACCEPTED'">{{c.text}}</td>
+	    				<td v-if="user.role=='BUYER' && c.status=='ACCEPTED'">{{c.grade}}</td>
+	    			</tr>
+	    		</table>
+	    		
+	    		-->
+	    		
+	    		<!-- For this label and the table below it there has to be a case user.role == 'MANAGER', couldnt do it right now have to come back -->
+	    		
+	    		<label><b>Prikaz komentara koji jos nisu prihvaceni/odbijeni</b></label>
+	    		<table border="1" class="tab">
+	    			<tr>
+	    				<th>Korisnicko ime</th>
+	    				<th>Tekst</th>
+	    				<th>Ocena</th>
+	    				<th>Dodeli status</th>
+	    			</tr>
+	    			<tr v-for="(c, index) in comments">
 	    				<td>{{c.user.username}}</td>
 	    				<td>{{c.text}}</td>
 	    				<td>{{c.grade}}</td>
+	    				<td><button v-on:click="acceptComment(c.id)">Potvrdi</button> <button v-on:click="declineComment(c.id)">Odbij</button></td>
 	    			</tr>
 	    		</table>
+	    		
+	    		<!-- -->
+	    		
 	    		<br></br>
 	    		<label><b>Prikaz svih vozila Rent A Car objekta</b></label>
 	    		<table border="1" class="tab"> 
@@ -86,6 +127,7 @@ Vue.component("rentACarObjectDisplay", {
     mounted () {
 		let p = this.$route.params.id;
         axios.get('rest/rentACars/' + p).then(response => (this.rentACar = response.data));
+        acios.get('rest/comments/').then(response => (this.comments = response.data));
     },
     methods: {
     	addNewVehicle : function() {
@@ -98,6 +140,44 @@ Vue.component("rentACarObjectDisplay", {
     	
     	delete : function(id) {
 
-    	}
+    	},
+    	
+    	acceptComment: function(id){
+			event.preventDefault();
+			
+			let count = 0;
+			for (const _ in this.comments) {
+  				count++;
+			}
+			
+			let i=0;
+			for(i; i < count; i++){
+				if(this.comments[i].id == id){
+					this.comments[i].status = "ACCEPTED";
+					break;
+				}
+			}
+			
+			axios.put('rest/comments/' + id, this.comments[i]).then(response => location.reload()).catch(error => console.log(error));
+		},
+		
+		declineComment: function(id){
+			event.preventDefault();
+			
+			let count = 0;
+			for (const _ in this.comments) {
+  				count++;
+			}
+			
+			let i=0;
+			for(i; i < count; i++){
+				if(this.comments[i].id == id){
+					this.comments[i].status = "DECLINED";
+					break;
+				}
+			}
+			
+			axios.put('rest/comments/' + id, this.comments[i]).then(response => location.reload()).catch(error => console.log(error));
+		}
     }
 });
