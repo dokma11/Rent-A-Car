@@ -30,8 +30,8 @@ public class VehicleService {
 	@PostConstruct 
 	public void init() {
 		if(ctx.getAttribute("vehicleDAO") == null) {
-		String contextPath = ctx.getRealPath("");
-		ctx.setAttribute("vehicleDAO", new VehicleDAO(contextPath));
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("vehicleDAO", new VehicleDAO(contextPath));
 		}
 	}
 	
@@ -57,7 +57,6 @@ public class VehicleService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void add(Vehicle v) {
-		System.out.println("usao u vehicle post servis stagod");
 		VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
 		dao.add(v);
 	}
@@ -69,5 +68,14 @@ public class VehicleService {
 	public Vehicle editVehicle(@PathParam("id") String id, Vehicle v) {
 		VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
 		return dao.edit(id, v);
+	}
+
+	@GET
+	@Path("/getAvailableVehicles/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public HashMap<String, Vehicle> getAvailableVehicles(@PathParam("id") String id) {
+		VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+		return dao.getAvailableVehicles(id);
 	}
 }

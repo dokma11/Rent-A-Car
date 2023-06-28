@@ -5,7 +5,9 @@ Vue.component("rentACarsDisplay", {
 			rentACarSearch: [],
 			notValid: null,
 			sortOption: "",
-			filterOption: "" 
+			filterOption: "",
+			user: [],
+			link: 'http://localhost:8080/WebShopREST/#/usersProfile/',
 	    }
 	},
 	    template: `
@@ -63,29 +65,26 @@ Vue.component("rentACarsDisplay", {
 		    				<td>{{r.name}}</td>
 		    				<td>{{r.location.address}}</td>
 		    				<td>
-	          					<img :src="r.logoPath" alt="Logo" /> <!-- Display the image from the URL -->
-	                       </td>
+	          					<img :src="r.logoPath" alt="Logo" />
+	                       	</td>
 		    				<td>{{r.grade}}</td>
 		    				<td><button v-on:click="displayDetails(r.id)">Prikazi detalje</button></td>
 		    			</tr>
 		    		</table>
 	    		</div>
 	    		<div style="display: flex; align-items: center;">
-		    		<button v-on:click="registration">Registracija</button>
-		    		<br></br>
-		    		<button v-on:click="rentACarRegistration">Registracija Rent A Car objekta</button>
+		    		<button v-if="user.role == 'ADMINISTRATOR'" v-on:click="rentACarRegistration">Registracija Rent A Car objekta</button>
 	    		</div>
 	    		<p v-if="notValid">Molimo Vas popunite bar neko polje za pretragu!</p>
+	    		<a v-bind:href="link + user.id">Prikaz profila</a>
 	    	</div>
 	    `,
 	mounted () {
-        axios.get('rest/rentACars/').then(response => (this.rentACar = response.data))
+        axios.get('rest/rentACars/').then(response => (this.rentACar = response.data));
+        
+        axios.get('rest/users/currentUser').then(response => (this.user = response.data));
     },   
-    methods: {
-    	registration : function() {
-			router.push(`/usersRegistration`);
-    	},
-    	
+    methods: {	
     	rentACarRegistration: function() {
 			router.push(`/rentACarRegistration`);
 		},
