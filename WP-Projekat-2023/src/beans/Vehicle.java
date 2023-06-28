@@ -11,7 +11,8 @@ public class Vehicle {
 	private String model;
 	private int price;
 	private GearBoxType gearBoxType;
-	private RentACar owner;
+	//private RentACar owner;
+	private String ownerId;
 	private VehicleType vehicleType;
 	private FuelType fuelType;
 	private String consumption;
@@ -33,7 +34,8 @@ public class Vehicle {
 		this.model = model;
 		this.price = price;
 		this.gearBoxType = gearBoxType;
-		this.owner.setId(rentACarsPosession);
+		//this.owner.setId(rentACarsPosession);
+		this.ownerId = rentACarsPosession;
 		this.vehicleType = vehicleType;
 		this.fuelType = fuelType;
 		this.consumption = consumption;
@@ -44,25 +46,6 @@ public class Vehicle {
 		this.status = status;
 	}
 
-	public Vehicle(String brand, String model, int price, GearBoxType gearBoxType, RentACar rentACarsPosession,
-			VehicleType vehicleType, FuelType fuelType, String consumption, int doorsNumber, int passangerCapacity,
-			String description, String picture, VehicleStatus status) {
-		super();
-		this.brand = brand;
-		this.model = model;
-		this.price = price;
-		this.gearBoxType = gearBoxType;
-		this.owner = rentACarsPosession;
-		this.vehicleType = vehicleType;
-		this.fuelType = fuelType;
-		this.consumption = consumption;
-		this.doorsNumber = doorsNumber;
-		this.passengerCapacity = passangerCapacity;
-		this.description = description;
-		this.picturePath = picture;
-		this.status = status;
-	}
-	
 	public String getId() {
 		return id;
 	}
@@ -91,9 +74,7 @@ public class Vehicle {
 		return price;
 	}
 
-	public void setPrice(int price/* String price*/) {
-		//int p = Integer.parseInt(price);
-		//this.price = p;
+	public void setPrice(int price) {
 		this.price = price;
 	}
 
@@ -108,7 +89,7 @@ public class Vehicle {
 			this.gearBoxType = GearBoxType.AUTOMATIC;
 		}
 	}
-
+/*
 	public RentACar getOwner() {
 		return owner;
 	}
@@ -116,11 +97,19 @@ public class Vehicle {
 	public void setOwner(RentACar rentACarsPosession) {
 		this.owner = rentACarsPosession;
 	}
+*/
+	public String getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
+	}
 
 	public VehicleType getVehicleType() {
 		return vehicleType;
 	}
-
+	
 	public void setVehicleType(String vehicleType) {
 		if(vehicleType.equals("CAR")) {
 			this.vehicleType = VehicleType.CAR;
@@ -163,9 +152,7 @@ public class Vehicle {
 		return doorsNumber;
 	}
 
-	public void setDoorsNumber(int doorsNumber/* String doorsNumber*/) {
-		//int p = Integer.parseInt(doorsNumber);
-		//this.doorsNumber = p;
+	public void setDoorsNumber(int doorsNumber) {
 		this.doorsNumber = doorsNumber;
 	}
 
@@ -173,9 +160,7 @@ public class Vehicle {
 		return passengerCapacity;
 	}
 
-	public void setPassengerCapacity(int passengerCapacity /*String passengerCapacity*/) {
-		//int p = Integer.parseInt(passengerCapacity);
-		//this.passengerCapacity = p;
+	public void setPassengerCapacity(int passengerCapacity) {
 		this.passengerCapacity = passengerCapacity;
 	}
 

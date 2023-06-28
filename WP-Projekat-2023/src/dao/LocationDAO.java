@@ -12,7 +12,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import beans.Location;
-import beans.User;
 
 public class LocationDAO {
 	
@@ -24,19 +23,8 @@ public class LocationDAO {
 	
 	public LocationDAO(String context) {
 		locations = new HashMap<String, Location>();
-		
-		Location l1 = new Location(47.34,36.75,"Barselona");
-		l1.setId("0");
-		
-		Location l2 = new Location(44.45,56.77,"Madrid");
-		l2.setId("1");
-		
-		locations.put(l1.getId(), l1);
-		locations.put(l2.getId(), l2);
-		
 		ctx = context;
-		saveToJson(ctx);
-	    //loadDataFromJson(context);
+	    loadDataFromJson(context);
 	}
 	
 	public HashMap<String, Location> getAll(){
@@ -44,9 +32,24 @@ public class LocationDAO {
 	}
 	
 	public Location getById(String id) {
-		int locaitonsId = Integer.parseInt(id);
-		return locations.get(locaitonsId);
+		return locations.get(id);
 	}
+	
+	public void add(Location location) {
+		
+		Integer maximum = -1;
+		for (String key : locations.keySet()) {
+			int temp = Integer.parseInt(key);
+			if(maximum < temp) {
+				maximum = temp;
+			}
+		}
+				
+		location.setId((++maximum).toString());
+		locations.put(location.getId(), location);
+        
+        saveToJson(ctx);
+    }
 	
 	public void saveToJson(String contextPath) {
 		String json = gson.toJson(locations);

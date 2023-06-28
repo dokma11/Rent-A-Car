@@ -16,7 +16,7 @@ public class User {
 	private LocalDate dateOfBirth;
 	private UserRole role;
 	//Manager attributes
-	private String rentACarObject;
+	private String rentACarObjectId;
 	//Buyer attributes
 	private ArrayList<Order> allRentals; 
 	private String shoppingCart;
@@ -129,12 +129,12 @@ public class User {
 	}
 	
 	//Manager getters and setters
-	public String getRentACarObject() {
-		return rentACarObject;
+	public String getRentACarObjectId() {
+		return rentACarObjectId;
 	}
 
-	public void setRentACarObject(String rentACarObject) {
-		this.rentACarObject = rentACarObject;
+	public void setRentACarObjectId(String rentACarObjectId) {
+		this.rentACarObjectId = rentACarObjectId;
 	}
 	
 	//Buyer getters and setters

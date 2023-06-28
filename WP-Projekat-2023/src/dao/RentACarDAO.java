@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
@@ -14,14 +13,7 @@ import com.google.gson.reflect.TypeToken;
 
 import beans.Location;
 
-//import javax.tools.DocumentationTool.Location;
-
 import beans.RentACar;
-import beans.User;
-import beans.Vehicle;
-//import beans.Vehicle;
-import beans.Enum.RentACarStatus;
-import dao.VehicleDAO;
 
 public class RentACarDAO {
 
@@ -59,19 +51,11 @@ public class RentACarDAO {
 		}
 				
 		rentACar.setId((++maximum).toString());
-		
-		ArrayList<Vehicle> emptyVehicleList = new ArrayList<Vehicle>();
-		rentACar.setAvailableVehicles(emptyVehicleList);
-		
-		rentACar.setStatus("WORKING");
-		
-		rentACar.setGrade(0);
-		
         rentACars.put(rentACar.getId(), rentACar);
         
         saveToJson(ctx);
     }
-	
+
 	public void saveToJson(String contextPath) {
 		String json = gson.toJson(rentACars);
 

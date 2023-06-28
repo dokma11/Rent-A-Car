@@ -4,6 +4,7 @@ const UsersProfileDisplay = { template: '<usersProfileDisplay></usersProfileDisp
 const AllUsersProfilesDisplay = { template: '<allUsersProfilesDisplay></allUsersProfilesDisplay>'}
 const UsersProfileEditDisplay = { template: '<usersProfileEditDisplay></usersProfileEditDisplay>'}
 const RegistrationUser = {template: '<usersRegistration></usersRegistration>'}
+const ManagerRegistration = {template: '<managerRegistration></managerRegistration>'}
 const RegistrationRentACar = {template: '<rentACarRegistration></rentACarRegistration>'}
 const LoginScreen = {template: '<loginScreen></loginScreen>'}
 const RentalReview = {template: '<rentalReview></rentalReview>'}
@@ -23,6 +24,7 @@ const router = new VueRouter({
 		{ path: '/allUsersProfiles', name: 'allusershome', component: AllUsersProfilesDisplay},
 		{ path: '/usersProfile/edit/:id', name: 'userhome1', component: UsersProfileEditDisplay},
 		{ path: '/usersRegistration', name: 'registration', component: RegistrationUser},	
+		{ path: '/managerRegistration', name: 'managerregistration', component: ManagerRegistration},	
 		{ path: '/rentACarRegistration', name: 'rentACarRegistration', component: RegistrationRentACar},	
 		{ path: '/usersProfile/rentalReview/:id', name: 'rentalReviewhome', component: RentalReview},
 		{ path: '/usersProfile/usersRentACarObject/:id', name: 'usersRentACarObject', component: UsersRentACarObjectDisplay},

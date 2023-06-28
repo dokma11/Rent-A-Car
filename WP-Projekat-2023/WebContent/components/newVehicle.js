@@ -2,7 +2,7 @@ Vue.component("newVehicle", {
 	data: function () {
 	    return {
 			vehicle: {id: null, brand: null, model: null, price: null, vehicleType: null, fuelType: null, gearBoxType: null, consumption: null,
-					  doorsNumber: null, passengerCapacity: null, picturePath: null, description: null, owner: null, status: null},
+					  doorsNumber: null, passengerCapacity: null, picturePath: null, description: null, ownerId: null, status: null},
 			rentACar: [],
 			notValid: null
 	    }
@@ -86,7 +86,7 @@ Vue.component("newVehicle", {
 	    `,
     mounted () {
         let p = this.$route.params.id;
-        axios.get('rest/rentACars/' + p).then(response => (this.rentACar = response.data));
+        axios.get('rest/rentACars/' + p).then(response => (this.rentACar = response.data));      
     },
     methods: {
     	registerVehicle : function() {
@@ -174,9 +174,9 @@ Vue.component("newVehicle", {
 			}
 			
 			if(!this.notValid){
-				this.vehicle.owner = this.rentACar;
+				this.vehicle.ownerId = this.rentACar.id;
 				this.vehicle.status = 'AVAILABLE';
-				axios.post('rest/vehicles/', this.vehicle).then(response => router.push(`/rentACar`)); //router.push(`/rentaCar/rentACarObjectDisplay/${this.rentACar.id}`)).catch(error => console.log(error));
+				axios.post('rest/vehicles/', this.vehicle).then(response => router.push(`/rentACar`));
 			}
     	}
     }

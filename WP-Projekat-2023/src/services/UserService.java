@@ -32,8 +32,8 @@ public class UserService {
 	@PostConstruct
 	public void init() {
 		if(ctx.getAttribute("userDAO") == null) {
-		String contextPath = ctx.getRealPath("");
-		ctx.setAttribute("userDAO", new UserDAO(contextPath));
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("userDAO", new UserDAO(contextPath));
 		}
 	}
 	
@@ -72,6 +72,14 @@ public class UserService {
         dao.add(u);
     }
 	
+	@GET
+	@Path("/getAvailableManagers")
+	@Produces(MediaType.APPLICATION_JSON)
+	public HashMap<String, User> getAvailableManagers() {
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		return dao.getAvailableManagers();
+	}
+	
 	@POST
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -82,7 +90,6 @@ public class UserService {
 		if (loggedUser == null) {
 			return Response.status(400).entity("Invalid username and/or password").build();
 		}
-		System.out.println("usao login u servis");
 		request.getSession().setAttribute("user", loggedUser);
 		return Response.status(200).build();
 	}
@@ -98,6 +105,7 @@ public class UserService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public User login(@Context HttpServletRequest request) {
+		System.out.println("usao za currentUser");
 		return (User) request.getSession().getAttribute("user");
 	}
 }

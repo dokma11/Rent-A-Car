@@ -3,6 +3,7 @@ package dao;
 import java.util.HashMap;
 
 import beans.User;
+import beans.Enum.UserRole;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -34,7 +35,19 @@ public class UserDAO {
 	public User getById(String id) {
 		return users.get(id);
 	}
+	
+	public HashMap<String, User> getAvailableManagers(){
+		HashMap<String, User> ret = new HashMap<String, User>();
 
+		for (User user : users.values()) {
+			if (user.getRole().equals(UserRole.MANAGER) && user.getRentACarObjectId() == null) {
+				ret.put(user.getId(), user);   
+	        }
+	    }
+		
+		return ret;
+	}
+	
 	public User edit(String id, User user) {
 
 	    if (users.containsKey(id)) {
@@ -66,6 +79,10 @@ public class UserDAO {
 	        
 	        toEdit.setBlocked(user.isBlocked());
 	        
+	        if (user.getRentACarObjectId() != null) {
+	            toEdit.setRentACarObjectId(user.getRentACarObjectId());
+	        }
+	        
 	        saveToJson(ctx);
 	        
 	        return toEdit;
@@ -94,19 +111,14 @@ public class UserDAO {
     }
 	
 	public User logIn(String username, String password) {
-		if (!users.containsKey(username)) {
-			return null;
-		}
-		User user = users.get(username);
-		if (!user.getPassword().equals(password)) {
-			return null;
-		}
-		
-		System.out.println("usao login u dao");
-
-		return user;
+	    for (User user : users.values()) {
+	        if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+	            return user;
+	        }
+	    }
+	    return null;
 	}
-	
+
 	public void saveToJson(String contextPath) {
 		String json = gson.toJson(users);
 

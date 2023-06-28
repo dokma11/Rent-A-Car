@@ -29,8 +29,8 @@ public class ShoppingCartService {
 	@PostConstruct
 	public void init() {
 		if(ctx.getAttribute("shoppingCartDAO") == null) {
-		String contextPath = ctx.getRealPath("");
-		ctx.setAttribute("shoppingCartDAO", new ShoppingCartDAO(contextPath));
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("shoppingCartDAO", new ShoppingCartDAO(contextPath));
 		}
 	}
 	

@@ -1,16 +1,17 @@
-Vue.component("usersRegistration", { 
+Vue.component("managerRegistration", { 
     data: function () {
         return {
             user: {id: null, username: null, password: null, name: null, surname: null, gender: null, dateOfBirth: null, role:null},
 			notValid: false,
 			repeatedPassword: null,
 			allUsers: [],
-			usernameExists: null
+			usernameExists: null,
+			allRentACars: []
         }
     },
     template: `
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
-			<label><b>Registacija korisnika</b></label>
+			<label><b>Registacija menadzera</b></label>
 			<br></br>
 	    	<form>
 	    		<table>
@@ -54,6 +55,8 @@ Vue.component("usersRegistration", {
     `,
      mounted () {
         axios.get('rest/users/').then(response => this.allUsers = response.data);
+        
+        axios.get('rest/rentACars/').then(response => this.allRentACars = response.data);
     },
     methods: {
         create : function() {
@@ -141,8 +144,16 @@ Vue.component("usersRegistration", {
 			}
 			
 			if (!this.notValid){
-				this.user.role = 'BUYER';
-			  	axios.post('rest/users/', this.user).then(response => router.push(`/login`));
+				this.user.role = 'MANAGER';
+				
+				let racCount = 0;
+				for (const _ in this.allRentACars) {
+	  				racCount++;
+				}
+				
+				this.user.rentACarObjectId = racCount;
+				
+			  	axios.post('rest/users/', this.user).then(response => router.push(`/rentACarRegistration`));
 			}
         }
     }

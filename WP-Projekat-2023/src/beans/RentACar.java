@@ -14,13 +14,15 @@ public class RentACar {
 	private String logoPath;
 	private int grade;
 
-	
+	public RentACar() {
+		this.availableVehicles = new ArrayList<Vehicle>();
+	}
 
-	public RentACar(String name, ArrayList<Vehicle> availableVehicles, String workingHours,
+	public RentACar(String name, String workingHours,
 			RentACarStatus status, Location location, String logoPath, int grade) {
 		super();
 		this.name = name;
-		this.availableVehicles = availableVehicles;
+		this.availableVehicles = new ArrayList<Vehicle>();
 		this.workingHours = workingHours;
 		this.status = status;
 		this.location = location;
@@ -29,13 +31,11 @@ public class RentACar {
 	}
 
 	public RentACar(String name, String workingHours, RentACarStatus status,int grade) {
-		
 		this.name = name;
 		this.workingHours = workingHours;
 		this.status = status;
 		this.grade = grade;
-		
-		
+		this.availableVehicles = new ArrayList<Vehicle>();
 	}
 
 	public String getId() {

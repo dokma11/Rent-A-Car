@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -13,9 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import beans.Location;
-import beans.User;
 import dao.LocationDAO;
-import dao.UserDAO;
 
 @Path("/locations")
 public class LocationService {
@@ -51,4 +50,13 @@ public class LocationService {
 		LocationDAO dao = (LocationDAO) ctx.getAttribute("locationDAO");
 		return dao.getById(id);
 	}
+	
+	@POST
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void add(Location l) {
+		LocationDAO dao = (LocationDAO) ctx.getAttribute("locationDAO");
+        dao.add(l);
+    }
 }

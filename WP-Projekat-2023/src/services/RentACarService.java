@@ -14,9 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import beans.RentACar;
-import dao.LocationDAO;
 import dao.RentACarDAO;
-import dao.VehicleDAO;
 
 @Path("/rentACars")
 public class RentACarService {
@@ -31,22 +29,9 @@ public class RentACarService {
 	@PostConstruct 
 	public void init() {
 		if(ctx.getAttribute("rentACarDAO") == null) {
-		String contextPath = ctx.getRealPath("");
-		ctx.setAttribute("rentACarDAO", new RentACarDAO(contextPath));
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("rentACarDAO", new RentACarDAO(contextPath));
 		}
-		
-		/*
-		if(ctx.getAttribute("vehicleDAO") == null) {
-			String contextPath=ctx.getRealPath("");
-			ctx.setAttribute("vehicleDAO", new VehicleDAO(contextPath));
-		}
-		
-		if(ctx.getAttribute("loactionDAO") == null) {
-			String contextPath=ctx.getRealPath("");
-			ctx.setAttribute("locationDAO", new LocationDAO(contextPath));
-		} */
-		
-		System.out.println("Usao u init");
 	}
 	
 	@GET
@@ -65,14 +50,13 @@ public class RentACarService {
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
 		return dao.getById(id);
 	}
-	
+
 	@POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public void add(RentACar r) {
-        RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
         dao.add(r);
-        System.out.println("usao u post");
     }
 }
