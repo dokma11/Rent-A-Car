@@ -21,6 +21,7 @@ public class Vehicle {
 	private String description;
 	private String picturePath;
 	private VehicleStatus status;
+	private boolean isDeleted;
 	
 	public Vehicle() {
 
@@ -190,5 +191,13 @@ public class Vehicle {
 		}else if(status.equals("AVAILABLE")) {
 			this.status = VehicleStatus.AVAILABLE;
 		}
+	}
+
+	public boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(boolean deleted) {
+		this.isDeleted = deleted;
 	}	
 }

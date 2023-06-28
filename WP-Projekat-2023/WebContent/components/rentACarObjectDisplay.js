@@ -4,7 +4,10 @@ Vue.component("rentACarObjectDisplay", {
 			rentACar: [],
 			comments: [],
 			user: [],
-			vehicles: []
+			vehicles: [],
+			rightManager: null,
+			notRightManager: null,
+			toDelete: []
 	    }
 	},
 	    template: `
@@ -101,44 +104,54 @@ Vue.component("rentACarObjectDisplay", {
 		      <th>Obrisi vozilo</th>
 		    </tr>
 		    <tr v-for="(veh, index) in vehicles">
-		      <td>{{veh.brand}}</td>
-		      <td>{{veh.model}}</td>
-		      <td>{{veh.price}}</td>
-		      <td>{{veh.gearBoxType}}</td>
-		      <td>{{veh.vehicleType}}</td>
-		      <td>{{veh.fuelType}}</td>
-		      <td>{{veh.consumption}}</td>
-		      <td>{{veh.doorsNumber}}</td>
-		      <td>{{veh.passengerCapacity}}</td>
-		      <td>{{veh.description}}</td>
-		      <td>
+		      <td v-if="veh.isDeleted == false">{{veh.brand}}</td>
+		      <td v-if="veh.isDeleted == false">{{veh.model}}</td>
+		      <td v-if="veh.isDeleted == false">{{veh.price}}</td>
+		      <td v-if="veh.isDeleted == false">{{veh.gearBoxType}}</td>
+		      <td v-if="veh.isDeleted == false">{{veh.vehicleType}}</td>
+		      <td v-if="veh.isDeleted == false">{{veh.fuelType}}</td>
+		      <td v-if="veh.isDeleted == false">{{veh.consumption}}</td>
+		      <td v-if="veh.isDeleted == false">{{veh.doorsNumber}}</td>
+		      <td v-if="veh.isDeleted == false">{{veh.passengerCapacity}}</td>
+		      <td v-if="veh.isDeleted == false">{{veh.description}}</td>
+		      <td v-if="veh.isDeleted == false">
 	          	  <img :src="veh.picturePath" alt="Picture" />
 	          </td>
-		      <td>{{veh.status}}</td>
-		      <td>
-		        <button v-if="user.role == 'MANAGER' && user.rentACarObjectId == veh.id" v-on:click="edit(veh.id)">Izmeni</button>
-		        <p v-if="user.role != 'MANAGER'">Opcija izmene je dostupna samo menadžerima ovog objekta</p>
+		      <td v-if="veh.isDeleted == false">{{veh.status}}</td>
+		      <td v-if="veh.isDeleted == false">
+		        <button v-if="rightManager" v-on:click="edit(veh.id)">Izmeni</button>
+		        <p v-if="notRightManager">Opcija izmene je dostupna samo menadžerima ovog objekta</p>
 		      </td>
-		      <td>
-		        <button v-if="user.role == 'MANAGER' && user.rentACarObjectId == veh.id" v-on:click="del(veh.id)">Obrisi</button>
-		        <p v-if="user.role != 'MANAGER'">Opcija brisanja je dostupna samo menadžerima ovog objekta</p>
+		      <td v-if="veh.isDeleted == false">
+		        <button v-if="rightManager" v-on:click="del(veh.id)">Obrisi</button>
+		        <p v-if="notRightManager">Opcija brisanja je dostupna samo menadžerima ovog objekta</p>
 		      </td>
 		    </tr>
 		  </table>
 		  <br></br>
-		  <button v-if="user.role == 'MANAGER'" v-on:click="addNewVehicle">Dodaj novo vozilo</button>
+		  <button v-if="rightManager" v-on:click="addNewVehicle">Dodaj novo vozilo</button>
 		</div>
 
 	    `,
     mounted () {
 		let p = this.$route.params.id;
-        axios.get('rest/rentACars/' + p).then(response => (this.rentACar = response.data));
-        
-		axios.get('rest/users/currentUser').then(response => (this.user = response.data));
-        
-        axios.get('rest/vehicles/getAvailableVehicles/' + p).then(response => (this.vehicles = response.data));
-        
-        axios.get('rest/comments/').then(response => (this.comments = response.data));
+        axios.get('rest/rentACars/' + p).then(response => {
+			this.rentACar = response.data;
+			axios.get('rest/users/currentUser').then(response => {
+				if(response.status == 200 && response.data.role == "MANAGER" && response.data.rentACarObjectId == this.rentACar.id){
+					this.rightManager = true;
+					this.notRightManager = false;
+				}
+				else{
+					this.rightManager = false;
+					this.notRightManager = true;
+				}
+				axios.get('rest/vehicles/getAvailableVehicles/' + p).then(response => {
+					this.vehicles = response.data;
+					axios.get('rest/comments/').then(response => (this.comments = response.data));
+					});
+				});
+			});
     },
     methods: {
     	addNewVehicle : function() {
@@ -155,18 +168,12 @@ Vue.component("rentACarObjectDisplay", {
     	
     	del : function(id) {
 			event.preventDefault();
-			
-			let count = 0;
-			for (const _ in this.vehicles) {
-  				count++;
-			}
-			
-			let i=0;
-			for(i; i < count; i++){
-				this.vehicles[i].ownerId = -1	
-			}
-			
-			location.reload();
+
+			axios.get('rest/vehicles/' + id).then(response => {
+				this.toDelete = response.data;
+				this.toDelete.isDeleted = true;
+				axios.put('rest/vehicles/' + this.toDelete.id, this.toDelete).then(response => location.reload());
+			});
     	},
     	
     	acceptComment: function(id){

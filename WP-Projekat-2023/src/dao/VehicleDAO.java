@@ -113,6 +113,8 @@ public class VehicleDAO {
 	            toEdit.setStatus(v.getStatus().toString());
 	        }
 	        
+	        toEdit.setIsDeleted(v.getIsDeleted());
+	        
 	        saveToJson(ctx);
 	        
 	        return toEdit;
