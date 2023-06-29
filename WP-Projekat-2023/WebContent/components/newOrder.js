@@ -1,12 +1,14 @@
 Vue.component("newOrder", { 
 	data: function () {
 	    return {
-			vehicles:[], /*{id: null, brand: null, model: null, price: null, gearBoxType: null, owner: null, vehicleType: null, fuelType: null, 
-						consumption: null, passengerCapacity: null, doorsNumber: null, description: null, picturePath: null, status: null},*/
+			vehicles:[],
 			startDate: null,		
 			endDate: null,
-			shoppingCart: {id: null, responsibleUser: null, vehiclesInCart: null, price: 0}
-	    }
+			shoppingCart: {id: null, userId: null, idsOfVehiclesInCart: [], price: 0},
+			orders: [],
+			loggedInUser: [],
+			allShoppingCarts: []
+		}
 	},
 	    template: `
 	    	<div>	
@@ -23,37 +25,39 @@ Vue.component("newOrder", {
 	    				<td><input type="date" name="endDate" v-model="endDate" /></td>
 	    			</tr>
 	    		</table>
+	    		<button v-on:click="search">Pretrazi</button>
 	    		<br></br>
 	    		<table border="1" class="tab">
-	    			<th>
-	    				<td>Marka</td>
-	    				<td>Model</td>
-	    				<td>Cena</td>
-	    				<td>Tip</td>
-	    				<td>Vrsta</td>
-	    				<td>Tip goriva</td>
-	    				<td>Potrosnja</td>
-	    				<td>Broj vrata</td>
-	    				<td>Putnicki kapacitet</td>
-	    				<td>Opis</td>
-	    				<td>Slika</td>
-	    				<td></td>
-	    			</th>
+	    			<tr>
+	    				<th>Marka</th>
+	    				<th>Model</th>
+	    				<th>Cena</th>
+	    				<th>Tip menjaca</th>
+	    				<th>Vrsta</th>
+	    				<th>Tip goriva</th>
+	    				<th>Potrosnja</th>
+	    				<th>Broj vrata</th>
+	    				<th>Putnicki kapacitet</th>
+	    				<th>Opis</th>
+	    				<th>Slika</th>
+	    				<th></th>
+	    			</tr>
 	    			<tr v-for="(v, index) in vehicles">
-	    				<td>{{v.brand}}</td>
-	    				<td>{{v.model}}</td>
-	    				<td>{{v.price}}</td>
-	    				<td>{{v.gearBoxType}}</td>
-	    				<td>{{v.owner}}</td>
-	    				<td>{{v.vehicleType}}</td>
-	    				<td>{{v.fuelType}}</td>
-	    				<td>{{v.consumption}}</td>
-	    				<td>{{v.passengerCapacity}}</td>
-	    				<td>{{v.doorsNumber}}</td>
-	    				<td>{{v.description}}</td>
-	    				<td>{{v.picturePath}}</td>
-	    				<td>{{v.status}}</td>
-	    				<td><button v-on:click="addToCart(v.id)">Dodaj u korpu</button></td>
+	    				<td v-if="v.isDeleted == false">{{v.brand}}</td>
+	    				<td v-if="v.isDeleted == false">{{v.model}}</td>
+	    				<td v-if="v.isDeleted == false">{{v.price}}</td>
+	    				<td v-if="v.isDeleted == false">{{v.gearBoxType}}</td>
+	    				<td v-if="v.isDeleted == false">{{v.vehicleType}}</td>
+	    				<td v-if="v.isDeleted == false">{{v.fuelType}}</td>
+	    				<td v-if="v.isDeleted == false">{{v.consumption}}</td>
+	    				<td v-if="v.isDeleted == false">{{v.passengerCapacity}}</td>
+	    				<td v-if="v.isDeleted == false">{{v.doorsNumber}}</td>
+	    				<td v-if="v.isDeleted == false">{{v.description}}</td>
+	    				<td v-if="v.isDeleted == false">
+	    					<img :src="v.picturePath" alt="Logo" />
+	    				</td>
+	    				<td v-if="v.isDeleted == false">{{v.status}}</td>
+	    				<td v-if="v.isDeleted == false"><button v-on:click="addToCart(v.id)">Dodaj u korpu</button></td>
 	    			</tr>
 	    		</table>
 	    		<br></br>
@@ -61,23 +65,58 @@ Vue.component("newOrder", {
 	    	</div>
 	    `,
     mounted () {
-        axios.get('rest/vehicles/').then(response => (this.vehicles = response.data))
+        axios.get('rest/vehicles/').then(response => {
+			this.vehicles = response.data;
+        	axios.get('rest/orders/').then(response => {
+				this.orders = response.data;
+				axios.get('rest/users/currentUser').then(response => {
+					this.loggedInUser = response.data;
+					axios.get('rest/shoppingCarts/').then(response => {
+						this.allShoppingCarts = response.data;
+					})
+				});
+			});
+        });
     },
     methods: {
+		search : function() {
+			event.preventDefault();
+			
+			let count = 0;
+			for (const _ in this.orders) {
+  				count++;
+			}
+			
+			//should implement...
+		},
+		
     	addToCart : function(id) {
 			event.preventDefault();
 			
-			for(let v of vehicles){
-				if(v.id === id){
-					this.shoppingCart.vehiclesInCart.add(v);
-					this.shoppingCart.price += v.price;
-					//this.shoppingCart.responsibleUser = this.loggedInUser
+			let count = 0;
+			for (const _ in this.vehicles) {
+  				count++;
+			}
+			
+			let i =0;
+			for(i; i < count; i++){
+				if(this.vehicles[i].id === id){
+					this.shoppingCart.idsOfVehiclesInCart.push(this.vehicles[i].id);
+					this.shoppingCart.price += this.vehicles[i].price;
+					this.shoppingCart.userId = this.loggedInUser.id
 				}
 			}
     	},
     	
     	proceedToCheckout: function(){
-			axios.post('rest/shoppingCarts/' + this.shoppingCart).then(reponse => (router.push(`/checkout/${this.shoppingCart.id}`)));
+			event.preventDefault();
+			
+			let cartCount = 0;
+			for (const _ in this.allShoppingCarts) {
+  				cartCount++;
+			}
+			
+			axios.post('rest/shoppingCarts/', this.shoppingCart).then(response => (router.push(`/checkout/${cartCount}`)));
 		}
     }
 });

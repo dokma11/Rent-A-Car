@@ -1,8 +1,3 @@
-/*import { Map, View } from '.../assets/ol';
-import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
-*/
-
 Vue.component("rentACarRegistration", { 
 	data: function () {
 	    return {
@@ -63,28 +58,34 @@ Vue.component("rentACarRegistration", {
 	    		<button v-on:click="registerRentACar">Registruj objekat</button>
 	    		<br></br>
 	    		<p v-if="notValid">Molimo Vas popunite sva polja</p>
+	    		<div id="map-container" class="map"></div>
 	    	</div>
 	    `,
     mounted () {
-        /*const map = new Map({
-	    target: 'map-container', // Provide the ID or class of the DOM element where the map should be displayed
-	    layers: [
-	      new TileLayer({
-	        source: new OSM(),
-	      }),
-	    ],
-	    view: new View({
-	      center: [0, 0], // Set the initial center coordinates of the map
-	      zoom: 2, // Set the initial zoom level of the map
-	    }),
-	  });*/
-	  axios.get('rest/locations/').then(response => this.allLocations = response.data);
+	  const map = new ol.Map({
+		  target: 'map-container', // Update the target ID to match the ID used in the HTML template
+		  layers: [
+		    new ol.layer.Tile({
+		      source: new ol.source.OSM(),
+		    })
+		  ],
+		  view: new ol.View({
+		    center: ol.proj.fromLonLat([0, 0]),
+		    zoom: 2,
+		  })
+		});
+
 	  
-	  axios.get('rest/users/getAvailableManagers').then(response => this.managers = response.data);
-	  
-	  axios.get('rest/rentACars/').then(response => this.allRentACars = response.data);
-	  
-	  axios.get('rest/users/').then(response => this.allUsers = response.data);
+	  axios.get('rest/locations/').then(response => {
+		  this.allLocations = response.data
+		  axios.get('rest/users/getAvailableManagers').then(response => {
+			  this.managers = response.data
+			  axios.get('rest/rentACars/').then(response => {
+				  this.allRentACars = response.data
+			  	  axios.get('rest/users/').then(response => this.allUsers = response.data);
+			  });
+		  });
+	  });
     },
     methods: {
     	addObjectToManager : function(id) {

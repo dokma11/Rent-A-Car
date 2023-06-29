@@ -105,9 +105,6 @@ public class UserService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public User login(@Context HttpServletRequest request) {
-		User u = (User) request.getSession().getAttribute("user");
-		System.out.println(u.getUsername());
-		System.out.println("usao za currentUser");
 		return (User) request.getSession().getAttribute("user");
 	}
 }

@@ -33,7 +33,7 @@ const router = new VueRouter({
 		{ path: '/newVehicle/:id', name: 'newVehicleHome', component: NewVehicle},
 		{ path: '/editVehicle/:id', name: 'editVehicleHome', component: EditVehicle},
 		{ path: '/login', name: 'loginscreen', component: LoginScreen},
-		{ path: '/checkout', name: 'checkout', component: Checkout}
+		{ path: '/checkout/:id', name: 'checkout', component: Checkout}
 	  ]
 });
 

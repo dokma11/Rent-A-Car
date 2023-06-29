@@ -5,7 +5,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -131,6 +134,24 @@ public class VehicleDAO {
 			if (vehicle.getOwnerId().equals(rentACarsId)) {
 				ret.put(vehicle.getId(), vehicle);   
 	        }
+	    } 
+
+		return ret;
+	}
+	
+	public HashMap<String, Vehicle> getVehiclesInCart(String idList) {
+		HashMap<String, Vehicle> ret = new HashMap<String, Vehicle>();
+		
+		List<String> idValues = Arrays.asList(idList.split(","));
+		ArrayList<String> ids = new ArrayList<>(idValues);		
+				
+		for (String id : ids) {
+			for (Vehicle vehicle : vehicles.values()) {
+				if (vehicle.getId().equals(id)) {
+					ret.put(vehicle.getId(), vehicle);
+					break;
+		        }
+		    }
 	    } 
 
 		return ret;

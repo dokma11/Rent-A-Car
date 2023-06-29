@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
@@ -13,14 +12,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import beans.Order;
-import beans.RentACar;
-import beans.User;
-import beans.Vehicle;
-import beans.Enum.FuelType;
-import beans.Enum.GearBoxType;
-import beans.Enum.RentalStatus;
-import beans.Enum.VehicleStatus;
-import beans.Enum.VehicleType;
 
 public class OrderDAO {
 	
@@ -29,31 +20,11 @@ public class OrderDAO {
 	private Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 	
 	private String ctx;
-	
-	private ArrayList<Vehicle> vehicles;
-	
+		
 	public OrderDAO(String ContextPath) {
 	    orders = new HashMap<String, Order> ();
-	    
-	    vehicles = new ArrayList<Vehicle>();
-	    
-	    Vehicle v = new Vehicle("brend", "model", 123, GearBoxType.AUTOMATIC, "1", VehicleType.CAR, FuelType.DIESEL, "consumption", 4, 5, "description", "picture", VehicleStatus.AVAILABLE);
-	    v.setId("0");
-	    vehicles.add(v);
-	    
-	    RentACarDAO rDAO = new RentACarDAO(ContextPath);
-	    RentACar rent = rDAO.getById("0");
-	    
-	    UserDAO uDAO = new UserDAO(ContextPath);
-	    User user = uDAO.getById("0");
-	    
-	    Order o1 = new Order("ABCD", vehicles, rent, LocalDate.of(2023, 6, 19), 2, 10, user, RentalStatus.PROCESSING);
-	    o1.setId("0");
-	    orders.put(o1.getId(), o1);
-	    
 	    ctx = ContextPath;
-	    saveToJson(ctx);
-	    //loadDataFromJson(ContextPath);
+	    loadDataFromJson(ContextPath);
 	}
 	
 	public HashMap<String, Order> getAll(){
@@ -79,6 +50,18 @@ public class OrderDAO {
         
         saveToJson(ctx);
     }
+	
+	public HashMap<String, Order> getByUserId(String id) {
+		HashMap<String, Order> ret = new HashMap<String, Order>();
+		
+		for(Order order : orders.values()) {
+			if(order.getBuyer().getId().equals(id)) {
+				ret.put(order.getId(), order);
+			}
+		}
+		
+		return ret;
+	}
 	
 	public void saveToJson(String contextPath) {
 		String json = gson.toJson(orders);

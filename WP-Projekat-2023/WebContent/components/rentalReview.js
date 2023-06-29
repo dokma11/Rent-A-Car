@@ -86,14 +86,14 @@ Vue.component("rentalReview", {
 			</div>
 	    `,
     mounted () {
-		//Will try this alternative approach hope it works
-		//axios.get('rest/orders/users/' + p).then(response => (this.orders = response.data))
-        axios.get('rest/orders/').then(response => (this.orders = response.data))
-        
         let p = this.$route.params.id
-        axios.get('rest/users/' + p).then(response => (this.user = response.data))
-        
-        axios.get('rest/rentACars/').then(response => (this.allRentACars = response.data))
+        axios.get('rest/users/' + p).then(response => {
+			this.user = response.data
+			axios.get('rest/orders/user/' + p).then(response => {
+				this.orders = response.data
+				axios.get('rest/rentACars/').then(response => this.allRentACars = response.data);		
+				});
+			});
     },
     methods: {
     	search : function() {

@@ -78,4 +78,13 @@ public class VehicleService {
 		VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
 		return dao.getAvailableVehicles(id);
 	}
+	
+	@GET
+	@Path("/getVehiclesInCart/{idList}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public HashMap<String, Vehicle> getVehiclesInCart(@PathParam("idList") String idList) {
+	    VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+	    return dao.getVehiclesInCart(idList);
+	}
 }
