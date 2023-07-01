@@ -8,13 +8,16 @@ import java.util.ArrayList;
 
 public class Order {
 	private String id;
-	private String uniqueId;//come back to this (do i need the regular id, maybe for json files)
-	private ArrayList<Vehicle> rentedVehicles;
-	private RentACar rentACarFacility;
+	//private String uniqueId;//come back to this (do i need the regular id, maybe for json files)
+	//private ArrayList<Vehicle> rentedVehicles;
+	private ArrayList<String> idsOfRentedVehicles;
+	//private RentACar rentACarFacility;
+	private String rentACarFacilityId;
 	private LocalDate rentalDate; 
 	private int rentalDuration; //should check
 	private int price;
-	private User buyer;//it says name and surname in specification only idk
+	//private User buyer;//it says name and surname in specification only idk
+	private String userId;
 	private RentalStatus status;
 	
 	public Order() {
@@ -24,13 +27,13 @@ public class Order {
 	public Order(String uniqueId, ArrayList<Vehicle> rentedVehicles, RentACar rentACarFacility, LocalDate rentalDate,
 			int rentalDuration, int price, User buyer, RentalStatus status) {
 		super();
-		this.uniqueId = uniqueId;
-		this.rentedVehicles = rentedVehicles;
-		this.rentACarFacility = rentACarFacility;
+		//this.uniqueId = uniqueId;
+		//this.rentedVehicles = rentedVehicles;
+		//this.rentACarFacility = rentACarFacility;
 		this.rentalDate = rentalDate;
 		this.rentalDuration = rentalDuration;
 		this.price = price;
-		this.buyer = buyer;
+		//this.buyer = buyer;
 		this.status = status;
 	}
 	
@@ -41,7 +44,7 @@ public class Order {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+	/*
 	public String getUniqueId() {
 		return uniqueId;
 	}
@@ -65,7 +68,7 @@ public class Order {
 	public void setRentACarFacility(RentACar rentACarFacility) {
 		this.rentACarFacility = rentACarFacility;
 	}
-	
+	*/
 	public String getRentalDate() {
 		return rentalDate.toString();
 	}
@@ -90,7 +93,7 @@ public class Order {
 	public void setPrice(int price) {
 		this.price = price;
 	}
-	
+/*	
 	public User getBuyer() {
 		return buyer;
 	}
@@ -98,12 +101,36 @@ public class Order {
 	public void setBuyer(User buyer) {
 		this.buyer = buyer;
 	}
-	
+	*/
 	public RentalStatus getStatus() {
 		return status;
 	}
 	
 	public void setStatus(RentalStatus status) {
 		this.status = status;
+	}
+
+	public ArrayList<String> getIdsOfRentedVehicles() {
+		return idsOfRentedVehicles;
+	}
+
+	public void setIdsOfRentedVehicles(ArrayList<String> idsOfRentedVehicles) {
+		this.idsOfRentedVehicles = idsOfRentedVehicles;
+	}
+
+	public String getRentACarFacilityId() {
+		return rentACarFacilityId;
+	}
+
+	public void setRentACarFacilityId(String rentACarFacilityId) {
+		this.rentACarFacilityId = rentACarFacilityId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 }

@@ -2,7 +2,9 @@ Vue.component("checkout", {
 	data: function () {
 	    return {
 			shoppingCart: [],
-			vehiclesInCart: []
+			vehiclesInCart: [],
+			vehicle: [],
+			newOrder: []
 	    }
 	},
 	    template: `
@@ -16,6 +18,7 @@ Vue.component("checkout", {
 	    				<th>Cena</th>
 	    				<th>Slika</th>
 	    				<th>Kolicina</th>
+	    				<th>Izbaci vozilo iz korpe</th>
 	    			</tr>
 	    			<tr v-for="(v, index) in vehiclesInCart">
 	    				<td>{{v.brand}}</td>
@@ -26,9 +29,12 @@ Vue.component("checkout", {
 	    				</td>
 	    				<td>
 					        <button v-on:click="decrementItem(v.id)">-</button>
-					        <input type="number" v-model="v.count">
+					        <label>{{v.count}}</label>
 					        <button v-on:click="incrementItem(v.id)">+</button>
 					    </td>	
+					    <td>
+					    	<button v-on:click="removeFromCart(v.id)">Izbaci</button>
+					    </td>
 	    			</tr>
 	    		</table>
 	    		<label>Ukupna cena korpe je {{shoppingCart.price}}</label>
@@ -50,7 +56,11 @@ Vue.component("checkout", {
     	rent : function() {
 			event.preventDefault();
 			
-			axios.post('rest/orders/' + this.shoppingCart).then(reponse => (router.push(`/`)));
+			this.newOrder.idsOfRentedVehicles = this.shoppingCart.idsOfVehiclesInCart;
+			this.newOrder.rentACarFacilityId = this.shoppingCart.idsOfVehiclesInCart;
+			this.newOrder.rentalDate
+			
+			axios.post('rest/orders/', this.newOrder).then(reponse => (router.push(`/`)));
     	},
     	
     	decrementItem : function(id) {
@@ -91,6 +101,39 @@ Vue.component("checkout", {
 	        this.shoppingCart.price += this.vehiclesInCart[i].price;
 	        
 	        location.reload();
-	    }
+	    },
+	    
+	    removeFromCart : function(id){
+			event.preventDefault();
+			
+			let count = 0;
+			for (const _ in this.shoppingCart.idsOfVehiclesInCart) {
+  				count++;
+			}
+
+			let i=0;
+			for(i; i < count; i++){	
+				if(this.shoppingCart.idsOfVehiclesInCart[i] == id){
+					//axios.get('rest/vehicles/' + id).then(response => this.vehicle = response.data);
+					
+				/*	for(let j=0; j < count; j++){
+						if(this.vehiclesInCart[j].id == id){
+							this.shoppingCart.price -= this.vehiclesInCart[j].price;
+							this.shoppingCart.idsOfVehiclesInCart.splice(i, 1);
+						}
+					}*/
+					/*
+					for (const element of this.vehiclesInCart) {
+						if(element.id == id){
+							this.shoppingCart.price -= elemet.price;
+							this.shoppingCart.idsOfVehiclesInCart.splice(i, 1);
+						}
+					}
+					*/
+				}
+			}
+		
+			axios.put('rest/shoppingCarts/' + this.shoppingCart.id, this.shoppingCart).then(response => location.reload());
+		}
     }
 });

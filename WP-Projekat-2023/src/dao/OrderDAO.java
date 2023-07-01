@@ -53,9 +53,9 @@ public class OrderDAO {
 	
 	public HashMap<String, Order> getByUserId(String id) {
 		HashMap<String, Order> ret = new HashMap<String, Order>();
-		
+		System.out.println("usao 1");
 		for(Order order : orders.values()) {
-			if(order.getBuyer().getId().equals(id)) {
+			if(order.getUserId().equals(id)) {
 				ret.put(order.getId(), order);
 			}
 		}

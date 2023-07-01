@@ -33,4 +33,26 @@ public class ShoppingCartDAO {
 		shoppingCart.setId((++maximum).toString());
 		shoppingCarts.put(shoppingCart.getId(), shoppingCart);
     }
+	
+	public ShoppingCart edit(String id, ShoppingCart sc) {
+		if (shoppingCarts.containsKey(id)) {
+			ShoppingCart toEdit = shoppingCarts.get(id);
+
+	        if (sc.getUserId() != null) {
+	            toEdit.setUserId(sc.getUserId());
+	        }
+
+	        if (sc.getPrice() > 0) {
+	            toEdit.setPrice(sc.getPrice());
+	        }
+
+	        if (sc.getIdsOfVehiclesInCart() != null) {
+	            toEdit.setIdsOfVehiclesInCart(sc.getIdsOfVehiclesInCart());
+	        }
+	        
+	        return toEdit;
+	    }
+
+	    return null;
+	}
 }

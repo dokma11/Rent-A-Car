@@ -13,7 +13,7 @@ Vue.component("rentACarRegistration", {
 	    }
 	},
 	    template: `
-	    	<div id="map-container">
+	    	<div>
 	    		<label>Registracija Rent A Car objekta</label>
 	    		<table>
 	    			<tr>
@@ -33,6 +33,8 @@ Vue.component("rentACarRegistration", {
 	    				<td><input type="text" name="logoPath" v-model="rentACar.logoPath" /></td>
 	    			</tr>
 	    		</table>
+	    		<br></br>
+	    		<div id="map"></div>
 	    		<br></br>
 	    		<label>Slobodni menadzeri</label>
 	    		<table border="1" class="tab">
@@ -58,12 +60,11 @@ Vue.component("rentACarRegistration", {
 	    		<button v-on:click="registerRentACar">Registruj objekat</button>
 	    		<br></br>
 	    		<p v-if="notValid">Molimo Vas popunite sva polja</p>
-	    		<div id="map-container" class="map"></div>
 	    	</div>
 	    `,
     mounted () {
 	  const map = new ol.Map({
-		  target: 'map-container', // Update the target ID to match the ID used in the HTML template
+		  target: 'map', // Update the target ID to match the ID used in the HTML template
 		  layers: [
 		    new ol.layer.Tile({
 		      source: new ol.source.OSM(),
@@ -74,8 +75,7 @@ Vue.component("rentACarRegistration", {
 		    zoom: 2,
 		  })
 		});
-
-	  
+  
 	  axios.get('rest/locations/').then(response => {
 		  this.allLocations = response.data
 		  axios.get('rest/users/getAvailableManagers').then(response => {

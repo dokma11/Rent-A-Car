@@ -1,15 +1,2 @@
 @charset "ISO-8859-1";
 
-body {
-	background-color: #ffd6b3;
-	font-family: sans-serif;
-}
-
-.tab {
-    border-collapse: collapse;
-    margin: 25px 0;
-    font-size: 0.9em;
-    font-family: sans-serif;
-    min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-}

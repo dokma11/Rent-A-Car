@@ -1,7 +1,7 @@
 Vue.component("rentalReview", { 
 	data: function () {
 	    return {
-			orders: null,
+			orders: [],
 			searchOrder: {id: null, rentACarFacility: null, rentalDate: null, price: null},
 			startDate: null,
 			endDate: null,

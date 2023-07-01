@@ -27,7 +27,7 @@ Vue.component("rentACarsDisplay", {
 				      <option>MINIBUS</option>
 				    </select>
 				    <label style="margin-right: 10px;">Lokaciji:</label>
-				    <input type="text" name="searchLocation" v-model="rentACarSearch.location" style="margin-right: 10px;" />
+				    <div id="map"></div>
 				    <label style="margin-right: 10px;">Prosecnoj oceni:</label>
 				    <input type="text" name="searchAverageGrade" v-model="rentACarSearch.grade" style="width: 50px; margin-right: 10px;" />
 				    <button v-on:click="search" style="margin-right: 40px;">Pretrazi</button>
@@ -80,17 +80,54 @@ Vue.component("rentACarsDisplay", {
 	    	</div>
 	    `,
 	mounted () {
-        axios.get('rest/rentACars/').then(response => (this.rentACar = response.data));
-        
-        axios.get('rest/users/currentUser').then(response => (this.user = response.data));
+		const map = new ol.Map({
+		  target: 'map',
+		  layers: [
+		    new ol.layer.Tile({
+		      source: new ol.source.OSM(),
+		    })
+		  ],
+		  view: new ol.View({
+		    center: ol.proj.fromLonLat([0, 0]),
+		    zoom: 2,
+		  })
+		});
+		
+		const marker = new ol.layer.Vector({
+			source: new ol.source.Vector({
+				features: [
+					new ol.Feature({
+						geometry: new ol.geom.Point(
+							ol.proj.fromLonLat([0, 0])
+						)
+					})
+				]
+			}),
+			style: new ol.style.Style({
+				image: new ol.style.Icon({
+					src: 'https://docs.maptiler.com/openlayers/default-marker/marker-icon.png',
+					anchor: [0.5,1]
+				})
+			})
+		})
+		
+		map.addLayer(marker);
+				
+        axios.get('rest/rentACars/').then(response => {
+			this.rentACar = response.data;
+			axios.get('rest/users/currentUser').then(response => (this.user = response.data));
+		});
     },   
     methods: {	
     	rentACarRegistration: function() {
+			event.preventDefault();
+			
 			router.push(`/rentACarRegistration`);
 		},
 		
 		search: function() {
 			event.preventDefault();
+			
 			let temp = [];
 			temp = this.rentACar;
 			this.rentACar = [];	
@@ -124,11 +161,14 @@ Vue.component("rentACarsDisplay", {
 		},
 		
 		displayDetails: function(id){
+			event.preventDefault();
+			
 			router.push(`/rentaCar/rentACarObjectDisplay/${id}`);
 		},
 		
 		sortRentACar: function() {
 			event.preventDefault();
+			
 			let count = 0;
 			for (const _ in this.rentACar) {
   				count++;
@@ -208,11 +248,13 @@ Vue.component("rentACarsDisplay", {
     	
     	resetClick: function(){
 			event.preventDefault();
+			
 			location.reload();
 		},
 		
 		filterRentACar: function(){
 			event.preventDefault();
+			
 			let count = 0;
 			for (const _ in this.rentACar) {
   				count++;
