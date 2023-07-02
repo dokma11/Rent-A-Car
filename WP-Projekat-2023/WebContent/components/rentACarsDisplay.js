@@ -8,6 +8,7 @@ Vue.component("rentACarsDisplay", {
 			filterOption: "",
 			user: [],
 			link: 'http://localhost:8080/WebShopREST/#/usersProfile/',
+			locationSearch: null
 	    }
 	},
 	    template: `
@@ -53,12 +54,12 @@ Vue.component("rentACarsDisplay", {
 				    <button v-on:click="resetClick">Resetuj prikaz</button>
 				</div>
 				<div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
-		    		<table border="1" class="tab" >
+		    		<table border="1" class="tab">
 		    			<tr>
-		    				<th>Name</th>
-		    				<th>Location</th>
+		    				<th>Naziv</th>
+		    				<th>Lokacija</th>
 		    				<th>Logo</th>
-		    				<th>Grade</th>
+		    				<th>Ocena</th>
 		    				<th>Prikaz detalja</th>
 		    			</tr>
 		    			<tr v-for="(r,index) in rentACar">
@@ -112,13 +113,60 @@ Vue.component("rentACarsDisplay", {
 		})
 		
 		map.addLayer(marker);
-				
+		
+		this.mapObject = map;
+  		this.markerObject = marker;
+  		
+  		const vec = new ol.layer.Vector({
+		  source: new ol.source.Vector(),
+		});
+		  		
+  		map.on('click', (event) => {
+			  var cor = ol.proj.toLonLat(event.coordinate);
+			  this.convertToMyCoordinates(cor);
+			  vec.getSource().clear();
+			  
+			  var mapMarker = new ol.Feature({
+				  geometry: new ol.geom.Point(event.coordinate),
+			  });
+			  
+			  vec.getSource().addFeature(mapMarker);
+			  
+			  this.moveMarker(event.coordinate);
+		  });
+		
         axios.get('rest/rentACars/').then(response => {
 			this.rentACar = response.data;
 			axios.get('rest/users/currentUser').then(response => (this.user = response.data));
 		});
     },   
     methods: {	
+		convertToMyCoordinates : function(lonLatCoordinates){
+			fetch(
+				"http://nominatim.openstreetmap.org/reverse?format=json&lon=" + lonLatCoordinates[0] + "&lat=" + lonLatCoordinates[1]
+	      		).then(response => { return response.json(); }).then(json => 
+			  	{
+				  let adresa = json.address;
+				  let mesto = adresa.village || adresa.town || adresa.city;
+				  let postanskiBroj = adresa.postcode;
+				  let broj = adresa.house_number;
+				  let ulica = adresa.road;
+				  
+				  this.locationSearch = mesto
+			  	})
+		},
+		
+		moveMarker: function (lonLatCoordinates) {
+		    const markerSource = this.markerObject.getSource();
+		    markerSource.clear();
+		
+		    const mapMarker = new ol.Feature({
+		      geometry: new ol.geom.Point(lonLatCoordinates)
+		    });
+		
+		    markerSource.addFeature(mapMarker);
+		},
+		
     	rentACarRegistration: function() {
 			event.preventDefault();
 			
@@ -138,13 +186,13 @@ Vue.component("rentACarsDisplay", {
   			let entered = false;
   			this.notValid = false;
   			
-  			if (this.rentACarSearch.name || this.rentACarSearch.vehicleType || this.rentACarSearch.grade || this.rentACarSearch.location) {
+  			if (this.rentACarSearch.name || this.rentACarSearch.vehicleType || this.rentACarSearch.grade || this.locationSearch) {
 			  for (let i = 0; i < count; i++) {
 			    let item = temp[i];
 			    let nameMatch = !this.rentACarSearch.name || item.name.toLowerCase().includes(this.rentACarSearch.name.toLowerCase());
 			    let vehicleTypeMatch = !this.rentACarSearch.vehicleType || item.vehicleType.toLowerCase().includes(this.rentACarSearch.vehicleType.toLowerCase());
 			    let gradeMatch = !this.rentACarSearch.grade || item.grade == this.rentACarSearch.grade;
-			    let locationMatch = !this.rentACarSearch.location || item.location.toLowerCase().includes(this.rentACarSearch.location.toLowerCase());
+			    let locationMatch = !this.locationSearch || item.location.address.toLowerCase().includes(this.locationSearch.toLowerCase());
 			  
 			    if (nameMatch && vehicleTypeMatch && gradeMatch && locationMatch) {
 			      this.rentACar.push(item);

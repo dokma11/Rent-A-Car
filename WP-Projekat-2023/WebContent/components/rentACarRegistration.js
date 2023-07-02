@@ -2,14 +2,15 @@ Vue.component("rentACarRegistration", {
 	data: function () {
 	    return {
 			rentACar: {id:null, name: null, availableVehicles: [], workingHours: null, status: null, location: null, logoPath: null, grade: null },
-			managers: {id: null, username: null, password: null, name: null, surname: null, gender: null, dateOfBirth: null, role:null, rentACarObjectId: null},
+			managers: []/*{id: null, username: null, password: null, name: null, surname: null, gender: null, dateOfBirth: null, role:null, rentACarObjectId: null}*/,
 			address: null,
 			notValid: null,
 			allLocations: [],
 			allRentACars: [],
 			allUsers: [],
 			alreadyAdded: false,
-			notAdded: true
+			notAdded: true,
+			location: {id: null, address: null, geographicalLength: null, geographicalWidth: null}
 	    }
 	},
 	    template: `
@@ -21,20 +22,17 @@ Vue.component("rentACarRegistration", {
 	    				<td><input type="text" name="name" v-model="rentACar.name" /></td>
 	    			</tr>
 	    			<tr>
-	    				<td><label>Unesite lokaciju: </label></td>
-	    				<td><input type="text" name="locationAddress" v-model="address" /></td>
-	    			</tr>
-	    			<tr>
 	    				<td><label>Unesite radno vreme (format: 00:00-24:00): </label></td>
 	    				<td><input type="text" name="workingHours" v-model="rentACar.workingHours" /></td>
 	    			</tr>
 	    			<tr>
-	    				<td><label>Postavite logo: </label></td>
+	    				<td><label>Unesite putanju za logo: </label></td>
 	    				<td><input type="text" name="logoPath" v-model="rentACar.logoPath" /></td>
 	    			</tr>
 	    		</table>
 	    		<br></br>
-	    		<div id="map"></div>
+	    		<label>Odaberite lokaciju: </label>
+	    		<div id="map" ref="map"></div>
 	    		<br></br>
 	    		<label>Slobodni menadzeri</label>
 	    		<table border="1" class="tab">
@@ -64,7 +62,7 @@ Vue.component("rentACarRegistration", {
 	    `,
     mounted () {
 	  const map = new ol.Map({
-		  target: 'map', // Update the target ID to match the ID used in the HTML template
+		  target: 'map',
 		  layers: [
 		    new ol.layer.Tile({
 		      source: new ol.source.OSM(),
@@ -75,8 +73,49 @@ Vue.component("rentACarRegistration", {
 		    zoom: 2,
 		  })
 		});
-  
-	  axios.get('rest/locations/').then(response => {
+		
+		const marker = new ol.layer.Vector({
+			source: new ol.source.Vector({
+				features: [
+					new ol.Feature({
+						geometry: new ol.geom.Point(
+							ol.proj.fromLonLat([0, 0])
+						)
+					})
+				]
+			}),
+			style: new ol.style.Style({
+				image: new ol.style.Icon({
+					src: 'https://docs.maptiler.com/openlayers/default-marker/marker-icon.png',
+					anchor: [0.5,1]
+				})
+			})
+		})
+		
+		map.addLayer(marker);
+  		
+  		this.mapObject = map;
+  		this.markerObject = marker;
+  		
+  		const vec = new ol.layer.Vector({
+		  source: new ol.source.Vector(),
+		});
+		  		
+  		map.on('click', (event) => {
+			  var cor = ol.proj.toLonLat(event.coordinate);
+			  this.convertToMyCoordinates(cor);
+			  vec.getSource().clear();
+			  
+			  var mapMarker = new ol.Feature({
+				  geometry: new ol.geom.Point(event.coordinate),
+			  });
+			  
+			  vec.getSource().addFeature(mapMarker);
+			  
+			  this.moveMarker(event.coordinate);
+		  });
+  		
+	  	axios.get('rest/locations/').then(response => {
 		  this.allLocations = response.data
 		  axios.get('rest/users/getAvailableManagers').then(response => {
 			  this.managers = response.data
@@ -88,6 +127,39 @@ Vue.component("rentACarRegistration", {
 	  });
     },
     methods: {
+		convertToMyCoordinates : function(lonLatCoordinates){
+			fetch(
+				"http://nominatim.openstreetmap.org/reverse?format=json&lon=" + lonLatCoordinates[0] + "&lat=" + lonLatCoordinates[1]
+	      		).then(response => { return response.json(); }).then(json => 
+			  	{
+				  let adresa = json.address;
+				  let mesto = adresa.village || adresa.town || adresa.city;
+				  let postanskiBroj = adresa.postcode;
+				  let broj = adresa.house_number;
+				  let ulica = adresa.road;
+				  
+				  this.location.address = String(ulica + " " + broj + " " + mesto + " " + postanskiBroj);
+				  
+				  let boundingbox = json.boundingbox;
+				  let length = Math.abs(parseFloat(boundingbox[3]) - parseFloat(boundingbox[1]));
+			   	  let width = Math.abs(parseFloat(boundingbox[2]) - parseFloat(boundingbox[0]));
+					
+				  this.location.geographicalWidth = width;
+				  this.location.geographicalLength = length;
+			  	})
+		},
+		
+		moveMarker: function (lonLatCoordinates) {
+		    const markerSource = this.markerObject.getSource();
+		    markerSource.clear();
+		
+		    const mapMarker = new ol.Feature({
+		      geometry: new ol.geom.Point(lonLatCoordinates)
+		    });
+		
+		    markerSource.addFeature(mapMarker);
+		  },
+		
     	addObjectToManager : function(id) {
 			event.preventDefault();
 						
@@ -147,24 +219,12 @@ Vue.component("rentACarRegistration", {
                 document.getElementsByName("name")[0].style.border = "2px solid black";
             }
 			
-			if(!this.address){
+			if(!this.location){
                 valid = false;
                 this.notValid = true;
-                document.getElementsByName("locationAddress")[0].style.border = "2px solid red";
             }
-            else{
-                document.getElementsByName("locationAddress")[0].style.border = "2px solid black";
-                
-                let count = 0;
-				for (const _ in this.allLocations) {
-	  				count++;
-				}
-				
-				for(let i=0; i < count; i++){
-					if(this.allLocations[i].address == this.address){
-						this.rentACar.location = this.allLocations[i];
-					}
-				}
+            else{                
+                this.rentACar.location = this.location;
             }
 			
 			const workingHoursRegex = /^(?:[01]\d|2[0-3]):[0-5]\d-(?:[01]\d|2[0-3]):[0-5]\d$/;
@@ -189,7 +249,11 @@ Vue.component("rentACarRegistration", {
 			if(valid){
 				this.rentACar.status = 'CLOSED';
 				this.rentACar.grade = 0;
-				axios.post('rest/rentACars/', this.rentACar).then(response => router.push(`/rentACar`)).catch(error => console.log(error));
+								  
+				axios.post('rest/locations/', this.location).then(response => {
+					this.rentACar.location = this.location;
+					axios.post('rest/rentACars/', this.rentACar).then(response => router.push(`/rentACar`)).catch(error => console.log(error));
+				});
 			}
 		}
     }

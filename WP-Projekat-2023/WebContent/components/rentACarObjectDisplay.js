@@ -1,7 +1,7 @@
 Vue.component("rentACarObjectDisplay", { 
 	data: function () {
 	    return {
-			rentACar: [],
+			rentACar: {location: {address: null}},
 			comments: [],
 			user: [],
 			vehicles: [],
@@ -19,21 +19,23 @@ Vue.component("rentACarObjectDisplay", {
 		      <th>Naziv</th>
 		      <th>Radno vreme</th>
 		      <th>Status</th>
-		      <th>Lokacija</th>
 		      <th>Logo</th>
 		      <th>Ocena objekta</th>
 		    </tr>
-		    <tr>
+		    <tr v-if="rentACar">
 		      <td>{{rentACar.name}}</td>
 		      <td>{{rentACar.workingHours}}</td>
 		      <td>{{rentACar.status}}</td>
-		      <td>{{rentACar.location.address}}</td>
 		      <td>
 		        <img :src="rentACar.logoPath" alt="Logo" />
 		      </td>
 		      <td>{{rentACar.grade}}</td>
 		    </tr>
 		  </table>
+		  <div>
+		  	<label>Lokacija odabranog Rent A Car objekta: {{rentACar.location.address}}</label>
+		  	<div id="map"></div>
+		  </div>
 		  <br></br>
 		  
 		  <!-- Table if a buyer is logged in -->
@@ -134,9 +136,43 @@ Vue.component("rentACarObjectDisplay", {
 
 	    `,
     mounted () {
+		const map = new ol.Map({
+		  target: 'map',
+		  layers: [
+		    new ol.layer.Tile({
+		      source: new ol.source.OSM(),
+		    })
+		  ],
+		  view: new ol.View({
+		    center: ol.proj.fromLonLat([0, 0]),
+		    zoom: 4,
+		  })
+		});
+		
+		const marker = new ol.layer.Vector({
+			source: new ol.source.Vector({
+				features: [
+					new ol.Feature({
+						geometry: new ol.geom.Point(
+							ol.proj.fromLonLat([0, 0])
+						)
+					})
+				]
+			}),
+			style: new ol.style.Style({
+				image: new ol.style.Icon({
+					src: 'https://docs.maptiler.com/openlayers/default-marker/marker-icon.png',
+					anchor: [0.5,1]
+				})
+			})
+		}) 
+		
+		map.addLayer(marker); 
+		
 		let p = this.$route.params.id;
         axios.get('rest/rentACars/' + p).then(response => {
 			this.rentACar = response.data;
+			this.centerMapOnLocation();
 			axios.get('rest/users/currentUser').then(response => {
 				if(response.status == 200 && response.data.role == "MANAGER" && response.data.rentACarObjectId == this.rentACar.id){
 					this.rightManager = true;
@@ -154,6 +190,20 @@ Vue.component("rentACarObjectDisplay", {
 			});
     },
     methods: {
+		centerMapOnLocation() {
+	      const latitude = this.rentACar.location.latitude;
+	      const longitude = this.rentACar.location.longitude;
+	      const coordinates = ol.proj.fromLonLat([longitude, latitude]);
+	
+	      map.getView().setCenter(coordinates);
+	
+	      const marker = new ol.Feature({
+	        geometry: new ol.geom.Point(coordinates),
+	      });
+	
+	      marker.getSource().clear();
+	      marker.getSource().addFeature(marker);
+	    },
     	addNewVehicle : function() {
 			event.preventDefault();
 			
