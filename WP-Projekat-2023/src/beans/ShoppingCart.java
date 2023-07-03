@@ -1,5 +1,7 @@
 package beans;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class ShoppingCart {
@@ -9,18 +11,22 @@ public class ShoppingCart {
 	//private ArrayList<Vehicle> vehiclesInCart;
 	private ArrayList<String> idsOfVehiclesInCart;
 	private int price;
-	
+	private LocalDate rentalDateStart; 
+	private LocalDate rentalDateEnd;
+
 	public ShoppingCart() {
 
 	}
 	
-	public ShoppingCart(/*User user, ArrayList<Vehicle> vehiclesInCart,*/ String userId, ArrayList<String> ids, int price) {
+	public ShoppingCart(/*User user, ArrayList<Vehicle> vehiclesInCart,*/ String userId, ArrayList<String> ids, int price, LocalDate rds, LocalDate rde) {
 		super();
 		//this.responsibleUser = user;
 		//this.vehiclesInCart = vehiclesInCart;
 		this.userId = userId;
 		this.idsOfVehiclesInCart = ids;
 		this.price = price;
+		this.rentalDateEnd = rde;
+		this.rentalDateStart = rds;
 	}
 /*
 	public User getresponsibleUser() {
@@ -69,5 +75,23 @@ public class ShoppingCart {
 
 	public void setIdsOfVehiclesInCart(ArrayList<String> idsOfVehiclesInCart) {
 		this.idsOfVehiclesInCart = idsOfVehiclesInCart;
+	}
+	
+	public String getRentalDateStart() {
+		return rentalDateStart.toString();
+	}
+
+	public void setRentalDateStart(String rentalDateStart) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		this.rentalDateStart = LocalDate.parse(rentalDateStart,formatter);;
+	}
+
+	public String getRentalDateEnd() {
+		return rentalDateEnd.toString();
+	}
+
+	public void setRentalDateEnd(String rentalDateEnd) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		this.rentalDateEnd = LocalDate.parse(rentalDateEnd,formatter);
 	}
 }

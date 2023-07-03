@@ -44,14 +44,15 @@ Vue.component("rentalReview", {
 					</select>
 	    		</div>
 	    		<table border="1" class="tab">
-	    			<th>
-	    				<td>Datum iznajmljivanja</td>
-	    				<td>Trajanje najma</td>
-	    				<td>Objekat iz kog je iznajmljeno</td>
-	    				<td>Cena</td>
-	    				<td>Status</td>
-	    				<td>Ostavi komentar</td>
-	    			</th>
+	    			<tr>
+	    				<th>Datum iznajmljivanja</th>
+	    				<th>Trajanje najma</th>
+	    				<th>Objekat iz kog je iznajmljeno</th>
+	    				<th>Cena</th>
+	    				<th>Status</th>
+	    				<th>Otkazi porudzbinu</th>
+	    				<th>Ostavi komentar</th>
+	    			</tr>
 	    			<tr v-for="(o,index) in orders">
 	    				<td>{{o.rentalDate}}</td>
 	    				<td>{{o.rentalDuration}}</td>
@@ -59,7 +60,11 @@ Vue.component("rentalReview", {
 	    				<td>{{o.price}}</td>
 	    				<td>{{o.status}}</td>
 	    				<td>
-	    					<button v-if="o.status == 'RETURNED'" v=on:click="leaveAComment">Ostavi komentar</button>
+	    					<button v-if="o.status == 'PROCESSING'" v=on:click="cancel(o.id)">Otkazi</button>
+	    					<p v-if="o.status != 'PROCESSING'">Porudzbina mora biti u procesu obrade da biste je mogli otkazati</p>
+	    				</td>
+	    				<td>
+	    					<button v-if="o.status == 'RETURNED'" v=on:click="leaveAComment(o.id)">Ostavi komentar</button>
 	    					<p v-if="o.status != 'RETURNED'">Porudzbina mora biti vracena da biste mogli ostaviti komentar</p>
 	    				</td>
 	    			</tr>
@@ -88,9 +93,9 @@ Vue.component("rentalReview", {
     mounted () {
         let p = this.$route.params.id
         axios.get('rest/users/' + p).then(response => {
-			this.user = response.data
+			this.user = response.data;
 			axios.get('rest/orders/user/' + p).then(response => {
-				this.orders = response.data
+				this.orders = response.data;
 				axios.get('rest/rentACars/').then(response => this.allRentACars = response.data);		
 				});
 			});
@@ -221,6 +226,26 @@ Vue.component("rentalReview", {
 					break;
 				}
 			}
+		},
+		
+		cancel: function(id){
+			event.preventDefault();
+			
+			let count=0;
+			for (const _ in this.orders) {
+  				count++;
+			}
+			
+			let i=0;
+			for(i; i < count; i++){
+				if(this.orders[i].id == id){
+					break;
+				}
+			}
+			
+			this.user.collectedPointsNumber -= this.orders[i].price * 4 * 133 / 1000;
+			
+			axios.put('rest/users/' + this.user.id, this.user).then(response => location.reload()); 
 		},
 		
 		submit: function(){

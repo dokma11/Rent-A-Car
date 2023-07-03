@@ -36,7 +36,7 @@ public class OrderDAO {
 	}
 	
 	public void add(Order order) {
-		
+		System.out.println("Usao u dao za order");
 		Integer maximum = -1;
 		for (String key : orders.keySet()) {
 			int temp = Integer.parseInt(key);
@@ -53,7 +53,6 @@ public class OrderDAO {
 	
 	public HashMap<String, Order> getByUserId(String id) {
 		HashMap<String, Order> ret = new HashMap<String, Order>();
-		System.out.println("usao 1");
 		for(Order order : orders.values()) {
 			if(order.getUserId().equals(id)) {
 				ret.put(order.getId(), order);

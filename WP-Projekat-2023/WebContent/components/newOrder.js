@@ -2,12 +2,11 @@ Vue.component("newOrder", {
 	data: function () {
 	    return {
 			vehicles:[],
-			startDate: null,		
-			endDate: null,
-			shoppingCart: {id: null, userId: null, idsOfVehiclesInCart: [], price: 0},
+			shoppingCart: {id: null, userId: null, idsOfVehiclesInCart: [], price: 0, rentalDateStart: null, rentalDateEnd: null},
 			orders: [],
 			loggedInUser: [],
-			allShoppingCarts: []
+			allShoppingCarts: [],
+			dateNotValid: false
 		}
 	},
 	    template: `
@@ -21,8 +20,8 @@ Vue.component("newOrder", {
 	    				<td>Kraj opsega</td>
 	    			</tr>
 	    			<tr>
-	    				<td><input type="date" name="startDate" v-model="startDate" /></td>
-	    				<td><input type="date" name="endDate" v-model="endDate" /></td>
+	    				<td><input type="date" name="startDate" v-model="shoppingCart.rentalDateStart" /></td>
+	    				<td><input type="date" name="endDate" v-model="shoppingCart.rentalDateEnd" /></td>
 	    			</tr>
 	    		</table>
 	    		<button v-on:click="search">Pretrazi</button>
@@ -62,19 +61,17 @@ Vue.component("newOrder", {
 	    		</table>
 	    		<br></br>
 	    		<button v-on:click="proceedToCheckout">Pregled korpe</button>
+	    		<p v-if="dateNotValid">Molimo Vas da unesete datume pravilno</p>
 	    	</div>
 	    `,
     mounted () {
         axios.get('rest/vehicles/').then(response => {
 			this.vehicles = response.data;
-        	axios.get('rest/orders/').then(response => {
-				this.orders = response.data;
 				axios.get('rest/users/currentUser').then(response => {
 					this.loggedInUser = response.data;
 					axios.get('rest/shoppingCarts/').then(response => {
 						this.allShoppingCarts = response.data;
 					})
-				});
 			});
         });
     },
@@ -82,12 +79,23 @@ Vue.component("newOrder", {
 		search : function() {
 			event.preventDefault();
 			
-			let count = 0;
-			for (const _ in this.orders) {
-  				count++;
-			}
+			const startDate = new Date(this.shoppingCart.rentalDateStart);
+			const endDate = new Date(this.shoppingCart.rentalDateEnd);
 			
-			//should implement...
+			if (startDate < endDate) {
+			    let count = 0;
+			    for (const _ in this.orders) {
+			      count++;
+			    }
+			
+			    let i = 0;
+			    for (i; i < count; i++) {
+			      // Perform further operations as needed
+			    }
+			}
+			else{
+				this.dateNotValid = true;
+			}
 		},
 		
     	addToCart : function(id) {
@@ -111,12 +119,21 @@ Vue.component("newOrder", {
     	proceedToCheckout: function(){
 			event.preventDefault();
 			
-			let cartCount = 0;
-			for (const _ in this.allShoppingCarts) {
-  				cartCount++;
-			}
+			const startDate = new Date(this.shoppingCart.rentalDateStart);
+			const endDate = new Date(this.shoppingCart.rentalDateEnd);
 			
-			axios.post('rest/shoppingCarts/', this.shoppingCart).then(response => (router.push(`/checkout/${cartCount}`)));
+			if (startDate < endDate) {
+			    
+			    let cartCount = 0;
+				for (const _ in this.allShoppingCarts) {
+	  				cartCount++;
+				}
+	
+				axios.post('rest/shoppingCarts/', this.shoppingCart).then(response => (router.push(`/checkout/${cartCount}`)));
+			}
+			else{
+				this.dateNotValid = true;
+			}
 		}
     }
 });

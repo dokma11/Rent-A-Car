@@ -28,9 +28,10 @@ public class OrderService {
 	
 	@PostConstruct
 	public void init() {
+		System.out.println("usao u order init");
 		if(ctx.getAttribute("orderDAO") == null) {
-		String contextPath = ctx.getRealPath("");
-		ctx.setAttribute("orderDAO", new OrderDAO(contextPath));
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("orderDAO", new OrderDAO(contextPath));
 		}
 	}
 	
@@ -65,6 +66,7 @@ public class OrderService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public void add(Order o) {
+		System.out.println("usao u service za order");
         OrderDAO dao = (OrderDAO) ctx.getAttribute("orderDAO");
         dao.add(o);
     }

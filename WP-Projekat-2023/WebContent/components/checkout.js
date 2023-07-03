@@ -4,7 +4,8 @@ Vue.component("checkout", {
 			shoppingCart: [],
 			vehiclesInCart: [],
 			vehicle: [],
-			newOrder: []
+			newOrder: {id: null, idsOfRentedVehicles: [], idsOfRentACarFacilities: [], rentalDateStart: null, rentalDateEnd: null, price: null, userId: null, status: null},
+			loggedInUser: []
 	    }
 	},
 	    template: `
@@ -49,6 +50,17 @@ Vue.component("checkout", {
 			let idString = this.shoppingCart.idsOfVehiclesInCart.join(",");
 			axios.get('rest/vehicles/getVehiclesInCart/' + idString).then(response => {
 				this.vehiclesInCart = response.data;
+			
+				const dataValues = Object.values(response.data);
+			    if (Array.isArray(dataValues)) {
+			        this.vehiclesInCart = dataValues;
+			
+			        this.vehiclesInCart.forEach(vehicle => {
+			            vehicle.amount = 1;
+			        });
+			    } else {
+			        console.error('Response data is not an array:', dataValues);
+			    }
 			});
 		});
     },
@@ -56,11 +68,43 @@ Vue.component("checkout", {
     	rent : function() {
 			event.preventDefault();
 			
-			this.newOrder.idsOfRentedVehicles = this.shoppingCart.idsOfVehiclesInCart;
-			this.newOrder.rentACarFacilityId = this.shoppingCart.idsOfVehiclesInCart;
-			this.newOrder.rentalDate
+			this.newOrder.status = 'PROCESSING';
+			this.newOrder.price = this.shoppingCart.price;
+			this.newOrder.userId = this.shoppingCart.userId
+			this.newOrder.rentalDateStart = this.shoppingCart.rentalDateStart;
+			this.newOrder.rentalDateEnd = this.shoppingCart.rentalDateEnd;
 			
-			axios.post('rest/orders/', this.newOrder).then(reponse => (router.push(`/`)));
+			let ccount = 0;
+			for (const _ in this.shoppingCart.idsOfVehiclesInCart) {
+  				ccount++;
+			}
+			
+			this.newOrder.idsOfRentedVehicles = [];
+			let j = 0;
+			for(j; j < ccount; j++){
+				this.newOrder.idsOfRentedVehicles.push(this.shoppingCart.idsOfVehiclesInCart[j]);
+			}
+			
+			let count = 0;
+			for (const _ in this.vehiclesInCart) {
+  				count++;
+			}
+			
+			this.newOrder.idsOfRentACarFacilities = [];
+			let i = 0;
+			for(i; i < count; i++){
+				if(!this.newOrder.idsOfRentACarFacilities.includes(this.vehiclesInCart[i].ownerId)){
+					this.newOrder.idsOfRentACarFacilities.push(this.vehiclesInCart[i].ownerId)
+				}
+			}
+			axios.get('rest/users/' + this.newOrder.userId).then(response => {
+				this.loggedInUser = response.data;
+				this.loggedInUser.collectedPointsNumber += this.shoppingCart.price * 133 / 1000;
+				
+				axios.put('rest/users/' + this.loggedInUser.id, this.loggedInUser).then(response => [
+					axios.post('rest/orders/', this.newOrder).then(response => (router.push(`/`)))
+				]);
+			});
     	},
     	
     	decrementItem : function(id) {
@@ -72,15 +116,18 @@ Vue.component("checkout", {
 			}
 			
 			for(let i=0; i < count; i++){
-				if(this.vehiclesInCart[i].id == id){
+				if(this.vehiclesInCart[i].id == id && this.vehiclesInCart[i].amount > 1){
 					this.vehiclesInCart[i].amount--;
+					this.shoppingCart.price -= this.vehiclesInCart[i].price;
 					break;
 				}
 			}
 	        
-	        this.shoppingCart.price -= this.vehiclesInCart[i].price;
-	        
-	        location.reload();
+	        axios.put('rest/shoppingCarts/' + this.shoppingCart.id, this.shoppingCart).then(response => {
+				axios.put('rest/vehicles/' + this.vehiclesInCart[i].id, this.vehiclesInCart[i]).then(response => {
+					location.reload();	
+				});	
+			});
 	    },
 	    
 	    incrementItem : function(id) {
@@ -94,13 +141,16 @@ Vue.component("checkout", {
 			for(let i=0; i < count; i++){
 				if(this.vehiclesInCart[i].id == id){
 					this.vehiclesInCart[i].amount++;
+					this.shoppingCart.price += this.vehiclesInCart[i].price;
 					break;
 				}
 			}
 	        
-	        this.shoppingCart.price += this.vehiclesInCart[i].price;
-	        
-	        location.reload();
+	        axios.put('rest/shoppingCarts/' + this.shoppingCart.id, this.shoppingCart).then(response => {
+				axios.put('rest/vehicles/' + this.vehiclesInCart[i].id, this.vehiclesInCart[i]).then(response => {
+					location.reload();	
+				});	
+			});
 	    },
 	    
 	    removeFromCart : function(id){
@@ -114,22 +164,15 @@ Vue.component("checkout", {
 			let i=0;
 			for(i; i < count; i++){	
 				if(this.shoppingCart.idsOfVehiclesInCart[i] == id){
-					//axios.get('rest/vehicles/' + id).then(response => this.vehicle = response.data);
-					
-				/*	for(let j=0; j < count; j++){
+					for(let j=0; j < count; j++){
 						if(this.vehiclesInCart[j].id == id){
-							this.shoppingCart.price -= this.vehiclesInCart[j].price;
-							this.shoppingCart.idsOfVehiclesInCart.splice(i, 1);
-						}
-					}*/
-					/*
-					for (const element of this.vehiclesInCart) {
-						if(element.id == id){
-							this.shoppingCart.price -= elemet.price;
+							for(let k=0; k < this.vehiclesInCart[j].amount; k++){
+								this.shoppingCart.price -= this.vehiclesInCart[j].price;
+							}
 							this.shoppingCart.idsOfVehiclesInCart.splice(i, 1);
 						}
 					}
-					*/
+					
 				}
 			}
 		
