@@ -29,7 +29,7 @@ Vue.component("checkout", {
 	    				</td>
 	    				<td>
 					        <button v-on:click="decrementItem(v.id)">-</button>
-					        <label>{{v.count}}</label>
+					        <label>{{v.amount}}</label>
 					        <button v-on:click="incrementItem(v.id)">+</button>
 					    </td>	
 					    <td>
@@ -73,7 +73,7 @@ Vue.component("checkout", {
 			
 			for(let i=0; i < count; i++){
 				if(this.vehiclesInCart[i].id == id){
-					this.vehiclesInCart[i].count--;
+					this.vehiclesInCart[i].amount--;
 					break;
 				}
 			}
@@ -93,7 +93,7 @@ Vue.component("checkout", {
 			
 			for(let i=0; i < count; i++){
 				if(this.vehiclesInCart[i].id == id){
-					this.vehiclesInCart[i].count++;
+					this.vehiclesInCart[i].amount++;
 					break;
 				}
 			}

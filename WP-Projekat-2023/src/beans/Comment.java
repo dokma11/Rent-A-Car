@@ -4,8 +4,10 @@ import beans.Enum.CommentStatus;
 
 public class Comment {
 	private String id;
-	private User user;
-	private RentACar rentACar;
+	//private User user;
+	private String userId;
+	//private RentACar rentACar;
+	private String rentACarId;
 	private String text;
 	private int grade;//on a scale 1-5
 	private CommentStatus status;
@@ -16,8 +18,8 @@ public class Comment {
 
 	public Comment(User user, RentACar rentACar, String text, int grade, CommentStatus status) {
 		super();
-		this.user = user;
-		this.rentACar = rentACar;
+		//this.user = user;
+		//this.rentACar = rentACar;
 		this.text = text;
 		this.grade = grade;
 		this.status = status;
@@ -36,7 +38,7 @@ public class Comment {
 			this.status = CommentStatus.DECLINED;
 		}
 	}
-
+/*
 	public User getUser() {
 		return user;
 	}
@@ -52,9 +54,25 @@ public class Comment {
 	public void setRentACar(RentACar rentACar) {
 		this.rentACar = rentACar;
 	}
-
+*/
 	public String getText() {
 		return text;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getRentACarId() {
+		return rentACarId;
+	}
+
+	public void setRentACarId(String rentACarId) {
+		this.rentACarId = rentACarId;
 	}
 
 	public void setText(String text) {

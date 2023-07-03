@@ -22,7 +22,8 @@ public class Vehicle {
 	private String picturePath;
 	private VehicleStatus status;
 	private boolean isDeleted;
-	
+	private int amount;
+
 	public Vehicle() {
 
 	}
@@ -199,5 +200,13 @@ public class Vehicle {
 
 	public void setIsDeleted(boolean deleted) {
 		this.isDeleted = deleted;
-	}	
+	}
+	
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
 }

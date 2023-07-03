@@ -56,12 +56,12 @@ public class CommentDAO {
 	    if (comments.containsKey(id)) {
 	    	Comment toEdit = comments.get(id);
 
-	        if (comment.getUser() != null) {
-	            toEdit.setUser(comment.getUser());
+	        if (comment.getUserId() != null) {
+	            toEdit.setUserId(comment.getUserId());
 	        }
 
-	        if (comment.getRentACar() != null) {
-	            toEdit.setRentACar(comment.getRentACar());
+	        if (comment.getRentACarId() != null) {
+	            toEdit.setRentACarId(comment.getRentACarId());
 	        }
 
 	        if (comment.getText() != null) {

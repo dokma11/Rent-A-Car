@@ -172,7 +172,7 @@ Vue.component("rentACarObjectDisplay", {
 		let p = this.$route.params.id;
         axios.get('rest/rentACars/' + p).then(response => {
 			this.rentACar = response.data;
-			this.centerMapOnLocation();
+			//this.centerMapOnLocation();
 			axios.get('rest/users/currentUser').then(response => {
 				if(response.status == 200 && response.data.role == "MANAGER" && response.data.rentACarObjectId == this.rentACar.id){
 					this.rightManager = true;

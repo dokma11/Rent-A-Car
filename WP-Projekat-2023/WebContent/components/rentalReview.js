@@ -228,7 +228,7 @@ Vue.component("rentalReview", {
 			
 			this.commentNotValid = false;
 			
-			if(!this.vehicle.brand){
+			if(!this.comment.text){
 				this.commentNotValid = true;
 				document.getElementsByName("commentText")[0].style.border = "2px solid red";
 			}
@@ -236,7 +236,7 @@ Vue.component("rentalReview", {
 				document.getElementsByName("commentText")[0].style.border = "2px solid black";
 			}
 			
-			if(!this.vehicle.model){
+			if(!this.comment.grade){
 				this.commentNotValid = true;
 				document.getElementsByName("commentGrade")[0].style.border = "2px solid red";
 			}
@@ -245,8 +245,8 @@ Vue.component("rentalReview", {
 			}
 			
 			if(!this.commentNotValid){
-				this.comment.user = this.user;
-				this.comment.status = 'PROCESSING'
+				this.comment.userId = this.user.id;
+				this.comment.status = 'PENDING'
 				axios.post('rest/comments/', this.comment).then(response => location.reload());
 			}
 		}
