@@ -35,6 +35,18 @@ public class CommentDAO {
 		return comments.get(id);
 	}
 	
+	public HashMap<String, Comment> getByRentACar(String id) {
+		HashMap<String, Comment> ret = new HashMap<String, Comment>();
+
+		for(Comment comment : comments.values()) {
+			if(comment.getRentACarId().equals(id)) {
+				ret.put(comment.getId(), comment);
+			}
+		}
+		
+		return ret;
+	}
+	
 	public void add(Comment comment) {
 				
 		Integer maximum = -1;

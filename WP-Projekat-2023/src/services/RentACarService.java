@@ -59,4 +59,13 @@ public class RentACarService {
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
         dao.add(r);
     }
+	
+	@GET
+	@Path("/getFromOrder/{idList}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public HashMap<String, RentACar> getFromOrder(@PathParam("idList") String idList) {
+		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+	    return dao.getFromOrder(idList);
+	}
 }

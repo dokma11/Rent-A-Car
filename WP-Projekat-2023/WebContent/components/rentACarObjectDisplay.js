@@ -2,12 +2,14 @@ Vue.component("rentACarObjectDisplay", {
 	data: function () {
 	    return {
 			rentACar: {location: {address: null}},
-			comments: [],
+			comments: {rentACarName: null},
 			user: [],
 			vehicles: [],
 			rightManager: null,
 			notRightManager: null,
-			toDelete: []
+			rightAdmin: null,
+			toDelete: [],
+			toEdit: []
 	    }
 	},
 	    template: `
@@ -40,15 +42,15 @@ Vue.component("rentACarObjectDisplay", {
 		  
 		  <!-- Table if a buyer is logged in -->
 		  
-		  <label v-if="user.role == 'BUYER'"><b>Prikaz komentara Rent A Car objekta</b></label>
-		  <table border="1" class="tab" v-if="user.role == 'BUYER'">
+		  <label v-if="notRightManager"><b>Prikaz komentara Rent A Car objekta</b></label>
+		  <table border="1" class="tab" v-if="notRightManager">
 		    <tr>
 		      <th>Korisnicko ime</th>
 		      <th>Tekst</th>
 		      <th>Ocena</th>
 		    </tr>
 		    <tr v-for="(c, index) in comments">
-		      <td v-if="c.status == 'ACCEPTED'">{{c.user.username}}</td>
+		      <td v-if="c.status == 'ACCEPTED'">{{c.userId}}</td>
 		      <td v-if="c.status == 'ACCEPTED'">{{c.text}}</td>
 		      <td v-if="c.status == 'ACCEPTED'">{{c.grade}}</td>
 		    </tr>
@@ -57,22 +59,24 @@ Vue.component("rentACarObjectDisplay", {
 		  
 		  <!-- Table if a manager/admin is logged in -->
 		  
-		  <label v-if="user.role != 'BUYER'"><b>Prikaz komentara Rent A Car objekta</b></label>
-		  <table border="1" class="tab" v-if="user.role != 'BUYER'">
+		  <label v-if="rightAdmin"><b>Prikaz komentara Rent A Car objekta</b></label>
+		  <table border="1" class="tab" v-if="rightAdmin">
 		    <tr>
 		      <th>Korisnicko ime</th>
 		      <th>Tekst</th>
 		      <th>Ocena</th>
+		      <th>Status</th>
 		    </tr>
 		    <tr v-for="(c, index) in comments">
-		      <td v-if="c.status != 'PENDING'">{{c.user.username}}</td>
+		      <td v-if="c.status != 'PENDING'">{{c.userId}}</td>
 		      <td v-if="c.status != 'PENDING'">{{c.text}}</td>
 		      <td v-if="c.status != 'PENDING'">{{c.grade}}</td>
+		      <td v-if="c.status != 'PENDING'">{{c.status}}</td>
 		    </tr>
 		  </table>
 		  <br></br>
-		  <label v-if="user.role == 'MANAGER' && user.rentACarObjectId == v.id"><b>Prikaz komentara koji jos nisu prihvaceni/odbijeni</b></label>
-		  <table border="1" class="tab" v-if="user.role == 'MANAGER' && user.rentACarObjectId == v.id">
+		  <label v-if="rightManager"><b>Prikaz komentara koji jos nisu prihvaceni/odbijeni</b></label>
+		  <table border="1" class="tab" v-if="rightManager">
 		    <tr>
 		      <th>Korisnicko ime</th>
 		      <th>Tekst</th>
@@ -80,10 +84,10 @@ Vue.component("rentACarObjectDisplay", {
 		      <th>Dodeli status</th>
 		    </tr>
 		    <tr v-for="(c, index) in comments">
-		      <td>{{c.user.username}}</td>
-		      <td>{{c.text}}</td>
-		      <td>{{c.grade}}</td>
-		      <td><button v-on:click="acceptComment(c.id)">Potvrdi</button> <button v-on:click="declineComment(c.id)">Odbij</button></td>
+		      <td v-if="c.status == 'PENDING'">{{c.userId}}</td>
+		      <td v-if="c.status == 'PENDING'">{{c.text}}</td>
+		      <td v-if="c.status == 'PENDING'">{{c.grade}}</td>
+		      <td v-if="c.status == 'PENDING'"><button v-on:click="acceptComment(c.id)">Potvrdi</button> <button v-on:click="declineComment(c.id)">Odbij</button></td>
 		    </tr>
 		  </table>
 		  <br></br>
@@ -176,18 +180,39 @@ Vue.component("rentACarObjectDisplay", {
 			axios.get('rest/users/currentUser').then(response => {
 				if(response.status == 200 && response.data.role == "MANAGER" && response.data.rentACarObjectId == this.rentACar.id){
 					this.rightManager = true;
+					this.rightAdmin = true;
+					this.notRightManager = false;
+				}
+				else if(response.status == 200 && response.data.role == "ADMINISTRATOR"){
+					this.rightManager = false;
+					this.rightAdmin = true;
 					this.notRightManager = false;
 				}
 				else{
 					this.rightManager = false;
+					this.rightAdmin = false;
 					this.notRightManager = true;
 				}
 				axios.get('rest/vehicles/getAvailableVehicles/' + p).then(response => {
 					this.vehicles = response.data;
-					axios.get('rest/comments/').then(response => (this.comments = response.data));
+					axios.get('rest/comments/getByRentACar/' + this.rentACar.id).then(response => {
+						this.comments = response.data;
+						
+						let count = 0;
+						for (const _ in this.comments) {
+			  				count++;
+						}
+						
+						let i=0;
+						for(i; i < count; i++){
+							axios.get('rest/rentACars/' + this.comments[i].rentACarId).then(response => {
+								
+							});
+						}
 					});
 				});
 			});
+		});
     },
     methods: {
 		centerMapOnLocation() {
@@ -228,40 +253,24 @@ Vue.component("rentACarObjectDisplay", {
     	
     	acceptComment: function(id){
 			event.preventDefault();
-			
-			let count = 0;
-			for (const _ in this.comments) {
-  				count++;
-			}
-			
-			let i=0;
-			for(i; i < count; i++){
-				if(this.comments[i].id == id){
-					this.comments[i].status = "ACCEPTED";
-					break;
-				}
-			}
-			
-			axios.put('rest/comments/' + id, this.comments[i]).then(response => location.reload()).catch(error => console.log(error));
+
+			axios.get('rest/comments/' + id).then(response => {
+				this.toEdit = response.data;
+				this.toEdit.status = "ACCEPTED";
+				
+				axios.put('rest/comments/' + id, this.toEdit).then(response => location.reload()).catch(error => console.log(error));
+			});
 		},
 		
 		declineComment: function(id){
 			event.preventDefault();
 			
-			let count = 0;
-			for (const _ in this.comments) {
-  				count++;
-			}
-			
-			let i=0;
-			for(i; i < count; i++){
-				if(this.comments[i].id == id){
-					this.comments[i].status = "DECLINED";
-					break;
-				}
-			}
-			
-			axios.put('rest/comments/' + id, this.comments[i]).then(response => location.reload()).catch(error => console.log(error));
+			axios.get('rest/comments/' + id).then(response => {
+				this.toEdit = response.data;
+				this.toEdit.status = "DECLINED";
+				
+				axios.put('rest/comments/' + id, this.toEdit).then(response => location.reload()).catch(error => console.log(error));
+			});
 		}
     }
 });

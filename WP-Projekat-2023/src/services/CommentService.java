@@ -30,8 +30,8 @@ public class CommentService {
 	@PostConstruct 
 	public void init() {
 		if(ctx.getAttribute("commentDAO") == null) {
-		String contextPath = ctx.getRealPath("");
-		ctx.setAttribute("commentDAO", new CommentDAO(contextPath));
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("commentDAO", new CommentDAO(contextPath));
 		}
 	}
 	
@@ -50,6 +50,15 @@ public class CommentService {
 	public Comment getById(@PathParam("id") String id) {
 		CommentDAO dao = (CommentDAO) ctx.getAttribute("commentDAO");
 		return dao.getById(id);
+	}
+	
+	@GET
+	@Path("/getByRentACar/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public HashMap<String, Comment> getByRentACar(@PathParam("id") String id) {
+		CommentDAO dao = (CommentDAO) ctx.getAttribute("commentDAO");
+		return dao.getByRentACar(id);
 	}
 	
 	@POST

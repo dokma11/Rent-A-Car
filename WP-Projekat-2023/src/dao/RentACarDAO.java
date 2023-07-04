@@ -5,7 +5,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -56,6 +59,24 @@ public class RentACarDAO {
         saveToJson(ctx);
     }
 
+	public HashMap<String, RentACar> getFromOrder(String idList) {
+		HashMap<String, RentACar> ret = new HashMap<String, RentACar>();
+		
+		List<String> idValues = Arrays.asList(idList.split(","));
+		ArrayList<String> ids = new ArrayList<>(idValues);		
+				
+		for (String id : ids) {
+			for (RentACar rentACar : rentACars.values()) {
+				if (rentACar.getId().equals(id)) {
+					ret.put(rentACar.getId(), rentACar);
+					break;
+		        }
+		    }
+	    } 
+
+		return ret;
+	}
+	
 	public void saveToJson(String contextPath) {
 		String json = gson.toJson(rentACars);
 

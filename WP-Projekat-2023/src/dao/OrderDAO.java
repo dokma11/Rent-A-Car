@@ -62,6 +62,47 @@ public class OrderDAO {
 		return ret;
 	}
 	
+	public Order edit(String id, Order order) {
+
+	    if (orders.containsKey(id)) {
+	    	Order toEdit = orders.get(id);
+
+	        if (order.getRentalDateStart() != null) {
+	            toEdit.setRentalDateStart(order.getRentalDateStart().toString());
+	        }
+	        
+	        if (order.getRentalDateEnd() != null) {
+	            toEdit.setRentalDateEnd(order.getRentalDateEnd().toString());
+	        }
+	        
+	        if (order.getPrice() > 0) {
+	            toEdit.setPrice(order.getPrice());
+	        }
+	        
+	        if (order.getUserId() != null) {
+	            toEdit.setUserId(order.getUserId());
+	        }
+	        
+	        if (order.getStatus() != null) {
+	            toEdit.setStatus(order.getStatus().toString());
+	        }
+	        
+	        if (order.getIdsOfRentedVehicles() != null) {
+	            toEdit.setIdsOfRentedVehicles(order.getIdsOfRentedVehicles());
+	        }
+	        
+	        if (order.getIdsOfRentACarFacilities() != null) {
+	            toEdit.setIdsOfRentACarFacilities(order.getIdsOfRentACarFacilities());
+	        }
+	        
+	        saveToJson(ctx);
+	        
+	        return toEdit;
+	    }
+
+	    return null;
+	}
+	
 	public void saveToJson(String contextPath) {
 		String json = gson.toJson(orders);
 
