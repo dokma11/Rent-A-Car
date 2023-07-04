@@ -12,7 +12,7 @@ public class Order {
 	//private ArrayList<Vehicle> rentedVehicles;
 	private ArrayList<String> idsOfRentedVehicles;
 	//private RentACar rentACarFacility;
-	private ArrayList<String> idsOfRentACarFacilities;
+	private ArrayList<String> idsOfRentACarFacilities;	
 	private LocalDate rentalDateStart; 
 	private LocalDate rentalDateEnd; //should check
 	private int price;
@@ -21,7 +21,8 @@ public class Order {
 	private RentalStatus status;
 	
 	public Order() {
-		
+		this.idsOfRentACarFacilities = new ArrayList<String>();
+		this.idsOfRentedVehicles = new ArrayList<String>();
 	}
 	
 	public Order(ArrayList<String> rentedVehicles, ArrayList<String> idsOfRentACarFacilities, LocalDate rentalDate,
@@ -35,8 +36,10 @@ public class Order {
 		this.price = price;
 		//this.buyer = buyer;
 		this.status = status;
-		this.userId = buyer;
+		//this.userId = buyer;
+		this.idsOfRentACarFacilities = new ArrayList<String>();
 		this.idsOfRentACarFacilities = idsOfRentACarFacilities;
+		this.idsOfRentedVehicles = new ArrayList<String>();
 		this.idsOfRentedVehicles = rentedVehicles;
 	}
 	
@@ -76,18 +79,18 @@ public class Order {
 		return rentalDateStart.toString();
 	}
 
-	public void setRentalDateStart(String RentalDate) {
+	public void setRentalDateStart(String rentalDateStart) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	    this.rentalDateStart = LocalDate.parse(RentalDate,formatter);
+	    this.rentalDateStart = LocalDate.parse(rentalDateStart,formatter);
 	}
 	
 	public String getRentalDateEnd() {
 		return rentalDateEnd.toString();
 	}
 	
-	public void setRentalDateEnd(String rentalDate) {
+	public void setRentalDateEnd(String rentalDateEnd) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	    this.rentalDateEnd = LocalDate.parse(rentalDate,formatter);
+	    this.rentalDateEnd = LocalDate.parse(rentalDateEnd,formatter);
 	}
 	
 	public int getPrice() {

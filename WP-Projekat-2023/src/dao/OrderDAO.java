@@ -36,7 +36,7 @@ public class OrderDAO {
 	}
 	
 	public void add(Order order) {
-		System.out.println("Usao u dao za order");
+
 		Integer maximum = -1;
 		for (String key : orders.keySet()) {
 			int temp = Integer.parseInt(key);
@@ -73,11 +73,17 @@ public class OrderDAO {
 	}
 	  
 	private void loadDataFromJson(String contextPath) {
-        try (FileReader reader = new FileReader(contextPath + "/orders.txt")) {
-            Type type = new TypeToken<HashMap<String, Order>>(){}.getType();
-            this.orders = gson.fromJson(reader, type);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } 
+	    try (FileReader reader = new FileReader(contextPath + "/orders.txt")) {
+	        Type type = new TypeToken<HashMap<String, Order>>(){}.getType();
+	        this.orders = gson.fromJson(reader, type);
+	        
+	        if (this.orders == null) {
+	            this.orders = new HashMap<>();
+	        }
+	    } catch (IOException e) {
+	        this.orders = new HashMap<>();
+	        e.printStackTrace();
+	    } 
 	}
+
 }
