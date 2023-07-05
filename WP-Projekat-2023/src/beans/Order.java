@@ -19,6 +19,7 @@ public class Order {
 	//private User buyer;//it says name and surname in specification only idk
 	private String userId;
 	private RentalStatus status;
+	private LocalDate cancellationDate;
 	
 	public Order() {
 		this.idsOfRentACarFacilities = new ArrayList<String>();
@@ -26,7 +27,7 @@ public class Order {
 	}
 	
 	public Order(ArrayList<String> rentedVehicles, ArrayList<String> idsOfRentACarFacilities, LocalDate rentalDate,
-			LocalDate rentalDuration, int price, String buyer, RentalStatus status) {
+			LocalDate rentalDuration, int price, String buyer, RentalStatus status, LocalDate cancel) {
 		super();
 		//this.uniqueId = uniqueId;
 		//this.rentedVehicles = rentedVehicles;
@@ -41,8 +42,9 @@ public class Order {
 		this.idsOfRentACarFacilities = idsOfRentACarFacilities;
 		this.idsOfRentedVehicles = new ArrayList<String>();
 		this.idsOfRentedVehicles = rentedVehicles;
+		this.cancellationDate = cancel;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -151,5 +153,14 @@ public class Order {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+	
+	public String getCancellationDate() {
+		return cancellationDate.toString();
+	}
+
+	public void setCancellationDate(String cancellationDate) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    this.cancellationDate = LocalDate.parse(cancellationDate,formatter);
 	}
 }

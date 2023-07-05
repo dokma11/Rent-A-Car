@@ -87,4 +87,13 @@ public class VehicleService {
 	    VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
 	    return dao.getVehiclesInCart(idList);
 	}
+	
+	@PUT
+	@Path("/editStatusByOrder/{idList}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void editStatusByOrder(@PathParam("idList") String idList) {
+		VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+	    dao.editStatusByOrder(idList);
+	}
 }

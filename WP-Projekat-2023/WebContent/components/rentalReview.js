@@ -262,10 +262,37 @@ Vue.component("rentalReview", {
 			this.user.collectedPointsNumber -= this.toEdit.price * 4 * 133 / 1000;
 			
 			this.toEdit.status = 'CANCELED';
+			this.toEdit.cancellationDate = formatDate(new Date());
+			
+			let monthCount = 0;
+			for (let j = 0; j < count; j++) {
+			    let orderDate = new Date(this.orders[j].cancellationDate);
+			    if (this.orders[j].cancellationDate !== "0001-01-01" && isWithinMonthTimeSpan(orderDate)) {
+			      monthCount++;
+			      if (monthCount >= 5) {
+					this.user.suspicious = true;  
+			        break;
+			      }
+			    }
+			}
 			
 			axios.put('rest/orders/' + this.toEdit.id, this.toEdit).then(response => {
 				  axios.put('rest/users/' + this.user.id, this.user).then(response => location.reload()); 
 			});
+		},
+		
+		formatDate: function(date) {
+		  const year = date.getFullYear();
+		  const month = String(date.getMonth() + 1).padStart(2, '0');
+		  const day = String(date.getDate()).padStart(2, '0');
+		  return `${year}-${month}-${day}`;
+		},
+		
+		isWithinMonthTimeSpan : function(date) {
+		  let currentDate = new Date();
+		  let oneMonthAgo = new Date();
+		  oneMonthAgo.setMonth(currentDate.getMonth() - 1);
+		  return date >= oneMonthAgo && date <= currentDate;
 		},
 		
 		submit: function(){
@@ -299,21 +326,8 @@ Vue.component("rentalReview", {
 			
 			if(!this.commentNotValid){
 				this.comment.userId = this.user.id;
-				this.comment.status = 'PENDING'
-				/*
-				let count=0;
-				for (const _ in this.rentACarsForComment) {
-	  				count++;
-				}
-				
-				let i=0;
-				for(i; i < count; i++){
-					if(this.rentACarsForComment[i].name == this.commentsRentACar){
-						this.comment.rentACarId = this.rentACarsForComment[i].id;
-						break;
-					}
-				}
-				*/
+				this.comment.status = 'PENDING';
+
 				axios.get('rest/rentACars/' + this.commentsRentACar).then(response => {
 					this.temp = response.data;
 					this.comment.rentACarId = this.temp.id;

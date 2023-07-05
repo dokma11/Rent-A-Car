@@ -53,8 +53,21 @@ public class OrderDAO {
 	
 	public HashMap<String, Order> getByUserId(String id) {
 		HashMap<String, Order> ret = new HashMap<String, Order>();
+		
 		for(Order order : orders.values()) {
 			if(order.getUserId().equals(id)) {
+				ret.put(order.getId(), order);
+			}
+		}
+		
+		return ret;
+	}
+	
+	public HashMap<String, Order> getByRentACarId(String id) {
+		HashMap<String, Order> ret = new HashMap<String, Order>();
+		
+		for(Order order : orders.values()) {
+			if(order.getIdsOfRentACarFacilities().contains(id)) {
 				ret.put(order.getId(), order);
 			}
 		}
@@ -73,6 +86,10 @@ public class OrderDAO {
 	        
 	        if (order.getRentalDateEnd() != null) {
 	            toEdit.setRentalDateEnd(order.getRentalDateEnd().toString());
+	        }
+	        
+	        if (order.getCancellationDate() != null) {
+	            toEdit.setCancellationDate(order.getCancellationDate().toString());
 	        }
 	        
 	        if (order.getPrice() > 0) {

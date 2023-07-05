@@ -61,6 +61,15 @@ public class OrderService {
 		return dao.getByUserId(id);
 	}
 	
+	@GET
+	@Path("/rentACar/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public HashMap<String, Order> getByRentACarId(@PathParam("id") String id) {
+		OrderDAO dao = (OrderDAO) ctx.getAttribute("orderDAO");
+		return dao.getByRentACarId(id);
+	}
+	
 	@POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)

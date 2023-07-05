@@ -4,7 +4,7 @@ Vue.component("checkout", {
 			shoppingCart: [],
 			vehiclesInCart: [],
 			vehicle: [],
-			newOrder: {id: null, idsOfRentedVehicles: [], idsOfRentACarFacilities: [], rentalDateStart: null, rentalDateEnd: null, price: null, userId: null, status: null},
+			newOrder: {id: null, idsOfRentedVehicles: [], idsOfRentACarFacilities: [], rentalDateStart: null, rentalDateEnd: null, price: null, userId: null, status: null, cancellationDate: null},
 			loggedInUser: []
 	    }
 	},
@@ -73,6 +73,7 @@ Vue.component("checkout", {
 			this.newOrder.userId = this.shoppingCart.userId
 			this.newOrder.rentalDateStart = this.shoppingCart.rentalDateStart;
 			this.newOrder.rentalDateEnd = this.shoppingCart.rentalDateEnd;
+			this.newOrder.cancellationDate = "0001-01-01";
 			
 			let ccount = 0;
 			for (const _ in this.shoppingCart.idsOfVehiclesInCart) {

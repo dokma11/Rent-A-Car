@@ -157,6 +157,28 @@ public class VehicleDAO {
 		return ret;
 	}
 	
+	public void editStatusByOrder(String idList) {		
+		List<String> idValues = Arrays.asList(idList.split(","));
+		ArrayList<String> ids = new ArrayList<>(idValues);		
+				
+		for (String id : ids) {
+			for (Vehicle vehicle : vehicles.values()) {
+				if (vehicle.getId().equals(id)) {
+					
+					if(vehicle.getStatus().toString() == "AVAILABLE") {
+						vehicle.setStatus("RENTED");
+					}else if(vehicle.getStatus().toString() == "RENTED") {
+						vehicle.setStatus("AVAILABLE");
+					}
+					
+					break;
+		        }
+		    }
+	    } 
+		
+		saveToJson(ctx);
+	}
+	
 	public void saveToJson(String contextPath) {
 		String json = gson.toJson(vehicles);
 
