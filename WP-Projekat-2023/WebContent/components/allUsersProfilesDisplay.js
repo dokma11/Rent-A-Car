@@ -96,19 +96,21 @@ Vue.component("allUsersProfilesDisplay", {
 	    	</div>
 	    `,
     mounted () {
-        axios.get('rest/users/').then(response => (this.users = response.data));
-        
-        //preparing SUS users (doesnt work have to check why and how to fix it)
-        let count = 0;
-		for (const _ in this.users) {
-  			count++;
-		}
-		
-		for (let i = 0; i < count; i++){
-			if(this.users[i].suspicious){
-				this.susUsers.push(this.users[i]);
+        axios.get('rest/users/').then(response => {
+			this.users = response.data
+			
+			let count = 0;
+			for (const _ in this.users) {
+	  			count++;
 			}
-		}
+			
+			for (let i = 0; i < count; i++){
+				if(this.users[i].suspicious){
+					this.susUsers.push(this.users[i]);
+				}
+			}
+			
+		});
     },
     methods: {
     	search: function() {

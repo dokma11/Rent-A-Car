@@ -70,6 +70,15 @@ public class OrderService {
 		return dao.getByRentACarId(id);
 	}
 	
+	@GET
+	@Path("/getRentedVehiclesInDateRange/{range}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getRentedVehiclesInDateRange(@PathParam("range") String range) {
+		OrderDAO dao = (OrderDAO) ctx.getAttribute("orderDAO");
+		return dao.getRentedVehiclesInDateRange(range);
+	}
+	
 	@POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)

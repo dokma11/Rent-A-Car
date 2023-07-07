@@ -2,6 +2,7 @@ package dao;
 
 import java.util.HashMap;
 
+import beans.Order;
 import beans.User;
 import beans.Enum.UserRole;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class UserDAO {
 	
@@ -83,12 +85,54 @@ public class UserDAO {
 	            toEdit.setRentACarObjectId(user.getRentACarObjectId());
 	        }
 	        
+	        CheckIfSuspect(user.getId());
+	        
 	        saveToJson(ctx);
 	        
 	        return toEdit;
 	    }
 
 	    return null;
+	}
+	
+	private void CheckIfSuspect(String userId) {
+		HashMap<String, Order> orders = new HashMap<String, Order> ();
+		
+		OrderDAO oDao = new OrderDAO(ctx);
+		orders = oDao.getByUserId(userId);
+		
+		for(Order order : orders.values()) {
+			if(!order.getCancellationDate().equals("0001-01-01")) {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");				
+				LocalDate temp = LocalDate.parse(order.getCancellationDate(), formatter);
+				LocalDate tempAfter = temp.plusMonths(1);
+				LocalDate tempBefore = temp.minusMonths(1);
+
+				int counter=0;
+				for(Order orderToCompare : orders.values()) {					
+					if(!orderToCompare.getId().equals(order.getId()) && !orderToCompare.getCancellationDate().equals("0001-01-01")) {
+						LocalDate orderToComparesDate= LocalDate.parse(order.getCancellationDate(), formatter);
+						LocalDate ordersDate= LocalDate.parse(order.getCancellationDate(), formatter);
+
+						if((orderToComparesDate.isAfter(ordersDate) && orderToComparesDate.isBefore(tempAfter)) ||
+						  (orderToComparesDate.isBefore(ordersDate) && orderToComparesDate.isAfter(tempBefore)) ||
+						  (orderToCompare.getCancellationDate().equals(order.getCancellationDate()))) {
+							counter++;
+						}
+					}
+				}
+				
+				if(counter > 4) {
+					User toEdit = users.get(userId);
+					toEdit.setSuspicious(true);
+					return;
+				}
+				else {
+					counter = 0;
+				}
+			}
+		}
+		return;
 	}
 	
 	public void add(User user) {

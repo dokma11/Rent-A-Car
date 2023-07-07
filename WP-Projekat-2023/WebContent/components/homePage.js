@@ -3,6 +3,7 @@ Vue.component("homePage", {
 	    return {
 			rentACar: new Map(),
 			rentACarSearch: [],
+			users: [],
 			notValid: null,
 			sortOption: "",
 			link: 'http://localhost:8080/WebShopREST/#/login' 
@@ -65,7 +66,9 @@ Vue.component("homePage", {
 	    	</div>
 	    `,
 	mounted () {
-        axios.get('rest/rentACars/').then(response => (this.rentACar = response.data))
+        axios.get('rest/rentACars/').then(response => {
+			this.rentACar = response.data
+		});
     },   
     methods: {
     	registration : function() {

@@ -5,7 +5,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -72,6 +76,38 @@ public class OrderDAO {
 			}
 		}
 		
+		return ret;
+	}
+	
+	public String getRentedVehiclesInDateRange(String list){
+		String ret = "";
+
+		List<String> dateValues = Arrays.asList(list.split(","));
+		ArrayList<String> dates = new ArrayList<>(dateValues);
+		
+		for (Order order : orders.values()) {			
+			if((order.getStatus().toString() == "APPROVED") || (order.getStatus().toString() == "PICKED_UP")) {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");				
+				LocalDate orderDateStart = LocalDate.parse(order.getRentalDateStart(), formatter);
+				LocalDate orderDateEnd = LocalDate.parse(order.getRentalDateEnd(), formatter);
+
+				LocalDate dateStart = LocalDate.parse(dates.get(0), formatter);
+				LocalDate dateEnd = LocalDate.parse(dates.get(1), formatter);
+
+				if(((orderDateStart.isAfter(dateStart)) && (orderDateEnd.isBefore(dateEnd))) || 
+				   ((orderDateStart.isBefore(dateStart)) && (orderDateEnd.isAfter(dateEnd))) ||
+				   ((orderDateStart.isBefore(dateStart)) && (orderDateEnd.isAfter(dateStart))) || 
+				   ((orderDateStart.isBefore(dateEnd)) && (orderDateEnd.isAfter(dateEnd)))) {
+
+					for(String vehicle : order.getIdsOfRentedVehicles()) {
+						if(!ret.contains(vehicle)) {
+							ret = ret.concat("," + vehicle);
+						}
+					}
+				}
+			}
+		}
+
 		return ret;
 	}
 	

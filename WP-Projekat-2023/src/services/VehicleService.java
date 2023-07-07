@@ -88,6 +88,33 @@ public class VehicleService {
 	    return dao.getVehiclesInCart(idList);
 	}
 	
+	@GET
+	@Path("/getVehiclesForTypeSearch/{vehicleType}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getVehiclesForTypeSearch(@PathParam("vehicleType")String vehicleType) {
+	    VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+	    return dao.getVehiclesForTypeSearch(vehicleType);
+	}
+	
+	@GET
+	@Path("/getVehiclesForGearBoxTypeSearch/{gearBoxType}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getVehiclesForGearBoxTypeSearch(@PathParam("gearBoxType") String gearBoxType) {
+	    VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+	    return dao.getVehiclesForGearBoxTypeSearch(gearBoxType);
+	}
+	
+	@GET
+	@Path("/getVehiclesForFuelTypeSearch/{fuelType}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getVehiclesForFuelTypeSearch(@PathParam("fuelType") String fuelType) {
+	    VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+	    return dao.getVehiclesForFuelTypeSearch(fuelType);
+	}
+	
 	@PUT
 	@Path("/editStatusByOrder/{idList}")
 	@Produces(MediaType.APPLICATION_JSON)

@@ -101,7 +101,13 @@ Vue.component("checkout", {
 			
 			axios.get('rest/users/' + this.newOrder.userId).then(response => {
 				this.loggedInUser = response.data;
+				
+				if(this.loggedInUser.buyerType == ""){
+					
+				}
 				this.loggedInUser.collectedPointsNumber += this.shoppingCart.price * 133 / 1000;
+				
+				//uraditii ono za buyers type...
 				
 				axios.put('rest/users/' + this.loggedInUser.id, this.loggedInUser).then(response => [
 					axios.post('rest/orders/', this.newOrder).then(response => (router.push(`/usersProfile/${this.loggedInUser.id}`)))

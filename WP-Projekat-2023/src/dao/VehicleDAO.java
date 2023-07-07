@@ -157,6 +157,48 @@ public class VehicleDAO {
 		return ret;
 	}
 	
+	public String getVehiclesForTypeSearch(String list){
+		String ret = "";
+		
+		for (Vehicle vehicle : vehicles.values()) {			
+			if(list.equals(vehicle.getVehicleType().toString())) {
+				if(!ret.contains(vehicle.getOwnerId())) {
+					ret = ret.concat("," + vehicle.getOwnerId());
+				}
+			}
+	    } 
+
+		return ret;
+	}
+	
+	public String getVehiclesForGearBoxTypeSearch(String list){
+		String ret = "";
+		
+		for (Vehicle vehicle : vehicles.values()) {			
+			if(list.equals(vehicle.getGearBoxType().toString())) {
+				if(!ret.contains(vehicle.getOwnerId())) {
+					ret = ret.concat("," + vehicle.getOwnerId());
+				}
+			}
+	    } 
+
+		return ret;
+	}
+	
+	public String getVehiclesForFuelTypeSearch(String list){
+		String ret = "";
+		
+		for (Vehicle vehicle : vehicles.values()) {			
+			if(list.equals(vehicle.getFuelType().toString())) {
+				if(!ret.contains(vehicle.getOwnerId())) {
+					ret = ret.concat("," + vehicle.getOwnerId());
+				}
+			}
+	    } 
+
+		return ret;
+	}
+	
 	public void editStatusByOrder(String idList) {		
 		List<String> idValues = Arrays.asList(idList.split(","));
 		ArrayList<String> ids = new ArrayList<>(idValues);		

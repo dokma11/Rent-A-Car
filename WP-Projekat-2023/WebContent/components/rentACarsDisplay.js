@@ -8,7 +8,8 @@ Vue.component("rentACarsDisplay", {
 			filterOption: "",
 			user: [],
 			link: 'http://localhost:8080/WebShopREST/#/usersProfile/',
-			locationSearch: null
+			locationSearch: null,
+			filterReturnString: null
 	    }
 	},
 	    template: `
@@ -43,12 +44,12 @@ Vue.component("rentACarsDisplay", {
 				    </select>
 				    <select v-model="filterOption" @change="filterRentACar" style="margin-right: 10px;">
 				      <option value="">Filtriraj po:</option>
-				      <option value="manualGearBox">Vrsti menjaca: manuelni</option>
-				      <option value="automaticGearBox">Vrsti menjaca: automatik</option>
-				      <option value="dieselFuelType">Tipu goriva: dizel</option>
-				      <option value="gasolineFuelType">Tipu goriva: benzin</option>
-				      <option value="hybridFuelType">Tipu goriva: hibrid</option>
-				      <option value="electricFuelType">Tipu goriva: elektricni</option>
+				      <option value="MANUAL">Vrsti menjaca: manuelni</option>
+				      <option value="AUTOMATIC">Vrsti menjaca: automatik</option>
+				      <option value="DIESEL">Tipu goriva: dizel</option>
+				      <option value="GASOLINE">Tipu goriva: benzin</option>
+				      <option value="HYBRID">Tipu goriva: hibrid</option>
+				      <option value="ELECTRIC">Tipu goriva: elektricni</option>
 				      <option value="openRentACars">Samo otvoreni objekti</option>
 				    </select>
 				    <button v-on:click="resetClick">Resetuj prikaz</button>
@@ -190,7 +191,27 @@ Vue.component("rentACarsDisplay", {
 			  for (let i = 0; i < count; i++) {
 			    let item = temp[i];
 			    let nameMatch = !this.rentACarSearch.name || item.name.toLowerCase().includes(this.rentACarSearch.name.toLowerCase());
-			    let vehicleTypeMatch = !this.rentACarSearch.vehicleType || item.vehicleType.toLowerCase().includes(this.rentACarSearch.vehicleType.toLowerCase());
+			    let vehicleTypeMatch = false;
+			    
+			    if(!this.rentACarSearch.vehicleType){
+					vehicleTypeMatch = false;	
+				}
+			    else{
+				    axios.get('rest/vehicles/getVehiclesForTypeSearch/' + this.rentACarSearch.vehicleType).then(response => {
+							this.vehiclesForSearch = response.data;
+							
+							const parts = this.vehiclesForSearch.split(",");
+					
+							for (let part of parts) {
+							  for(let i=0; i < count; i++){
+								  if(temp[i].id == part){
+									  vehicleTypeMatch = true;
+								  }
+							  }
+							}
+					 });
+			    }
+			    
 			    let gradeMatch = !this.rentACarSearch.grade || item.grade == this.rentACarSearch.grade;
 			    let locationMatch = !this.locationSearch || item.location.address.toLowerCase().includes(this.locationSearch.toLowerCase());
 			  
@@ -198,8 +219,8 @@ Vue.component("rentACarsDisplay", {
 			      this.rentACar.push(item);
 			      entered = true;
 			    }
+			   }
 			  }
-			}
 
 			if(!entered){
 				this.rentACar = temp;
@@ -268,11 +289,11 @@ Vue.component("rentACarsDisplay", {
 				    }
 				}
       		}
-      		//probably should change for location later
+      		
       		else if (this.sortOption === "locationAscending") {
         		for (let i = 0; i < count - 1; i++) {
 				    for (let j = 0; j < count - i - 1; j++) {
-				      if (this.rentACar[j].location < this.rentACar[j + 1].location ) {
+				      if (this.rentACar[j].location.address > this.rentACar[j + 1].location.address ) {
 				        
 				        [this.rentACar[j], this.rentACar[j + 1]] = [this.rentACar[j + 1], this.rentACar[j]];
 				      
@@ -284,7 +305,7 @@ Vue.component("rentACarsDisplay", {
       		else if(this.sortOption === "locationDescending") {
         		for (let i = 0; i < count - 1; i++) {
 				    for (let j = 0; j < count - i - 1; j++) {
-				      if (this.rentACar[j].location > this.rentACar[j + 1].location ) {
+				      if (this.rentACar[j].location.address < this.rentACar[j + 1].location.address ) {
 				        
 				        [this.rentACar[j], this.rentACar[j + 1]] = [this.rentACar[j + 1], this.rentACar[j]];
 				      
@@ -311,101 +332,95 @@ Vue.component("rentACarsDisplay", {
 			temp = this.rentACar;
 			this.rentACar = [];	
 			
-			if(this.filterOption === "manualGearBox"){
-				for (let i = 0; i < count - 1; i++) {
+			if(this.filterOption === "MANUAL"){
+				axios.get('rest/vehicles/getVehiclesForGearBoxTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
 					
-					let vehicleCount = 0;
-					for (const _ in temp[i].avaliableVehicles) {
-		  				vehicleCount++;
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
 					}
-				    
-				    for(let j=0; j < vehicleCount; j++){
-						if(temp[i].avaliableVehicles[j].gearBoxType = "manualGearBox"){
-							this.rentACar.push(temp[i]);
-							break;
-						}
-					}
-				}
+				});	
 			}
-			else if(this.filterOption === "automaticGearBox"){
-				for (let i = 0; i < count - 1; i++) {
+			else if(this.filterOption === "AUTOMATIC"){
+				axios.get('rest/vehicles/getVehiclesForGearBoxTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
 					
-					let vehicleCount = 0;
-					for (const _ in temp[i].avaliableVehicles) {
-		  				vehicleCount++;
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
 					}
-				    
-				    for(let j=0; j < vehicleCount; j++){
-						if(temp[i].avaliableVehicles[j].gearBoxType = "automaticGearBox"){
-							this.rentACar.push(temp[i]);
-							break;
-						}
-					}
-				}
+				});
 			}
-			else if(this.filterOption === "dieselFuelType"){
-				for (let i = 0; i < count - 1; i++) {
+			else if(this.filterOption === "DIESEL"){
+				axios.get('rest/vehicles/getVehiclesForFuelTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
 					
-					let vehicleCount = 0;
-					for (const _ in temp[i].avaliableVehicles) {
-		  				vehicleCount++;
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
 					}
-				    
-				    for(let j=0; j < vehicleCount; j++){
-						if(temp[i].avaliableVehicles[j].fuelType = "dieselFuelType"){
-							this.rentACar.push(temp[i]);
-							break;
-						}
-					}
-				}
+				});
 			}
-			else if(this.filterOption === "gasolineFuelType"){
-				for (let i = 0; i < count - 1; i++) {
+			else if(this.filterOption === "GASOLINE"){
+				axios.get('rest/vehicles/getVehiclesForFuelTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
 					
-					let vehicleCount = 0;
-					for (const _ in temp[i].avaliableVehicles) {
-		  				vehicleCount++;
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
 					}
-				    
-				    for(let j=0; j < vehicleCount; j++){
-						if(temp[i].avaliableVehicles[j].fuelType = "gasolineFuelType"){
-							this.rentACar.push(temp[i]);
-							break;
-						}
-					}
-				}
+				});
 			}
-			else if(this.filterOption === "hybridFuelType"){
-				for (let i = 0; i < count - 1; i++) {
+			else if(this.filterOption === "HYBRID"){
+				axios.get('rest/vehicles/getVehiclesForFuelTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
 					
-					let vehicleCount = 0;
-					for (const _ in temp[i].avaliableVehicles) {
-		  				vehicleCount++;
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
 					}
-				    
-				    for(let j=0; j < vehicleCount; j++){
-						if(temp[i].avaliableVehicles[j].fuelType = "hybridFuelType"){
-							this.rentACar.push(temp[i]);
-							break;
-						}
-					}
-				}
+				});
 			}
-			else if(this.filterOption === "electricFuelType"){
-				for (let i = 0; i < count - 1; i++) {
+			else if(this.filterOption === "ELECTRIC"){
+				axios.get('rest/vehicles/getVehiclesForFuelTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
 					
-					let vehicleCount = 0;
-					for (const _ in temp[i].avaliableVehicles) {
-		  				vehicleCount++;
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
 					}
-				    
-				    for(let j=0; j < vehicleCount; j++){
-						if(temp[i].avaliableVehicles[j].fuelType = "electricFuelType"){
-							this.rentACar.push(temp[i]);
-							break;
-						}
-					}
-				}
+				});
 			}
 			else if(this.filterOption === "openRentACars"){
 				for (let i = 0; i < count - 1; i++) {

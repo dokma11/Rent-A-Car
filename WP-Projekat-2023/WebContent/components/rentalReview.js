@@ -16,8 +16,11 @@ Vue.component("rentalReview", {
 			commentNotValid: null,
 			user: [],
 			allRentACars: [],
+			rentACarsForOrder: [],
 			toEdit: [],
-			rentACarsForComment: []
+			rentACarsForComment: [],
+			dateNotValid: false,
+			ordersForSus: []
 	    }
 	},
 	    template: `
@@ -34,8 +37,8 @@ Vue.component("rentalReview", {
 	    			<input type="text" name="startPrice" v-model="startPrice" placeholder="Pocetak opsega" style="margin-right: 5px;" />
 	    			<input type="text" name="endPrice" v-model="endPrice" placeholder="Kraj opsega" style="margin-right: 10px;" />
 	    			<label style="margin-right: 5px;">Datumu iznajmljivanja: </label>
-	    			<input type="text" name="startDate" v-model="startDate" placeholder="Pocetak opsega" style="margin-right: 5px;" />
-	    			<input type="text" name="endDate" v-model="endDate" placeholder="Kraj opsega" style="margin-right: 10px;" />
+	    			<input type="date" name="startDate" v-model="startDate" placeholder="Pocetak opsega" style="margin-right: 5px;" />
+	    			<input type="date" name="endDate" v-model="endDate" placeholder="Kraj opsega" style="margin-right: 10px;" />
 	    			<button v-on:click="search" style="margin-right: 10px;">Pretrazi</button>	
 	    			<select v-model="sortOption" @change="sort">
 	    				<option value="">Sortiraj po: </option>
@@ -60,7 +63,7 @@ Vue.component("rentalReview", {
 	    			<tr v-for="(o,index) in orders">
 	    				<td>{{o.rentalDateStart}}</td>
 	    				<td>{{o.rentalDateEnd}}</td>
-	    				<td>{{o.idsOfRentACarFacilities}}</td>
+	    				<td>{{o.idsOfRentACarFacilites}}</td>
 	    				<td>{{o.price}}</td>
 	    				<td>{{o.status}}</td>
 	    				<td>
@@ -109,18 +112,27 @@ Vue.component("rentalReview", {
 			axios.get('rest/orders/user/' + p).then(response => {
 				this.orders = response.data;
 				axios.get('rest/rentACars/').then(response => {
-					this.allRentACars = response.data
-					/*
+					this.allRentACars = response.data;
+					
 					let count = 0;
 					for (const _ in this.orders) {
 		  				count++;
 					}
 					
+					let rcount = 0;
+					for (const _ in this.allRentACars) {
+		  				rcount++;
+					}
+					
 					let i=0;
 					for(i; i < count; i++){
-						axios.get('rest/rentACars/' + this.orders[i].idsOfRentACarFacilites)
+						for(let j=0; j < rcount; j++){
+							if(this.orders[i].idsOfRentACarFacilities.includes(this.allRentACars[j].id)){
+								
+							}
+						}
 					}
-					*/
+					
 				});		
 			});
 		});
@@ -142,10 +154,38 @@ Vue.component("rentalReview", {
 			  for (let i = 0; i < count; i++) {
 			    let item = temp[i];
 			    let rentACarFacilityMatch = !this.searchOrder.rentACarFacility || item.rentACarFacility.toLowerCase().includes(this.searchOrder.rentACarFacility.toLowerCase());
-			    let endPriceMatch = !this.endPrice || item.price < endPrice;
-			    let startPriceMatch = !this.startPrice || item.price > startPrice;
-				let endDateMatch = !this.endDate || item.rentalDate < endDate;
-			    let startDateMatch = !this.startDate || item.rentalDate > startDate ;			  
+			    let endPriceMatch = !this.endPrice || item.price < this.endPrice;
+			    let startPriceMatch = !this.startPrice || item.price > this.startPrice;
+				let endDateMatch = false;
+			    let startDateMatch = false;			  
+			    
+			    if(this.endDate && this.startDate){
+					const startDate = new Date(this.startDate);
+					const endDate = new Date(this.endDate);
+					
+					if(startDate < endDate){
+						if((item.rentalDateStart > this.startDate) && (item.rentalDateEnd < this.endDate)){
+							endDateMatch = true;
+							startDateMatch = true;
+						}
+					}
+					else{
+						this.dateNotValid = true;
+					}
+				}
+			    else if(this.endDate){
+					startDateMatch = true;
+					if(item.rentalDateEnd < this.endDate){
+						endDateMatch = true;
+					}
+				}
+				else if(this.startDate){
+					endDateMatch = true;
+					if(item.rentalDateStart > this.startDate){
+						startDateMatch = true;
+					}
+				}
+			    
 			    if (rentACarFacilityMatch && endPriceMatch && startPriceMatch && endDateMatch && startDateMatch) {
 			      this.orders.push(item);
 			      entered = true;
@@ -162,7 +202,7 @@ Vue.component("rentalReview", {
     	sort: function(){
 			event.preventDefault();
 			let count = 0;
-			for (const _ in this.rentACar) {
+			for (const _ in this.orders) {
   				count++;
 			}	
 			
@@ -213,7 +253,7 @@ Vue.component("rentalReview", {
       		else if (this.sortOption === "earliest") {
         		for (let i = 0; i < count - 1; i++) {
 				    for (let j = 0; j < count - i - 1; j++) {
-				      if (this.orders[j].rentalDate > this.orders[j + 1].rentalDate ) {
+				      if (this.orders[j].rentalDateStart > this.orders[j + 1].rentalDateStart) {
 				        
 				        [this.orders[j], this.orders[j + 1]] = [this.orders[j + 1], this.orders[j]];
 				      
@@ -224,7 +264,7 @@ Vue.component("rentalReview", {
       		else if(this.sortOption === "oldest") {
         		for (let i = 0; i < count - 1; i++) {
 				    for (let j = 0; j < count - i - 1; j++) {
-				      if (this.orders[j].rentalDate < this.orders[j + 1].rentalDate ) {
+				      if (this.orders[j].rentalDateStart < this.orders[j + 1].rentalDateStart ) {
 				        
 				        [this.orders[j], this.orders[j + 1]] = [this.orders[j + 1], this.orders[j]];
 				      
@@ -261,40 +301,16 @@ Vue.component("rentalReview", {
 			
 			this.user.collectedPointsNumber -= this.toEdit.price * 4 * 133 / 1000;
 			
-			this.toEdit.status = 'CANCELED';
-			this.toEdit.cancellationDate = formatDate(new Date());
+			const date = new Date();
 			
-			let monthCount = 0;
-			for (let j = 0; j < count; j++) {
-			    let orderDate = new Date(this.orders[j].cancellationDate);
-			    if (this.orders[j].cancellationDate !== "0001-01-01" && isWithinMonthTimeSpan(orderDate)) {
-			      monthCount++;
-			      if (monthCount >= 5) {
-					this.user.suspicious = true;  
-			        break;
-			      }
-			    }
-			}
+			this.toEdit.status = 'CANCELED';
+			this.toEdit.cancellationDate = date.toISOString().split('T')[0];
 			
 			axios.put('rest/orders/' + this.toEdit.id, this.toEdit).then(response => {
 				  axios.put('rest/users/' + this.user.id, this.user).then(response => location.reload()); 
 			});
 		},
-		
-		formatDate: function(date) {
-		  const year = date.getFullYear();
-		  const month = String(date.getMonth() + 1).padStart(2, '0');
-		  const day = String(date.getDate()).padStart(2, '0');
-		  return `${year}-${month}-${day}`;
-		},
-		
-		isWithinMonthTimeSpan : function(date) {
-		  let currentDate = new Date();
-		  let oneMonthAgo = new Date();
-		  oneMonthAgo.setMonth(currentDate.getMonth() - 1);
-		  return date >= oneMonthAgo && date <= currentDate;
-		},
-		
+
 		submit: function(){
 			event.preventDefault();
 			

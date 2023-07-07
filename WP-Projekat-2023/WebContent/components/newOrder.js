@@ -6,7 +6,8 @@ Vue.component("newOrder", {
 			orders: [],
 			loggedInUser: [],
 			allShoppingCarts: [],
-			dateNotValid: false
+			dateNotValid: false,
+			vehiclesFromSearch: false
 		}
 	},
 	    template: `
@@ -25,6 +26,7 @@ Vue.component("newOrder", {
 	    			</tr>
 	    		</table>
 	    		<button v-on:click="search">Pretrazi</button>
+	    		<button v-on:click="reset">Resetuj</button>
 	    		<br></br>
 	    		<table border="1" class="tab">
 	    			<tr>
@@ -83,15 +85,39 @@ Vue.component("newOrder", {
 			const endDate = new Date(this.shoppingCart.rentalDateEnd);
 			
 			if (startDate < endDate) {
-			    let count = 0;
-			    for (const _ in this.orders) {
-			      count++;
-			    }
-			
-			    let i = 0;
-			    for (i; i < count; i++) {
-			      // Perform further operations as needed
-			    }
+				let dateString = String(this.shoppingCart.rentalDateStart + "," + this.shoppingCart.rentalDateEnd);
+				axios.get('rest/orders/getRentedVehiclesInDateRange/' + dateString).then(response => {
+					this.vehiclesFromSearch = response.data;
+					
+					let count = 0;
+					for(const _ in this.vehicles){
+						count++;
+					}
+					
+					let temp = [];
+					temp = this.vehicles;
+					this.vehicles = [];
+					
+					const parts = this.vehiclesFromSearch.split(",");
+					let entered = false;
+					
+					   let i=0;
+					   for(i; i < count; i++){
+						   for (let part of parts) {
+							   if(temp[i].id == part){
+							   	   entered = true;  
+							   	   break; 
+							   }
+						   }  
+						   
+						   if(entered){
+							   entered = false;
+						   }
+						   else{
+							   this.vehicles.push(temp[i]);
+						   }  
+					   	}
+				});
 			}
 			else{
 				this.dateNotValid = true;
@@ -134,6 +160,12 @@ Vue.component("newOrder", {
 			else{
 				this.dateNotValid = true;
 			}
+		},
+		
+		reset : function(){
+			event.preventDefault();
+			
+			location.reload();
 		}
     }
 });

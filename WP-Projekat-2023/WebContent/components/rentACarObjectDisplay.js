@@ -153,12 +153,25 @@ Vue.component("rentACarObjectDisplay", {
 		  })
 		});
 		
-		const marker = new ol.layer.Vector({
+		let p = this.$route.params.id;
+        axios.get('rest/rentACars/' + p).then(response => {
+			this.rentACar = response.data;
+			
+			 const referenceLongitude = 19.8335494; // Longitude of Novi Sad, Serbia
+			  const referenceLatitude = 45.267136; // Latitude of Novi Sad, Serbia
+			
+			  const geographicalWidth = 25.414647500000004; // Example width value
+			  const geographicalLength = 25.4144737; // Example length value
+			
+			  const latitude = referenceLatitude + (geographicalLength / 111.32);
+			  const longitude = referenceLongitude + (geographicalWidth / (111.32 * Math.cos((Math.PI / 180) * referenceLatitude)));
+
+			const marker = new ol.layer.Vector({
 			source: new ol.source.Vector({
 				features: [
 					new ol.Feature({
 						geometry: new ol.geom.Point(
-							ol.proj.fromLonLat([0, 0])
+							ol.proj.fromLonLat([longitude, latitude])
 						)
 					})
 				]
@@ -167,16 +180,12 @@ Vue.component("rentACarObjectDisplay", {
 				image: new ol.style.Icon({
 					src: 'https://docs.maptiler.com/openlayers/default-marker/marker-icon.png',
 					anchor: [0.5,1]
+					})
 				})
-			})
-		}) 
-		
-		map.addLayer(marker); 
-		
-		let p = this.$route.params.id;
-        axios.get('rest/rentACars/' + p).then(response => {
-			this.rentACar = response.data;
-			//this.centerMapOnLocation();
+			}) 
+			
+			map.addLayer(marker); 
+			
 			axios.get('rest/users/currentUser').then(response => {
 				if(response.status == 200 && response.data.role == "MANAGER" && response.data.rentACarObjectId == this.rentACar.id){
 					this.rightManager = true;
@@ -215,20 +224,6 @@ Vue.component("rentACarObjectDisplay", {
 		});
     },
     methods: {
-		centerMapOnLocation() {
-	      const latitude = this.rentACar.location.latitude;
-	      const longitude = this.rentACar.location.longitude;
-	      const coordinates = ol.proj.fromLonLat([longitude, latitude]);
-	
-	      map.getView().setCenter(coordinates);
-	
-	      const marker = new ol.Feature({
-	        geometry: new ol.geom.Point(coordinates),
-	      });
-	
-	      marker.getSource().clear();
-	      marker.getSource().addFeature(marker);
-	    },
     	addNewVehicle : function() {
 			event.preventDefault();
 			
