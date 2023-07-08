@@ -220,7 +220,7 @@ Vue.component("allUsersProfilesDisplay", {
 				    }
 				}
 			} 
-			//couldnt check this one
+			
 			else if (this.sortOption === 'pointsAsc') {
 			    for (let i = 0; i < count - 1; i++) {
 				    for (let j = 0; j < count - i - 1; j++) {
@@ -285,7 +285,7 @@ Vue.component("allUsersProfilesDisplay", {
 			else if(this.filterOption === "goldUserType"){
 				for (let i = 0; i < count - 1; i++) {
 					if(temp[i].role == "BUYER"){
-						if(temp[i].buyerType == "GOLD"){
+						if(temp[i].buyerTypeId == "2"){
 							this.users.push(temp[i]);
 						}
 					}
@@ -294,7 +294,7 @@ Vue.component("allUsersProfilesDisplay", {
 			else if(this.filterOption === "silverUserType"){
 				for (let i = 0; i < count - 1; i++) {
 					if(temp[i].role == "BUYER"){
-						if(temp[i].buyerType == "SILVER"){
+						if(temp[i].buyerTypeId == "1"){
 							this.users.push(temp[i]);
 						}
 					}
@@ -303,7 +303,7 @@ Vue.component("allUsersProfilesDisplay", {
 			else if(this.filterOption === "bronzeUserType"){
 				for (let i = 0; i < count - 1; i++) {
 					if(temp[i].role == "BUYER"){
-						if(temp[i].buyerType == "BRONZE"){
+						if(temp[i].buyerTypeId == "0"){
 							this.users.push(temp[i]);
 						}
 					}

@@ -21,7 +21,7 @@ public class User {
 	private ArrayList<Order> allRentals; 
 	private String shoppingCart;
 	private int collectedPointsNumber;
-	private BuyersType buyerType;
+	private String buyerTypeId;
 	private boolean suspicious;
 	private boolean blocked;
 	
@@ -162,11 +162,11 @@ public class User {
 		this.collectedPointsNumber = collectedPointsNumber;
 	}
 	
-	public BuyersType getBuyerType() {
-		return buyerType;
+	public String getBuyerTypeId() {
+		return buyerTypeId;
 	}
 	
-	public void setBuyerType(BuyersType buyerType) {
-		this.buyerType = buyerType;
+	public void setBuyerTypeId(String buyerTypeId) {
+		this.buyerTypeId = buyerTypeId;
 	}
 }

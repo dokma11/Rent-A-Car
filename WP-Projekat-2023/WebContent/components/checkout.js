@@ -69,7 +69,6 @@ Vue.component("checkout", {
 			event.preventDefault();
 			
 			this.newOrder.status = 'PROCESSING';
-			this.newOrder.price = this.shoppingCart.price;
 			this.newOrder.userId = this.shoppingCart.userId
 			this.newOrder.rentalDateStart = this.shoppingCart.rentalDateStart;
 			this.newOrder.rentalDateEnd = this.shoppingCart.rentalDateEnd;
@@ -102,16 +101,50 @@ Vue.component("checkout", {
 			axios.get('rest/users/' + this.newOrder.userId).then(response => {
 				this.loggedInUser = response.data;
 				
-				if(this.loggedInUser.buyerType == ""){
-					
-				}
-				this.loggedInUser.collectedPointsNumber += this.shoppingCart.price * 133 / 1000;
-				
-				//uraditii ono za buyers type...
-				
-				axios.put('rest/users/' + this.loggedInUser.id, this.loggedInUser).then(response => [
-					axios.post('rest/orders/', this.newOrder).then(response => (router.push(`/usersProfile/${this.loggedInUser.id}`)))
-				]);
+				axios.get('rest/buyerTypes/getGold').then(response => {
+					   this.goldBuyerType = response.data;
+					   
+					   axios.get('rest/buyerTypes/getSilver').then(response => {
+						   this.silverBuyerType = response.data;
+					   
+					   	   if(this.loggedInUser.buyerTypeId == this.goldBuyerType.id){
+							   var discount = this.shoppingCart.price * 0.08;
+							   var discountedPrice = this.shoppingCart.price - discount;
+
+							   this.loggedInUser.collectedPointsNumber += discountedPrice * 133 / 1000;
+							   							   
+							   this.newOrder.price = discountedPrice;
+						   }
+						   else if(this.loggedInUser.buyerTypeId == this.silverBuyerType.id){
+							   var discount = this.shoppingCart.price * 0.05;
+							   var discountedPrice = this.shoppingCart.price - discount;
+
+							   this.loggedInUser.collectedPointsNumber += discountedPrice * 133 / 1000;
+							   							   
+							   this.newOrder.price = discountedPrice;
+						   }
+						   else{
+							   this.loggedInUser.collectedPointsNumber += this.shoppingCart.price * 133 / 1000;
+							   this.newOrder.price = this.shoppingCart.price;
+						   }
+						   
+						   
+						   
+						   if(this.loggedInUser.collectedPointsNumber >= this.goldBuyerType.collectedPointsRequired){
+							   this.loggedInUser.buyerTypeId = this.goldBuyerType.id;
+						   }
+						   else if(this.loggedInUser.collectedPointsNumber >= this.silverBuyerType.collectedPointsRequired){
+							   this.loggedInUser.buyerTypeId = this.silverBuyerType.id;
+						   }
+						   else{
+							   this.loggedInUser.buyerTypeId = "0";
+						   }
+						   
+						   axios.put('rest/users/' + this.loggedInUser.id, this.loggedInUser).then(response => {
+								axios.post('rest/orders/', this.newOrder).then(response => (router.push(`/usersProfile/${this.loggedInUser.id}`)));
+							});
+					   });
+				  });
 			});
     	},
     	

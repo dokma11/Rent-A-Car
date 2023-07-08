@@ -20,7 +20,9 @@ Vue.component("rentalReview", {
 			toEdit: [],
 			rentACarsForComment: [],
 			dateNotValid: false,
-			ordersForSus: []
+			ordersForSus: [],
+			silverBuyerType: [],
+			goldBuyerType: []
 	    }
 	},
 	    template: `
@@ -307,7 +309,27 @@ Vue.component("rentalReview", {
 			this.toEdit.cancellationDate = date.toISOString().split('T')[0];
 			
 			axios.put('rest/orders/' + this.toEdit.id, this.toEdit).then(response => {
-				  axios.put('rest/users/' + this.user.id, this.user).then(response => location.reload()); 
+				  axios.get('rest/buyerTypes/getGold').then(response => {
+					   this.goldBuyerType = response.data;
+					   
+					   axios.get('rest/buyerTypes/getSilver').then(response => {
+						   this.silverBuyerType = response.data;
+					   
+					   	   if(this.user.collectedPointsNumber >= this.goldBuyerType){
+							   this.user.buyerTypeId = this.goldBuyerType.id;
+						   }
+						   else if(this.user.collectedPointsNumber >= this.silverBuyerType){
+							   this.user.buyerTypeId = this.silverBuyerType.id;
+						   }
+						   else{
+							   this.user.buyerTypeId = "0";
+						   }
+						   
+						   axios.put('rest/users/' + this.user.id, this.user).then(response => {
+							  location.reload();
+						   });
+					   });
+				  }); 
 			});
 		},
 

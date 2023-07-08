@@ -85,6 +85,12 @@ public class UserDAO {
 	            toEdit.setRentACarObjectId(user.getRentACarObjectId());
 	        }
 	        
+	        toEdit.setCollectedPointsNumber(user.getCollectedPointsNumber());
+	        
+	        if (user.getBuyerTypeId() != null) {
+	        	toEdit.setBuyerTypeId(user.getBuyerTypeId());
+	        }
+	        
 	        CheckIfSuspect(user.getId());
 	        
 	        saveToJson(ctx);

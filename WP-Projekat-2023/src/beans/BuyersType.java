@@ -3,7 +3,7 @@ package beans;
 import beans.Enum.BuyersTypeName;
 
 public class BuyersType {
-	private int id;
+	private String id;
 	private BuyersTypeName name;
 	private double sale;
 	private int collectedPointsRequired;
@@ -19,11 +19,11 @@ public class BuyersType {
 		this.collectedPointsRequired = collectedPointsRequired;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -31,8 +31,16 @@ public class BuyersType {
 		return name;
 	}
 
-	public void setName(BuyersTypeName name) {
-		this.name = name;
+	public void setName(String name) {
+		if(name == "BRONZE") {
+			this.name = BuyersTypeName.BRONZE;
+		}
+		else if(name == "SILVER") {
+			this.name = BuyersTypeName.SILVER;
+		}
+		else if(name == "GOLD") {
+			this.name = BuyersTypeName.GOLD;
+		}
 	}
 
 	public double getSale() {
