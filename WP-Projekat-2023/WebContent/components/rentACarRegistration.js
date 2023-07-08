@@ -103,6 +103,10 @@ Vue.component("rentACarRegistration", {
 		  		
   		map.on('click', (event) => {
 			  var cor = ol.proj.toLonLat(event.coordinate);
+			  
+			  this.location.longitude = cor[0];
+			  this.location.latitude = cor[1];
+			  
 			  this.convertToMyCoordinates(cor);
 			  vec.getSource().clear();
 			  

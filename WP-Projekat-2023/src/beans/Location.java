@@ -5,16 +5,36 @@ public class Location {
 	private double geographicalLength;
 	private double geographicalWidth;
 	private String address;//keep an eye for format
+	private double longitude;
+	private double latitude;
 	
 	public Location() {
 		
 	}
 	
-	public Location(double geographicalLength, double geographicalWidth, String address) {
+	public Location(double geographicalLength, double geographicalWidth, String address, double longitude, double latitude) {
 		super();
 		this.geographicalLength = geographicalLength;
 		this.geographicalWidth = geographicalWidth;
 		this.address = address;
+		this.longitude = longitude;
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
 	}
 
 	public String getId() {

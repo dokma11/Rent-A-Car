@@ -184,17 +184,17 @@ Vue.component("rentACarsDisplay", {
 			for (const _ in temp) {
   				count++;
 			}
-  			let entered = false;
+  			let entered = true;
   			this.notValid = false;
   			
   			if (this.rentACarSearch.name || this.rentACarSearch.vehicleType || this.rentACarSearch.grade || this.locationSearch) {
 			  for (let i = 0; i < count; i++) {
 			    let item = temp[i];
 			    let nameMatch = !this.rentACarSearch.name || item.name.toLowerCase().includes(this.rentACarSearch.name.toLowerCase());
-			    let vehicleTypeMatch = false;
+			    let vehicleTypeMatch = true;
 			    
 			    if(!this.rentACarSearch.vehicleType){
-					vehicleTypeMatch = false;	
+					vehicleTypeMatch = true;	
 				}
 			    else{
 				    axios.get('rest/vehicles/getVehiclesForTypeSearch/' + this.rentACarSearch.vehicleType).then(response => {
@@ -221,6 +221,10 @@ Vue.component("rentACarsDisplay", {
 			    }
 			   }
 			  }
+			
+			if (!this.rentACarSearch.name && !this.rentACarSearch.vehicleType && !this.rentACarSearch.grade && !this.locationSearch){
+				entered = false;
+			}
 
 			if(!entered){
 				this.rentACar = temp;
