@@ -17,7 +17,7 @@ Vue.component("newOrder", {
 	    		<label>Unesite opseg datuma</label>
 	    		<table>
 	    			<tr>
-	    				<td>Pocetak opsega</td>
+	    				<td>Početak opsega</td>
 	    				<td>Kraj opsega</td>
 	    			</tr>
 	    			<tr>
@@ -25,7 +25,7 @@ Vue.component("newOrder", {
 	    				<td><input type="date" name="endDate" v-model="shoppingCart.rentalDateEnd" /></td>
 	    			</tr>
 	    		</table>
-	    		<button v-on:click="search">Pretrazi</button>
+	    		<button v-on:click="search">Pretraži</button>
 	    		<button v-on:click="reset">Resetuj</button>
 	    		<br></br>
 	    		<table border="1" class="tab">
@@ -33,12 +33,12 @@ Vue.component("newOrder", {
 	    				<th>Marka</th>
 	    				<th>Model</th>
 	    				<th>Cena</th>
-	    				<th>Tip menjaca</th>
+	    				<th>Tip menjača</th>
 	    				<th>Vrsta</th>
 	    				<th>Tip goriva</th>
-	    				<th>Potrosnja</th>
+	    				<th>Potrošnja</th>
 	    				<th>Broj vrata</th>
-	    				<th>Putnicki kapacitet</th>
+	    				<th>Putnički kapacitet</th>
 	    				<th>Opis</th>
 	    				<th>Slika</th>
 	    				<th></th>

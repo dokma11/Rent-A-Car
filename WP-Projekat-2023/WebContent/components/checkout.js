@@ -5,7 +5,8 @@ Vue.component("checkout", {
 			vehiclesInCart: [],
 			vehicle: [],
 			newOrder: {id: null, idsOfRentedVehicles: [], idsOfRentACarFacilities: [], rentalDateStart: null, rentalDateEnd: null, price: null, userId: null, status: null, cancellationDate: null},
-			loggedInUser: []
+			loggedInUser: [],
+			managers: []
 	    }
 	},
 	    template: `
@@ -18,7 +19,7 @@ Vue.component("checkout", {
 	    				<th>Model</th>
 	    				<th>Cena</th>
 	    				<th>Slika</th>
-	    				<th>Kolicina</th>
+	    				<th>Količina</th>
 	    				<th>Izbaci vozilo iz korpe</th>
 	    			</tr>
 	    			<tr v-for="(v, index) in vehiclesInCart">
@@ -73,6 +74,7 @@ Vue.component("checkout", {
 			this.newOrder.rentalDateStart = this.shoppingCart.rentalDateStart;
 			this.newOrder.rentalDateEnd = this.shoppingCart.rentalDateEnd;
 			this.newOrder.cancellationDate = "0001-01-01";
+			this.newOrder.refusalExplanation = "";
 			
 			let ccount = 0;
 			for (const _ in this.shoppingCart.idsOfVehiclesInCart) {
@@ -98,54 +100,71 @@ Vue.component("checkout", {
 				}
 			}
 			
-			axios.get('rest/users/' + this.newOrder.userId).then(response => {
-				this.loggedInUser = response.data;
+			////////////////////////////////////////////////////////////////////////////////////////////////////
+			this.newOrder.idsOfManagersToAccept = [];
+			let list = this.newOrder.idsOfRentACarFacilities.join(",");
+			axios.get('rest/users/getManagerIds/' + list).then(response =>{
+				this.managers = response.data;
+			
+				const myArray = this.managers.split(",");
 				
-				axios.get('rest/buyerTypes/getGold').then(response => {
-					   this.goldBuyerType = response.data;
-					   
-					   axios.get('rest/buyerTypes/getSilver').then(response => {
-						   this.silverBuyerType = response.data;
-					   
-					   	   if(this.loggedInUser.buyerTypeId == this.goldBuyerType.id){
-							   var discount = this.shoppingCart.price * 0.08;
-							   var discountedPrice = this.shoppingCart.price - discount;
-
-							   this.loggedInUser.collectedPointsNumber += discountedPrice * 133 / 1000;
-							   							   
-							   this.newOrder.price = discountedPrice;
-						   }
-						   else if(this.loggedInUser.buyerTypeId == this.silverBuyerType.id){
-							   var discount = this.shoppingCart.price * 0.05;
-							   var discountedPrice = this.shoppingCart.price - discount;
-
-							   this.loggedInUser.collectedPointsNumber += discountedPrice * 133 / 1000;
-							   							   
-							   this.newOrder.price = discountedPrice;
-						   }
-						   else{
-							   this.loggedInUser.collectedPointsNumber += this.shoppingCart.price * 133 / 1000;
-							   this.newOrder.price = this.shoppingCart.price;
-						   }
+				myArray.forEach(element => {
+				  	if(!this.newOrder.idsOfManagersToAccept.includes(element) && element != ""){
+						  this.newOrder.idsOfManagersToAccept.push(element);
+					  }
+				});
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////	
+				axios.get('rest/users/' + this.newOrder.userId).then(response => {
+					this.loggedInUser = response.data;
+				
+					axios.get('rest/buyerTypes/getGold').then(response => {
+						   this.goldBuyerType = response.data;
 						   
+						   axios.get('rest/buyerTypes/getSilver').then(response => {
+							   this.silverBuyerType = response.data;
 						   
-						   
-						   if(this.loggedInUser.collectedPointsNumber >= this.goldBuyerType.collectedPointsRequired){
-							   this.loggedInUser.buyerTypeId = this.goldBuyerType.id;
-						   }
-						   else if(this.loggedInUser.collectedPointsNumber >= this.silverBuyerType.collectedPointsRequired){
-							   this.loggedInUser.buyerTypeId = this.silverBuyerType.id;
-						   }
-						   else{
-							   this.loggedInUser.buyerTypeId = "0";
-						   }
-						   
-						   axios.put('rest/users/' + this.loggedInUser.id, this.loggedInUser).then(response => {
-								axios.post('rest/orders/', this.newOrder).then(response => (router.push(`/usersProfile/${this.loggedInUser.id}`)));
-							});
-					   });
-				  });
+						   	   if(this.loggedInUser.buyerTypeId == this.goldBuyerType.id){
+								   var discount = this.shoppingCart.price * 0.08;
+								   var discountedPrice = this.shoppingCart.price - discount;
+	
+								   this.loggedInUser.collectedPointsNumber += discountedPrice * 133 / 1000;
+								   							   
+								   this.newOrder.price = discountedPrice;
+							   }
+							   else if(this.loggedInUser.buyerTypeId == this.silverBuyerType.id){
+								   var discount = this.shoppingCart.price * 0.05;
+								   var discountedPrice = this.shoppingCart.price - discount;
+	
+								   this.loggedInUser.collectedPointsNumber += discountedPrice * 133 / 1000;
+								   							   
+								   this.newOrder.price = discountedPrice;
+							   }
+							   else{
+								   this.loggedInUser.collectedPointsNumber += this.shoppingCart.price * 133 / 1000;
+								   this.newOrder.price = this.shoppingCart.price;
+							   }
+							   
+							   
+							   
+							   if(this.loggedInUser.collectedPointsNumber >= this.goldBuyerType.collectedPointsRequired){
+								   this.loggedInUser.buyerTypeId = this.goldBuyerType.id;
+							   }
+							   else if(this.loggedInUser.collectedPointsNumber >= this.silverBuyerType.collectedPointsRequired){
+								   this.loggedInUser.buyerTypeId = this.silverBuyerType.id;
+							   }
+							   else{
+								   this.loggedInUser.buyerTypeId = "0";
+							   }
+							   
+							   axios.put('rest/users/' + this.loggedInUser.id, this.loggedInUser).then(response => {
+									axios.post('rest/orders/', this.newOrder).then(response => (router.push(`/usersProfile/${this.loggedInUser.id}`)));
+								});
+						   });
+					  });
+				});
 			});
+			
+			
     	},
     	
     	decrementItem : function(id) {

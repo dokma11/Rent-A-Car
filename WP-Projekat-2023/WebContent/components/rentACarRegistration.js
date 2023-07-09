@@ -34,10 +34,10 @@ Vue.component("rentACarRegistration", {
 	    		<label>Odaberite lokaciju: </label>
 	    		<div id="map" ref="map"></div>
 	    		<br></br>
-	    		<label>Slobodni menadzeri</label>
+	    		<label>Slobodni menadžeri</label>
 	    		<table border="1" class="tab">
 	    			<tr>
-		    			<th>Korisnicko ime</th>
+		    			<th>Korisničko ime</th>
 		    			<th>Ime</th>
 		    			<th>Prezime</th>
 		    			<th>Dodeli mu objekat</th>
@@ -48,12 +48,12 @@ Vue.component("rentACarRegistration", {
 	    				<td>{{m.surname}}</td>
 	    				<td>
 	    					<button v-if="notAdded" v-on:click="addObjectToManager(index)">Dodeli</button>
-	    					<p v-if="alreadyAdded">Vec ste dodali menadzera za objekat</p>
+	    					<p v-if="alreadyAdded">Već ste dodali menadžera za objekat</p>
 	    				</td>
 	    			</tr>
 	    		</table>
 	    		<br></br>
-	    		<button v-on:click="createManager">Kreiraj novog menadzera</button>
+	    		<button v-on:click="createManager">Kreiraj novog menadžera</button>
 	    		<br></br>
 	    		<button v-on:click="registerRentACar">Registruj objekat</button>
 	    		<br></br>
@@ -251,7 +251,7 @@ Vue.component("rentACarRegistration", {
             }
 			
 			if(valid){
-				this.rentACar.status = 'CLOSED';
+				this.rentACar.status = 'WORKING';
 				this.rentACar.grade = 0;
 								  
 				axios.post('rest/locations/', this.location).then(response => {

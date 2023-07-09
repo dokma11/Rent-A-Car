@@ -9,11 +9,15 @@ Vue.component("rentACarObjectDisplay", {
 			notRightManager: null,
 			rightAdmin: null,
 			toDelete: [],
-			toEdit: []
+			toEdit: [],
+			commentsForGrade: null,
+			temp: [],
+			link: 'http://localhost:8080/WebShopREST/#/rentACar' 
 	    }
 	},
 	    template: `
 	      <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
+	      <a style="position: absolute; top: 10px; right: 10px;" v-bind:href="link">Vratite se na početnu stranicu</a>
 		  <label><b>Prikaz Rent A Car objekta</b></label>
 		  <br></br>
 		  <table border="1" class="tab">
@@ -45,7 +49,7 @@ Vue.component("rentACarObjectDisplay", {
 		  <label v-if="notRightManager"><b>Prikaz komentara Rent A Car objekta</b></label>
 		  <table border="1" class="tab" v-if="notRightManager">
 		    <tr>
-		      <th>Korisnicko ime</th>
+		      <th>Korisničko ime</th>
 		      <th>Tekst</th>
 		      <th>Ocena</th>
 		    </tr>
@@ -62,7 +66,7 @@ Vue.component("rentACarObjectDisplay", {
 		  <label v-if="rightAdmin"><b>Prikaz komentara Rent A Car objekta</b></label>
 		  <table border="1" class="tab" v-if="rightAdmin">
 		    <tr>
-		      <th>Korisnicko ime</th>
+		      <th>Korisničko ime</th>
 		      <th>Tekst</th>
 		      <th>Ocena</th>
 		      <th>Status</th>
@@ -78,7 +82,7 @@ Vue.component("rentACarObjectDisplay", {
 		  <label v-if="rightManager"><b>Prikaz komentara koji jos nisu prihvaceni/odbijeni</b></label>
 		  <table border="1" class="tab" v-if="rightManager">
 		    <tr>
-		      <th>Korisnicko ime</th>
+		      <th>Korisničko ime</th>
 		      <th>Tekst</th>
 		      <th>Ocena</th>
 		      <th>Dodeli status</th>
@@ -97,10 +101,10 @@ Vue.component("rentACarObjectDisplay", {
 		      <th>Marka</th>
 		      <th>Model</th>
 		      <th>Cena</th>
-		      <th>Tip menjaca</th>
+		      <th>Tip menjača</th>
 		      <th>Tip vozila</th>
 		      <th>Tip goriva</th>
-		      <th>Potrosnja</th>
+		      <th>Potrošnja</th>
 		      <th>Broj vrata</th>
 		      <th>Broj putnika</th>
 		      <th>Opis</th>
@@ -153,7 +157,7 @@ Vue.component("rentACarObjectDisplay", {
 			  ],
 			  view: new ol.View({
 			    center: ol.proj.fromLonLat([this.rentACar.location.longitude, this.rentACar.location.latitude]),
-			    zoom: 17,
+			    zoom: 16,
 			  })
 			});
 			
@@ -244,7 +248,35 @@ Vue.component("rentACarObjectDisplay", {
 				this.toEdit = response.data;
 				this.toEdit.status = "ACCEPTED";
 				
-				axios.put('rest/comments/' + id, this.toEdit).then(response => location.reload()).catch(error => console.log(error));
+				axios.get('rest/comments/getForGrade/' + this.toEdit.rentACarId).then(response => {
+						this.commentsForGrade = response.data;
+						
+						const parts = this.commentsForGrade.split(",");
+						
+						parts.splice(0,1);
+						 
+						let sum=0;
+						let count=0;   
+						for (let part of parts) {
+							count ++;
+							sum += parseInt(part.trim(), 10); 
+						}
+						
+						sum += this.toEdit.grade;
+						count++;
+						
+						let average = sum/count;
+						const roundedGrade = average.toFixed(2);
+
+						axios.get('rest/rentACars/' + this.toEdit.rentACarId).then(response => {
+							this.temp = response.data;
+							
+							this.temp.grade = roundedGrade;
+							axios.put('rest/rentACars/' + this.temp.id, this.temp).then(response => {
+								axios.put('rest/comments/' + id, this.toEdit).then(response => location.reload()).catch(error => console.log(error));
+							});	
+						});
+				});
 			});
 		},
 		

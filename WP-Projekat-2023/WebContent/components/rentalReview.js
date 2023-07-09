@@ -22,7 +22,8 @@ Vue.component("rentalReview", {
 			dateNotValid: false,
 			ordersForSus: [],
 			silverBuyerType: [],
-			goldBuyerType: []
+			goldBuyerType: [],
+			commentsForGrade: []
 	    }
 	},
 	    template: `
@@ -36,45 +37,44 @@ Vue.component("rentalReview", {
 	    			<label style="margin-right: 5px;">Rent A Car objektu: </label>
 	    			<input type="text" name="rentACarObject" v-model="searchOrder.rentACarFacility" style="margin-right: 10px;" />
 	    			<label style="margin-right: 5px;">Ceni: </label>
-	    			<input type="text" name="startPrice" v-model="startPrice" placeholder="Pocetak opsega" style="margin-right: 5px;" />
+	    			<input type="text" name="startPrice" v-model="startPrice" placeholder="Početak opsega" style="margin-right: 5px;" />
 	    			<input type="text" name="endPrice" v-model="endPrice" placeholder="Kraj opsega" style="margin-right: 10px;" />
 	    			<label style="margin-right: 5px;">Datumu iznajmljivanja: </label>
-	    			<input type="date" name="startDate" v-model="startDate" placeholder="Pocetak opsega" style="margin-right: 5px;" />
+	    			<input type="date" name="startDate" v-model="startDate" placeholder="Početak opsega" style="margin-right: 5px;" />
 	    			<input type="date" name="endDate" v-model="endDate" placeholder="Kraj opsega" style="margin-right: 10px;" />
 	    			<button v-on:click="search" style="margin-right: 10px;">Pretrazi</button>	
 	    			<select v-model="sortOption" @change="sort">
 	    				<option value="">Sortiraj po: </option>
-						<option value="priceAscending">Cena rastuce</option>
-						<option value="priceDescending">Cena opadajuce</option>
+						<option value="priceAscending">Cena rastuće</option>
+						<option value="priceDescending">Cena opadajuće</option>
 						<option value="earliest">Najskorije</option>
 						<option value="oldest">Najstarije</option>
 						<option value="nameAscending">Naziv objekta A-Z</option>
 						<option value="nameDescending">Naziv objekta Z-A</option>
 					</select>
+					<button v-on:click="reset">Reset</button>	
 	    		</div>
 	    		<table border="1" class="tab">
 	    			<tr>
 	    				<th>Datum iznajmljivanja</th>
 	    				<th>Datum povratka</th>
-	    				<th>Objekat iz kog je iznajmljeno</th>
 	    				<th>Cena</th>
 	    				<th>Status</th>
-	    				<th>Otkazi porudzbinu</th>
+	    				<th>Otkaži porudžbinu</th>
 	    				<th>Ostavi komentar</th>
 	    			</tr>
 	    			<tr v-for="(o,index) in orders">
 	    				<td>{{o.rentalDateStart}}</td>
 	    				<td>{{o.rentalDateEnd}}</td>
-	    				<td>{{o.idsOfRentACarFacilites}}</td>
 	    				<td>{{o.price}}</td>
 	    				<td>{{o.status}}</td>
 	    				<td>
 	    					<button v-if="o.status == 'PROCESSING'" v-on:click="cancel(o.id)">Otkazi</button>
-	    					<p v-if="o.status != 'PROCESSING'">Porudzbina mora biti u procesu obrade da biste je mogli otkazati</p>
+	    					<p v-if="o.status != 'PROCESSING'">Porudžbina mora biti u procesu obrade da biste je mogli otkazati</p>
 	    				</td>
 	    				<td>
 	    					<button v-if="o.status == 'RETURNED'" v-on:click="leaveAComment(o.id)">Ostavi komentar</button>
-	    					<p v-if="o.status != 'RETURNED'">Porudzbina mora biti vracena da biste mogli ostaviti komentar</p>
+	    					<p v-if="o.status != 'RETURNED'">Porudžbina mora biti vracena da biste mogli ostaviti komentar</p>
 	    				</td>
 	    			</tr>
 	    		</table>
@@ -84,7 +84,7 @@ Vue.component("rentalReview", {
 				<label v-if="leaveACommentClicked"><b>Ostavljanje komentara</b></label>
 				<table v-if="leaveACommentClicked">
 					<tr>
-						<td>Izaberite objekat koji komentarisete:</td>
+						<td>Izaberite objekat koji komentarišete:</td>
 						<td>
 							<select v-model="commentsRentACar" name="commentComboBox">
 								<option v-for="rentACar in rentACarsForComment" :value="rentACar.id">{{rentACar.name}}</option>
@@ -113,29 +113,6 @@ Vue.component("rentalReview", {
 			this.user = response.data;
 			axios.get('rest/orders/user/' + p).then(response => {
 				this.orders = response.data;
-				axios.get('rest/rentACars/').then(response => {
-					this.allRentACars = response.data;
-					
-					let count = 0;
-					for (const _ in this.orders) {
-		  				count++;
-					}
-					
-					let rcount = 0;
-					for (const _ in this.allRentACars) {
-		  				rcount++;
-					}
-					
-					let i=0;
-					for(i; i < count; i++){
-						for(let j=0; j < rcount; j++){
-							if(this.orders[i].idsOfRentACarFacilities.includes(this.allRentACars[j].id)){
-								
-							}
-						}
-					}
-					
-				});		
 			});
 		});
     },
@@ -155,12 +132,32 @@ Vue.component("rentalReview", {
   			if (this.searchOrder.rentACarFacility || this.startDate|| this.endDate || this.startPrice || this.endPrice) {
 			  for (let i = 0; i < count; i++) {
 			    let item = temp[i];
-			    let rentACarFacilityMatch = !this.searchOrder.rentACarFacility || item.rentACarFacility.toLowerCase().includes(this.searchOrder.rentACarFacility.toLowerCase());
-			    let endPriceMatch = !this.endPrice || item.price < this.endPrice;
-			    let startPriceMatch = !this.startPrice || item.price > this.startPrice;
-				let endDateMatch = false;
-			    let startDateMatch = false;			  
+			    let rentACarFacilityMatch = true;
+			    let endPriceMatch = true;
+			    let startPriceMatch = true;
+				let endDateMatch = true;
+			    let startDateMatch = true;			  
 			    
+			    let rentACarEntered = false;
+			    
+			    if(this.searchOrder.rentACarFacility){
+					let rcount = 0;
+					for (const _ in this.allRentACars) {
+			  			rcount++;
+					}
+						
+					for(let j=0; j < rcount; j++){
+						if((this.allRentACars[j].name.toLowerCase().includes(this.searchOrder.rentACarFacility.toLowerCase())) &&
+						 item.idsOfRentACarFacilities.includes(this.allRentACars[j].id)){
+							rentACarEntered = true;
+						}
+					}	
+					
+					if(!rentACarEntered){
+						rentACarFacilityMatch = false;
+					}
+				}
+			    	    
 			    if(this.endDate && this.startDate){
 					const startDate = new Date(this.startDate);
 					const endDate = new Date(this.endDate);
@@ -169,6 +166,10 @@ Vue.component("rentalReview", {
 						if((item.rentalDateStart > this.startDate) && (item.rentalDateEnd < this.endDate)){
 							endDateMatch = true;
 							startDateMatch = true;
+						}
+						else{
+							endDateMatch = false;
+							startDateMatch = false;
 						}
 					}
 					else{
@@ -180,11 +181,51 @@ Vue.component("rentalReview", {
 					if(item.rentalDateEnd < this.endDate){
 						endDateMatch = true;
 					}
+					else{
+						endDateMatch = false;
+					}
 				}
 				else if(this.startDate){
 					endDateMatch = true;
 					if(item.rentalDateStart > this.startDate){
 						startDateMatch = true;
+					}
+					else{
+						startDateMatch = false;
+					}
+				}
+			    
+			    if(this.endPrice && this.startPrice){
+					if(this.startPrice < this.endPrice){
+						if((item.price > this.startPrice) && (item.price < this.endPrice)){
+							endPriceMatch = true;
+							startPriceMatch = true;
+						}
+						else{
+							endPriceMatch = false;
+							startPriceMatch = false;
+						}
+					}
+					else{
+						this.dateNotValid = true;
+					}
+				}
+			    else if(this.endPrice){
+					startPriceMatch = true;
+					if(item.price < this.endPrice){
+						endPriceMatch = true;
+					}
+					else{
+						endPriceMatch = false;
+					}
+				}
+				else if(this.startPrice){
+					endPriceMatch = true;
+					if(item.price > this.startPrice){
+						startPriceMatch = true;
+					}
+					else{
+						startPriceMatch = false;
 					}
 				}
 			    
@@ -288,48 +329,39 @@ Vue.component("rentalReview", {
 		cancel: function(id){
 			event.preventDefault();
 			
-			let count=0;
-			for (const _ in this.orders) {
-  				count++;
-			}
+			axios.get('rest/orders/' + id).then(response => {
+				this.toEdit = response.data;
+				
+				this.user.collectedPointsNumber -= this.toEdit.price * 4 * 133 / 1000;
 			
-			let i=0;
-			for(i; i < count; i++){
-				if(this.orders[i].id == id){
-					this.toEdit = this.orders[i];
-					break;
-				}
-			}
-			
-			this.user.collectedPointsNumber -= this.toEdit.price * 4 * 133 / 1000;
-			
-			const date = new Date();
-			
-			this.toEdit.status = 'CANCELED';
-			this.toEdit.cancellationDate = date.toISOString().split('T')[0];
-			
-			axios.put('rest/orders/' + this.toEdit.id, this.toEdit).then(response => {
-				  axios.get('rest/buyerTypes/getGold').then(response => {
-					   this.goldBuyerType = response.data;
-					   
-					   axios.get('rest/buyerTypes/getSilver').then(response => {
-						   this.silverBuyerType = response.data;
-					   
-					   	   if(this.user.collectedPointsNumber >= this.goldBuyerType){
-							   this.user.buyerTypeId = this.goldBuyerType.id;
-						   }
-						   else if(this.user.collectedPointsNumber >= this.silverBuyerType){
-							   this.user.buyerTypeId = this.silverBuyerType.id;
-						   }
-						   else{
-							   this.user.buyerTypeId = "0";
-						   }
+				const date = new Date();
+				
+				this.toEdit.status = 'CANCELED';
+				this.toEdit.cancellationDate = date.toISOString().split('T')[0];
+				
+				axios.put('rest/orders/' + this.toEdit.id, this.toEdit).then(response => {
+					  axios.get('rest/buyerTypes/getGold').then(response => {
+						   this.goldBuyerType = response.data;
 						   
-						   axios.put('rest/users/' + this.user.id, this.user).then(response => {
-							  location.reload();
+						   axios.get('rest/buyerTypes/getSilver').then(response => {
+							   this.silverBuyerType = response.data;
+						   
+						   	   if(this.user.collectedPointsNumber >= this.goldBuyerType){
+								   this.user.buyerTypeId = this.goldBuyerType.id;
+							   }
+							   else if(this.user.collectedPointsNumber >= this.silverBuyerType){
+								   this.user.buyerTypeId = this.silverBuyerType.id;
+							   }
+							   else{
+								   this.user.buyerTypeId = "0";
+							   }
+							   
+							   axios.put('rest/users/' + this.user.id, this.user).then(response => {
+								  location.reload();
+							   });
 						   });
-					   });
-				  }); 
+					  }); 
+				});
 			});
 		},
 
@@ -359,7 +391,13 @@ Vue.component("rentalReview", {
 				document.getElementsByName("commentGrade")[0].style.border = "2px solid red";
 			}
 			else{
-				document.getElementsByName("commentGrade")[0].style.border = "2px solid black";
+				if((this.comment.grade < 1) || (this.comment.grade > 5)){
+					this.commentNotValid = true;
+					document.getElementsByName("commentGrade")[0].style.border = "2px solid red";
+				}
+				else{
+					document.getElementsByName("commentGrade")[0].style.border = "2px solid black";
+				}
 			}
 			
 			if(!this.commentNotValid){
@@ -373,6 +411,12 @@ Vue.component("rentalReview", {
 					axios.post('rest/comments/', this.comment).then(response => location.reload());
 				});
 			}
+		},
+		
+		reset : function(){
+			event.preventDefault();
+			
+			location.reload();
 		}
     }
 });

@@ -47,6 +47,18 @@ public class CommentDAO {
 		return ret;
 	}
 	
+	public String getForGrade(String id) {
+		String ret = "";
+		
+		for(Comment comment : comments.values()) {
+			if(comment.getRentACarId().equals(id) && (comment.getStatus().toString()).equals("ACCEPTED")) {
+				ret = ret.concat("," + comment.getGrade());
+			}
+		}
+		
+		return ret;
+	}
+	
 	public void add(Comment comment) {
 				
 		Integer maximum = -1;
@@ -110,7 +122,12 @@ public class CommentDAO {
         try (FileReader reader = new FileReader(contextPath + "/comments.txt")) {
             Type type = new TypeToken<HashMap<String, Comment>>(){}.getType();
             this.comments = gson.fromJson(reader, type);
+            
+            if (this.comments == null) {
+	            this.comments = new HashMap<>();
+	        }
         } catch (IOException e) {
+        	this.comments = new HashMap<>();
             e.printStackTrace();
         } 
 	}

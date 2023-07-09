@@ -2,7 +2,9 @@ Vue.component("usersProfileEditDisplay", {
 	data: function () {
 	    return {
 			user: {id: null, username: null, password: null, name: null, surname: null, gender: null, dateOfBirth: null, role:null},
-			notValid: null
+			notValid: null,
+			allUsers: [],
+			usernameExists: false
 		}
 	},
 	    template: `
@@ -12,11 +14,11 @@ Vue.component("usersProfileEditDisplay", {
 	    		<br></br>
 	    		<table>
 	    			<tr>
-	    				<td><label>Korisnicko ime: </label></td>
+	    				<td><label>Korisničko ime: </label></td>
 	    				<td><input type = "text" name="username" v-model="user.username" /></td>
 	    			</tr>
 	    			<tr>
-	    				<td><label>Sifra: </label></td>
+	    				<td><label>Šifra: </label></td>
 	    				<td><input type = "password" name="password" v-model="user.password" /></td>
 	    			</tr>
 	    			<tr>
@@ -32,7 +34,7 @@ Vue.component("usersProfileEditDisplay", {
 	    				<td><input type = "text" name="gender" v-model="user.gender" /></td>
 	    			</tr>
 	    			<tr>
-	    				<td><label>Datum rodjenja: </label></td>
+	    				<td><label>Datum rođenja: </label></td>
 	    				<td><input type = "date" name="dateOfBirth" v-model="user.dateOfBirth" /></td>
 	    			</tr>
 	    			<tr>
@@ -41,22 +43,24 @@ Vue.component("usersProfileEditDisplay", {
 	    			</tr>
 	    		</table>
 	    		</form>
-	    		<p v-if="notValid">Molimo Vas da sve Vase podatke unesete u odgovarajucem obliku</p>
+	    		<p v-if="notValid">Molimo Vas da sve Vaše podatke unesete u odgovarajucem obliku</p>
+	    		<p v-if="usernameExists">Dato korisnicko ime vec postoji molimo Vas unesite novo</p>
 	    	</div>
 	    `,
     mounted () {
         let p = this.$route.params.id
-        axios.get('rest/users/' + p).then(response => (this.user = response.data))
+        axios.get('rest/users/' + p).then(response => {
+			this.user = response.data
+			axios.get('rest/users/').then(response => this.allUsers = response.data);
+		});
     },
     methods: {
     	edit : function(id) {
 			let p = this.$route.params.id;
 			event.preventDefault();
-			let valid = true;
 			this.notValid = false;
 			
 			if(!this.user.username){
-				valid = false;
 				this.notValid = true;
 				document.getElementsByName("username")[0].style.border = "2px solid red";
 			}
@@ -65,7 +69,6 @@ Vue.component("usersProfileEditDisplay", {
 			}
 			
 			if(!this.user.password){
-				valid = false;
 				this.notValid = true;
 				document.getElementsByName("password")[0].style.border = "2px solid red";
 			}
@@ -74,7 +77,6 @@ Vue.component("usersProfileEditDisplay", {
 			}
 			
 			if(!this.user.name){
-				valid = false;
 				this.notValid = true;
 				document.getElementsByName("name")[0].style.border = "2px solid red";
 			}
@@ -83,7 +85,6 @@ Vue.component("usersProfileEditDisplay", {
 			}
 			
 			if(!this.user.surname){
-				valid = false;
 				this.notValid = true;
 				document.getElementsByName("surname")[0].style.border = "2px solid red";
 			}
@@ -92,7 +93,6 @@ Vue.component("usersProfileEditDisplay", {
 			}
 			
 			if(!this.user.gender){
-				valid = false;
 				this.notValid = true;
 				document.getElementsByName("gender")[0].style.border = "2px solid red";
 			}
@@ -101,7 +101,6 @@ Vue.component("usersProfileEditDisplay", {
 			}
 			
 			if(!this.user.dateOfBirth){
-				valid = false;
 				this.notValid = true;
 				document.getElementsByName("dateOfBirth")[0].style.border = "2px solid red";
 			}
@@ -109,7 +108,26 @@ Vue.component("usersProfileEditDisplay", {
 				document.getElementsByName("dateOfBirth")[0].style.border = "2px solid black";
 			}
 			
-			if(valid){
+			let count = 0;
+			for (const _ in this.allUsers) {
+  				count++;
+			}
+			
+			for(let i=0; i < count; i++){
+				if(this.allUsers[i].username == this.user.username){
+					this.notValid = true;
+					this.usernameExists = true;
+					document.getElementsByName("username")[0].style.border = "2px solid red";
+					break;
+				}
+				else{
+					this.notValid = false;
+					this.usernameExists = false;
+					document.getElementsByName("username")[0].style.border = "2px solid black";
+				}
+			}
+			
+			if(!this.notValid){
 				axios.put('rest/users/' + p, this.user).then(response => router.push(`/usersProfile/` + p)).catch(error => console.log(error));
 			}
     	}

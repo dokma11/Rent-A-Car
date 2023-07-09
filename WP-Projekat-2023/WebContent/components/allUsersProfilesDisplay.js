@@ -13,16 +13,16 @@ Vue.component("allUsersProfilesDisplay", {
 	    	<div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
 	    		<label><b>Prikaz svih registrovanih korisnika</b></label>
 	    		<br></br>
-	    		<label style="margin-right: 1225px;">Pretrazi korisnike po: </label>
+	    		<label style="margin-right: 1225px;">Pretražite korisnike po: </label>
 	    		<div style="display: flex; align-items: center;">
 		    		<br></br>
-		    		<label style="margin-right: 10px;">Korisnickom imenu: </label>
+		    		<label style="margin-right: 10px;">Korisničkom imenu: </label>
 		    		<input type="text" name="username" v-model="userSearch.username" style="margin-right: 10px;" />
 		    		<label style="margin-right: 10px;">Imenu: </label>
 		    		<input type="text" name="name" v-model="userSearch.name" style="margin-right: 10px;" />
 		    		<label style="margin-right: 10px;">Prezimenu: </label>
 		    		<input type="text" name="surname" v-model="userSearch.surname" style="margin-right: 10px;" />
-		    		<button v-on:click="search" style="margin-right: 10px;">Pretrazi</button>
+		    		<button v-on:click="search" style="margin-right: 10px;">Pretraži</button>
 		    		<br></br>		    		
 		    		<select v-model="sortOption" @change="sort" style="margin-right: 10px;">
 					  <option value="">Sortiraj po:</option>
@@ -30,14 +30,14 @@ Vue.component("allUsersProfilesDisplay", {
 					  <option value="nameDesc">Imenu Z-A</option>
 					  <option value="surnameAsc">Prezimenu A-Z</option>
 					  <option value="surnameDesc">Prezimenu Z-A</option>
-					  <option value="usernameAsc">Korisnickom imenu A-Z</option>
-					  <option value="usernameDesc">Korisnickom imenu Z-A</option>
-					  <option value="pointsAsc">Broju sakupljenih bodova rastuce</option>
-					  <option value="pointsDesc">Broju sakupljenih bodova opadajuce</option>
+					  <option value="usernameAsc">Korisničkom imenu A-Z</option>
+					  <option value="usernameDesc">Korisničkom imenu Z-A</option>
+					  <option value="pointsAsc">Broju sakupljenih bodova: rastuće</option>
+					  <option value="pointsDesc">Broju sakupljenih bodova: opadajuće</option>
 					</select>
 					<select v-model="filterOption" @change="filter" style="margin-right: 10px;">
 					  <option value="">Filtriraj po:</option>
-					  <option value="managerRole">Ulozi: Menadzer</option>
+					  <option value="managerRole">Ulozi: Menadžer</option>
 					  <option value="administratorRole">Ulozi: Administrator</option>
 					  <option value="buyerRole">Ulozi: Kupac</option>
 					  <option value="goldUserType">Tipu kupca: Zlatni</option>
@@ -90,7 +90,10 @@ Vue.component("allUsersProfilesDisplay", {
 	    				<td>{{su.surname}}</td>
 	    				<td>{{su.gender}}</td>
 	    				<td>{{su.dateOfBirth}}</td>
-	    				<td><button v-on:click="block(su.id)">Blokiraj</button></td>
+	    				<td>
+	    					<button v-if="su.blocked == false" v-on:click="block(su.id)">Blokiraj</button>
+	    					<p v-if="su.blocked == true">Korisnik je vec blokiran</p>
+	    				</td>
 	    			</tr>
 	    		</table>
 	    	</div>

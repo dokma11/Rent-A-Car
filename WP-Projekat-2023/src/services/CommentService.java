@@ -61,6 +61,15 @@ public class CommentService {
 		return dao.getByRentACar(id);
 	}
 	
+	@GET
+	@Path("/getForGrade/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getForGrade(@PathParam("id") String id) {
+		CommentDAO dao = (CommentDAO) ctx.getAttribute("commentDAO");
+		return dao.getForGrade(id);
+	}
+	
 	@POST
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)

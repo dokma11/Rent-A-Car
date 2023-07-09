@@ -32,6 +32,9 @@ public class OrderDAO {
 	}
 	
 	public HashMap<String, Order> getAll(){
+		
+		System.out.println("USAO U DAO");
+		
 		return orders;
 	}
 	
@@ -73,6 +76,20 @@ public class OrderDAO {
 		for(Order order : orders.values()) {
 			if(order.getIdsOfRentACarFacilities().contains(id)) {
 				ret.put(order.getId(), order);
+			}
+		}
+		
+		return ret;
+	}
+	
+	public String getManagerIds(String list){
+		String ret = "";
+		
+		for(Order order : orders.values()) {
+			if(order.getId().equals(list)) {
+				for(String r : order.getIdsOfManagersToAccept()) {
+					ret = ret.concat("," + r);
+				}
 			}
 		}
 		
@@ -146,6 +163,14 @@ public class OrderDAO {
 	        
 	        if (order.getIdsOfRentACarFacilities() != null) {
 	            toEdit.setIdsOfRentACarFacilities(order.getIdsOfRentACarFacilities());
+	        }
+	        
+	        if (order.getIdsOfManagersToAccept() != null) {
+	            toEdit.setIdsOfManagersToAccept(order.getIdsOfManagersToAccept());
+	        }
+	        
+	        if(order.getRefusalExplanation() != null) {
+	        	toEdit.setRefusalExplanation(order.getRefusalExplanation());
 	        }
 	        
 	        saveToJson(ctx);

@@ -6,18 +6,58 @@ Vue.component("homePage", {
 			users: [],
 			notValid: null,
 			sortOption: "",
+			filterOption: "",
 			link: 'http://localhost:8080/WebShopREST/#/login' 
 	    }
 	},
 	    template: `
 	    	<div style="display: flex; flex-direction: column; align-items: center;"> 
+	    	<label><b>Dobrodošli na početnu stranicu</b></label>
 	    	 <a style="position: absolute; top: 10px; right: 10px;" v-bind:href="link">Prijavite se na svoj nalog</a>
-	    		<table border="1" class="tab">
+	    	 	<label>Pretražite po:</label>
+		    	<div style="display: flex; align-items: center;">
+				    <label style="margin-right: 10px;">Nazivu:</label>
+				    <input type="text" name="searchName" v-model="rentACarSearch.name" style="margin-right: 10px;" />
+				    <label style="margin-right: 10px;">Tipu vozila:</label>
+				    <select v-model="rentACarSearch.vehicleType" style="margin-right: 10px;">
+				      <option>CAR</option>
+				      <option>VAN</option>
+				      <option>MOTORHOME</option>
+				      <option>RV</option>
+				      <option>MINIBUS</option>
+				    </select>
+				    <label style="margin-right: 10px;">Lokaciji:</label>
+				    <div id="map"></div>
+				    <label style="margin-right: 10px;">Prosečnoj oceni:</label>
+				    <input type="text" name="searchAverageGrade" v-model="rentACarSearch.grade" style="width: 50px; margin-right: 10px;" />
+				    <button v-on:click="search" style="margin-right: 40px;">Pretraži</button>
+				    <select v-model="sortOption" @change="sortRentACar" style="margin-right: 10px;">
+				      <option value="">Sortriraj po:</option>
+				      <option value="nameAscending">Nazivu: A-Z</option>
+				      <option value="nameDescending">Nazivu: Z-A</option>
+				      <option value="locationAscending">Lokaciji: A-Z</option>
+				      <option value="locationDescending">Lokaciji: Z-A</option>
+				      <option value="gradeAscending">Oceni: rastuće</option>
+				      <option value="gradeDescending">Oceni: opadajuće</option>
+				    </select>
+				    <select v-model="filterOption" @change="filterRentACar" style="margin-right: 10px;">
+				      <option value="">Filtriraj po:</option>
+				      <option value="MANUAL">Vrsti menjača: manuelni</option>
+				      <option value="AUTOMATIC">Vrsti menjača: automatik</option>
+				      <option value="DIESEL">Tipu goriva: dizel</option>
+				      <option value="GASOLINE">Tipu goriva: benzin</option>
+				      <option value="HYBRID">Tipu goriva: hibrid</option>
+				      <option value="ELECTRIC">Tipu goriva: električni</option>
+				      <option value="WORKING">Samo otvoreni objekti</option>
+				    </select>
+				    <button v-on:click="resetClick">Resetuj prikaz</button>
+				</div>
+	    	 	<table border="1" class="tab">
 	    			<tr>
-	    				<th>Name</th>
-	    				<th>Location</th>
+	    				<th>Naziv</th>
+	    				<th>Lokacija</th>
 	    				<th>Logo</th>
-	    				<th>Grade</th>
+	    				<th>Prosečna ocena</th>
 	    				<th>Prikaz detalja</th>
 	    			</tr>
 	    			<tr v-for="(r,index) in rentACar">
@@ -31,46 +71,95 @@ Vue.component("homePage", {
 	    			</tr>
 	    		</table>
 				<br></br>
-	    		<label>Pretrazi po: </label>
-	    		<table>
-	    			<tr>
-	    				<td><label>Nazivu: </label></td>
-	    				<td><input type="text" name="searchName" v-model="rentACarSearch.name" /></td>
-	    			</tr>
-	    			<tr>
-	    				<td><label>Tipu : </label></td>
-	    				<td><input type="text" name="searchVehicleType" v-model="rentACarSearch.vehicleType" /></td>
-	    			</tr>
-	    			<tr>
-	    				<td><label>Lokaciji: </label></td>
-	    				<td><input type="text" name="searchLocation" v-model="rentACarSearch.location" /></td>
-	    			</tr>
-	    			<tr>
-	    				<td><label>Prosecnoj oceni: </label></td>
-	    				<td><input type="text" name="searchAverageGrade" v-model="rentACarSearch.grade" /></td>
-	    			</tr>
-	    		</table>
-	    		<button v-on:click="search">Pretrazi</button>
-	    		<label>Sortiraj po: </label>
-	    		<select v-model="sortOption" @change="sortRentACar">
-	    			<option value="nameAscending">Nazivu A-Z</option>
-	    			<option value="nameDescending">Nazivu Z-A</option>
-	    			<option value="locationAscending">Lokaciji A-Z</option>
-	    			<option value="locationDescending">Lokaciji Z-A</option>
-	    			<option value="gradeAscending">Oceni rastuce</option>
-	    			<option value="gradeDescending">Oceni opadajuce</option>
-	    		</select>
-	    		<br></br>
 	    		<p v-if="notValid">Molimo Vas popunite bar neko polje za pretragu!</p>
-	    		<br></br>
 	    	</div>
 	    `,
 	mounted () {
+        const map = new ol.Map({
+		  target: 'map',
+		  layers: [
+		    new ol.layer.Tile({
+		      source: new ol.source.OSM(),
+		    })
+		  ],
+		  view: new ol.View({
+		    center: ol.proj.fromLonLat([0, 0]),
+		    zoom: 2,
+		  })
+		});
+		
+		const marker = new ol.layer.Vector({
+			source: new ol.source.Vector({
+				features: [
+					new ol.Feature({
+						geometry: new ol.geom.Point(
+							ol.proj.fromLonLat([0, 0])
+						)
+					})
+				]
+			}),
+			style: new ol.style.Style({
+				image: new ol.style.Icon({
+					src: 'https://docs.maptiler.com/openlayers/default-marker/marker-icon.png',
+					anchor: [0.5,1]
+				})
+			})
+		})
+		
+		map.addLayer(marker);
+		
+		this.mapObject = map;
+  		this.markerObject = marker;
+  		
+  		const vec = new ol.layer.Vector({
+		  source: new ol.source.Vector(),
+		});
+		  		
+  		map.on('click', (event) => {
+			  var cor = ol.proj.toLonLat(event.coordinate);
+			  this.convertToMyCoordinates(cor);
+			  vec.getSource().clear();
+			  
+			  var mapMarker = new ol.Feature({
+				  geometry: new ol.geom.Point(event.coordinate),
+			  });
+			  
+			  vec.getSource().addFeature(mapMarker);
+			  
+			  this.moveMarker(event.coordinate);
+		});
+        
         axios.get('rest/rentACars/').then(response => {
 			this.rentACar = response.data
 		});
     },   
     methods: {
+		convertToMyCoordinates : function(lonLatCoordinates){
+			fetch(
+				"http://nominatim.openstreetmap.org/reverse?format=json&lon=" + lonLatCoordinates[0] + "&lat=" + lonLatCoordinates[1]
+	      		).then(response => { return response.json(); }).then(json => 
+			  	{
+				  let adresa = json.address;
+				  let mesto = adresa.village || adresa.town || adresa.city;
+				  let postanskiBroj = adresa.postcode;
+				  let broj = adresa.house_number;
+				  let ulica = adresa.road;
+				  
+				  this.locationSearch = mesto
+			  	})
+		},
+		
+		moveMarker: function (lonLatCoordinates) {
+		    const markerSource = this.markerObject.getSource();
+		    markerSource.clear();
+		
+		    const mapMarker = new ol.Feature({
+		      geometry: new ol.geom.Point(lonLatCoordinates)
+		    });
+		
+		    markerSource.addFeature(mapMarker);
+		},
+		
     	registration : function() {
 			router.push(`/usersRegistration`);
     	},
@@ -81,6 +170,7 @@ Vue.component("homePage", {
 		
 		search: function() {
 			event.preventDefault();
+			
 			let temp = [];
 			temp = this.rentACar;
 			this.rentACar = [];	
@@ -88,24 +178,48 @@ Vue.component("homePage", {
 			for (const _ in temp) {
   				count++;
 			}
-  			let entered = false;
+  			let entered = true;
   			this.notValid = false;
   			
-  			if (this.rentACarSearch.name || this.rentACarSearch.vehicleType || this.rentACarSearch.grade || this.rentACarSearch.location) {
+  			if (this.rentACarSearch.name || this.rentACarSearch.vehicleType || this.rentACarSearch.grade || this.locationSearch) {
 			  for (let i = 0; i < count; i++) {
 			    let item = temp[i];
 			    let nameMatch = !this.rentACarSearch.name || item.name.toLowerCase().includes(this.rentACarSearch.name.toLowerCase());
-			    let vehicleTypeMatch = !this.rentACarSearch.vehicleType || item.vehicleType.toLowerCase().includes(this.rentACarSearch.vehicleType.toLowerCase());
+			    let vehicleTypeMatch = true;
+			    
+			    if(!this.rentACarSearch.vehicleType){
+					vehicleTypeMatch = true;	
+				}
+			    else{
+				    axios.get('rest/vehicles/getVehiclesForTypeSearch/' + this.rentACarSearch.vehicleType).then(response => {
+							this.vehiclesForSearch = response.data;
+							
+							const parts = this.vehiclesForSearch.split(",");
+					
+							for (let part of parts) {
+							  for(let i=0; i < count; i++){
+								  if(temp[i].id == part){
+									  vehicleTypeMatch = true;
+								  }
+							  }
+							}
+					 });
+			    }
+			    
 			    let gradeMatch = !this.rentACarSearch.grade || item.grade == this.rentACarSearch.grade;
-			    let locationMatch = !this.rentACarSearch.location || item.location.toLowerCase().includes(this.rentACarSearch.location.toLowerCase());
+			    let locationMatch = !this.locationSearch || item.location.address.toLowerCase().includes(this.locationSearch.toLowerCase());
 			  
 			    if (nameMatch && vehicleTypeMatch && gradeMatch && locationMatch) {
 			      this.rentACar.push(item);
 			      entered = true;
 			    }
+			   }
 			  }
-			}
 			
+			if (!this.rentACarSearch.name && !this.rentACarSearch.vehicleType && !this.rentACarSearch.grade && !this.locationSearch){
+				entered = false;
+			}
+
 			if(!entered){
 				this.rentACar = temp;
 				this.notValid = true;
@@ -119,6 +233,7 @@ Vue.component("homePage", {
 		
 		sortRentACar: function() {
 			event.preventDefault();
+			
 			let count = 0;
 			for (const _ in this.rentACar) {
   				count++;
@@ -170,11 +285,11 @@ Vue.component("homePage", {
 				    }
 				}
       		}
-      		//probably should change for location later
+      		
       		else if (this.sortOption === "locationAscending") {
         		for (let i = 0; i < count - 1; i++) {
 				    for (let j = 0; j < count - i - 1; j++) {
-				      if (this.rentACar[j].location < this.rentACar[j + 1].location ) {
+				      if (this.rentACar[j].location.address > this.rentACar[j + 1].location.address ) {
 				        
 				        [this.rentACar[j], this.rentACar[j + 1]] = [this.rentACar[j + 1], this.rentACar[j]];
 				      
@@ -186,7 +301,7 @@ Vue.component("homePage", {
       		else if(this.sortOption === "locationDescending") {
         		for (let i = 0; i < count - 1; i++) {
 				    for (let j = 0; j < count - i - 1; j++) {
-				      if (this.rentACar[j].location > this.rentACar[j + 1].location ) {
+				      if (this.rentACar[j].location.address < this.rentACar[j + 1].location.address ) {
 				        
 				        [this.rentACar[j], this.rentACar[j + 1]] = [this.rentACar[j + 1], this.rentACar[j]];
 				      
@@ -194,6 +309,122 @@ Vue.component("homePage", {
 				    }
 				}
       		}
-    	}
+    	},
+    	
+    	filterRentACar: function(){
+			event.preventDefault();
+			
+			let count = 0;
+			for (const _ in this.rentACar) {
+  				count++;
+			}
+			let temp = [];
+			temp = this.rentACar;
+			this.rentACar = [];	
+			
+			if(this.filterOption === "MANUAL"){
+				axios.get('rest/vehicles/getVehiclesForGearBoxTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
+					
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
+					}
+				});	
+			}
+			else if(this.filterOption === "AUTOMATIC"){
+				axios.get('rest/vehicles/getVehiclesForGearBoxTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
+					
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
+					}
+				});
+			}
+			else if(this.filterOption === "DIESEL"){
+				axios.get('rest/vehicles/getVehiclesForFuelTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
+					
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
+					}
+				});
+			}
+			else if(this.filterOption === "GASOLINE"){
+				axios.get('rest/vehicles/getVehiclesForFuelTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
+					
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
+					}
+				});
+			}
+			else if(this.filterOption === "HYBRID"){
+				axios.get('rest/vehicles/getVehiclesForFuelTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
+					
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
+					}
+				});
+			}
+			else if(this.filterOption === "ELECTRIC"){
+				axios.get('rest/vehicles/getVehiclesForFuelTypeSearch/' + this.filterOption).then(response => {
+					this.filterReturnString = response.data;
+							
+					const parts = this.filterReturnString.split(",");
+					
+					for (let part of parts) {
+					  for(let i=0; i < count; i++){
+						  if(temp[i].id == part){
+							  this.rentACar.push(temp[i]);
+						  }
+					  }
+					}
+				});
+			}
+			else if(this.filterOption === "WORKING"){
+				for (let i = 0; i < count - 1; i++) {
+				    if(temp[i].status == "WORKING"){
+						this.rentACar.push(temp[i]);
+					}
+				}
+			}
+		},
+		
+		resetClick: function(){
+			event.preventDefault();
+			
+			location.reload();
+		},
     }
 });

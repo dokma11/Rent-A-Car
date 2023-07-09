@@ -11,12 +11,12 @@ Vue.component("managerRegistration", {
     },
     template: `
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
-			<label><b>Registacija menadzera</b></label>
+			<label><b>Registacija menadžera</b></label>
 			<br></br>
 	    	<form>
 	    		<table>
 	    			<tr>
-	    				<td><label>Korisnicko ime: </label></td>
+	    				<td><label>Korisničko ime: </label></td>
 	    				<td><input type = "text" name="username" v-model="user.username" /></td>
 	    			</tr>
 	    			<tr>
@@ -40,7 +40,7 @@ Vue.component("managerRegistration", {
 	    				<td><input type = "text" name="gender" v-model="user.gender" /></td>
 	    			</tr>
 	    			<tr>
-	    				<td><label>Datum rodjenja: </label></td>
+	    				<td><label>Datum rođenja: </label></td>
 	    				<td><input type = "date" name="dateOfBirth" v-model="user.dateOfBirth" /></td>
 	    			</tr>
 	    			<tr>
@@ -49,8 +49,8 @@ Vue.component("managerRegistration", {
 	    			</tr>
 	    		</table>
 	    		</form>
-	    		<p v-if="notValid">Molimo Vas da sve Vase podatke unesete u odgovarajucem obliku</p>
-	    		<p v-if="usernameExists">Dato korisnicko ime vec postoji molimo Vas unesite novo</p>
+	    		<p v-if="notValid">Molimo Vas da sve Vaše podatke unesete u odgovarajućem obliku</p>
+	    		<p v-if="usernameExists">Dato korisničko ime već postoji molimo Vas unesite novo</p>
 	    	</div>
     `,
      mounted () {

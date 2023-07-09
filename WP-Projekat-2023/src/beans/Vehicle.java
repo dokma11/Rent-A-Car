@@ -11,7 +11,6 @@ public class Vehicle {
 	private String model;
 	private int price;
 	private GearBoxType gearBoxType;
-	//private RentACar owner;
 	private String ownerId;
 	private VehicleType vehicleType;
 	private FuelType fuelType;
@@ -36,7 +35,6 @@ public class Vehicle {
 		this.model = model;
 		this.price = price;
 		this.gearBoxType = gearBoxType;
-		//this.owner.setId(rentACarsPosession);
 		this.ownerId = rentACarsPosession;
 		this.vehicleType = vehicleType;
 		this.fuelType = fuelType;
@@ -91,15 +89,7 @@ public class Vehicle {
 			this.gearBoxType = GearBoxType.AUTOMATIC;
 		}
 	}
-/*
-	public RentACar getOwner() {
-		return owner;
-	}
 
-	public void setOwner(RentACar rentACarsPosession) {
-		this.owner = rentACarsPosession;
-	}
-*/
 	public String getOwnerId() {
 		return ownerId;
 	}

@@ -83,7 +83,12 @@ public class BuyersTypeDAO {
         try (FileReader reader = new FileReader(contextPath + "/buyerTypes.txt")) {
             Type type = new TypeToken<HashMap<String, BuyersType>>(){}.getType();
             this.types = gson.fromJson(reader, type);
+            
+            if (this.types == null) {
+	            this.types = new HashMap<>();
+	        }
         } catch (IOException e) {
+        	this.types = new HashMap<>();
             e.printStackTrace();
         } 
 	}

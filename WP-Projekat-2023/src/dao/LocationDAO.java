@@ -65,7 +65,12 @@ public class LocationDAO {
         try (FileReader reader = new FileReader(contextPath + "/locations.txt")) {
             Type type = new TypeToken<HashMap<String, Location>>(){}.getType();
             this.locations = gson.fromJson(reader, type);
+            
+            if (this.locations == null) {
+	            this.locations = new HashMap<>();
+	        }
         } catch (IOException e) {
+        	this.locations = new HashMap<>();
             e.printStackTrace();
         } 
 	}

@@ -77,6 +77,23 @@ public class RentACarDAO {
 		return ret;
 	}
 	
+	public RentACar edit(String id, RentACar rentACar) {
+
+	    if (rentACars.containsKey(id)) {
+	    	RentACar toEdit = rentACars.get(id);
+
+	        if (rentACar.getGrade() > 0 && rentACar.getGrade() < 6) {
+	            toEdit.setGrade(rentACar.getGrade());
+	        }
+	        
+	        saveToJson(ctx);
+	        
+	        return toEdit;
+	    }
+
+	    return null;
+	}
+	
 	public void saveToJson(String contextPath) {
 		String json = gson.toJson(rentACars);
 
@@ -91,7 +108,12 @@ public class RentACarDAO {
         try (FileReader reader = new FileReader(contextPath + "/rentACars.txt")) {
             Type type = new TypeToken<HashMap<String, RentACar>>(){}.getType();
             this.rentACars = gson.fromJson(reader, type);
+            
+            if (this.rentACars == null) {
+	            this.rentACars = new HashMap<>();
+	        }
         } catch (IOException e) {
+        	this.rentACars = new HashMap<>();
             e.printStackTrace();
         } 
 	}

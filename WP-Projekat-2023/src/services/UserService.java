@@ -80,6 +80,23 @@ public class UserService {
 		return dao.getAvailableManagers();
 	}
 	
+	@GET
+	@Path("/getAllManagers")
+	@Produces(MediaType.APPLICATION_JSON)
+	public HashMap<String, User> getAllManagers() {
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		return dao.getAllManagers();
+	}
+	
+	@GET
+	@Path("/getManagerIds/{list}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getManagerIds(@PathParam("list") String list) {
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		return dao.getManagerIds(list);
+	}
+	
 	@POST
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_JSON)

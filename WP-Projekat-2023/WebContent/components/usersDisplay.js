@@ -9,11 +9,11 @@ Vue.component("usersProfileDisplay", {
 	    		<label><b>Pregled profila</b></label>
 	    		<table border="1" class="tab">
 	    			<tr>
-	    				<th>Username</th>
-	    				<th>Name</th>
-	    				<th>Surname</th>
-	    				<th>Gender</th>
-	    				<th>Date of birth</th>
+	    				<th>Korisničko ime</th>
+	    				<th>Ime</th>
+	    				<th>Prezime</th>
+	    				<th>Pol</th>
+	    				<th>Datum rođenja</th>
 	    			</tr>
 	    			<tr>
 	    				<td>{{user.username}}</td>
@@ -26,7 +26,7 @@ Vue.component("usersProfileDisplay", {
 	    		<div style="display: flex; justify-content: center;">
 		    		<button v-on:click="editProfileClick(user.id)">Izmeni profil</button>
 		    		<button v-if="user.role === 'BUYER'" v-on:click="rentalReview(user.id)">Pregled korisnikovih iznajmljivanja</button>
-		    		<button v-if="user.role === 'BUYER'" v-on:click="order(user.id)">Nova porudzbina</button>
+		    		<button v-if="user.role === 'BUYER'" v-on:click="order(user.id)">Nova porudžbina</button>
 		    		<button v-if="user.role === 'ADMINISTRATOR'" v-on:click="display">Pregled svih registrovanih korisnika</button>
 		    		<button v-if="user.role === 'MANAGER'" v-on:click="displayRentACar(user.id)">Pregled Rent A Car objekta</button>
 		    	</div>

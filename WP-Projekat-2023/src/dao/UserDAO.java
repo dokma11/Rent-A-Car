@@ -1,6 +1,9 @@
 package dao;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import beans.Order;
 import beans.User;
@@ -45,6 +48,37 @@ public class UserDAO {
 			if (user.getRole().equals(UserRole.MANAGER) && user.getRentACarObjectId() == null) {
 				ret.put(user.getId(), user);   
 	        }
+	    }
+		
+		return ret;
+	}
+	
+	public HashMap<String, User> getAllManagers(){
+		HashMap<String, User> ret = new HashMap<String, User>();
+
+		for (User user : users.values()) {
+			if (user.getRole().equals(UserRole.MANAGER)) {
+				ret.put(user.getId(), user);   
+	        }
+	    }
+		
+		return ret;
+	}
+	
+	public String getManagerIds(String list){
+		String ret = "";
+		
+		List<String> idValues = Arrays.asList(list.split(","));
+		ArrayList<String> ids = new ArrayList<>(idValues);		
+			
+		for (String id : ids) {			
+			for(User user : users.values()) {
+				if (user.getRole().equals(UserRole.MANAGER)) {
+					if(user.getRentACarObjectId().equals(id)) {
+						ret = ret.concat("," + user.getId());
+					}
+				}
+			}
 	    }
 		
 		return ret;
@@ -114,27 +148,35 @@ public class UserDAO {
 				LocalDate tempAfter = temp.plusMonths(1);
 				LocalDate tempBefore = temp.minusMonths(1);
 
-				int counter=0;
+				int sameDayCounter=0;
+				int beforeCounter=0;
+				int afterCounter=0;
 				for(Order orderToCompare : orders.values()) {					
 					if(!orderToCompare.getId().equals(order.getId()) && !orderToCompare.getCancellationDate().equals("0001-01-01")) {
-						LocalDate orderToComparesDate= LocalDate.parse(order.getCancellationDate(), formatter);
+						LocalDate orderToComparesDate= LocalDate.parse(orderToCompare.getCancellationDate(), formatter);
 						LocalDate ordersDate= LocalDate.parse(order.getCancellationDate(), formatter);
-
-						if((orderToComparesDate.isAfter(ordersDate) && orderToComparesDate.isBefore(tempAfter)) ||
-						  (orderToComparesDate.isBefore(ordersDate) && orderToComparesDate.isAfter(tempBefore)) ||
-						  (orderToCompare.getCancellationDate().equals(order.getCancellationDate()))) {
-							counter++;
+						
+						if((orderToComparesDate.isAfter(ordersDate) && orderToComparesDate.isBefore(tempAfter))) {
+							afterCounter++;
+						} 
+						else if(orderToComparesDate.isBefore(ordersDate) && orderToComparesDate.isAfter(tempBefore)){
+							beforeCounter++;
+						}
+						else if(orderToCompare.getCancellationDate().equals(order.getCancellationDate())) {
+							sameDayCounter++;
 						}
 					}
 				}
-				
-				if(counter > 4) {
+								
+				if(sameDayCounter >= 5 || beforeCounter >= 5 || afterCounter >= 5) {
 					User toEdit = users.get(userId);
 					toEdit.setSuspicious(true);
 					return;
 				}
 				else {
-					counter = 0;
+					sameDayCounter = 0;
+					beforeCounter = 0;
+					afterCounter = 0;
 				}
 			}
 		}
@@ -183,7 +225,12 @@ public class UserDAO {
         try (FileReader reader = new FileReader(contextPath + "/users.txt")) {
             Type type = new TypeToken<HashMap<String, User>>(){}.getType();
             this.users = gson.fromJson(reader, type);
+            
+            if (this.users == null) {
+	            this.users = new HashMap<>();
+	        }
         } catch (IOException e) {
+        	this.users = new HashMap<>();
             e.printStackTrace();
         } 
 	}

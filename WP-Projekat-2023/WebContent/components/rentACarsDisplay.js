@@ -16,7 +16,10 @@ Vue.component("rentACarsDisplay", {
 	    	<div>
 	    		<label><b>Prikaz svih Rent A Car objekata</b></label>
 	    		<br></br>
-	    		<label>Pretrazi po:</label>
+		    	<button v-if="user.role == 'ADMINISTRATOR'" v-on:click="rentACarRegistration">Registracija Rent A Car objekta</button>
+	    	    <a v-bind:href="link + user.id">Prikaz profila</a>
+	    	    <br></br>
+	    		<label>Pretražite po:</label>
 		    	<div style="display: flex; align-items: center;">
 				    <label style="margin-right: 10px;">Nazivu:</label>
 				    <input type="text" name="searchName" v-model="rentACarSearch.name" style="margin-right: 10px;" />
@@ -30,27 +33,27 @@ Vue.component("rentACarsDisplay", {
 				    </select>
 				    <label style="margin-right: 10px;">Lokaciji:</label>
 				    <div id="map"></div>
-				    <label style="margin-right: 10px;">Prosecnoj oceni:</label>
+				    <label style="margin-right: 10px;">Prosečnoj oceni:</label>
 				    <input type="text" name="searchAverageGrade" v-model="rentACarSearch.grade" style="width: 50px; margin-right: 10px;" />
-				    <button v-on:click="search" style="margin-right: 40px;">Pretrazi</button>
+				    <button v-on:click="search" style="margin-right: 40px;">Pretraži</button>
 				    <select v-model="sortOption" @change="sortRentACar" style="margin-right: 10px;">
 				      <option value="">Sortriraj po:</option>
 				      <option value="nameAscending">Nazivu: A-Z</option>
 				      <option value="nameDescending">Nazivu: Z-A</option>
 				      <option value="locationAscending">Lokaciji: A-Z</option>
 				      <option value="locationDescending">Lokaciji: Z-A</option>
-				      <option value="gradeAscending">Oceni: rastuce</option>
-				      <option value="gradeDescending">Oceni: opadajuce</option>
+				      <option value="gradeAscending">Oceni: rastuće</option>
+				      <option value="gradeDescending">Oceni: opadajuće</option>
 				    </select>
 				    <select v-model="filterOption" @change="filterRentACar" style="margin-right: 10px;">
 				      <option value="">Filtriraj po:</option>
-				      <option value="MANUAL">Vrsti menjaca: manuelni</option>
-				      <option value="AUTOMATIC">Vrsti menjaca: automatik</option>
+				      <option value="MANUAL">Vrsti menjača: manuelni</option>
+				      <option value="AUTOMATIC">Vrsti menjača: automatik</option>
 				      <option value="DIESEL">Tipu goriva: dizel</option>
 				      <option value="GASOLINE">Tipu goriva: benzin</option>
 				      <option value="HYBRID">Tipu goriva: hibrid</option>
-				      <option value="ELECTRIC">Tipu goriva: elektricni</option>
-				      <option value="openRentACars">Samo otvoreni objekti</option>
+				      <option value="ELECTRIC">Tipu goriva: električni</option>
+				      <option value="WORKING">Samo otvoreni objekti</option>
 				    </select>
 				    <button v-on:click="resetClick">Resetuj prikaz</button>
 				</div>
@@ -60,7 +63,7 @@ Vue.component("rentACarsDisplay", {
 		    				<th>Naziv</th>
 		    				<th>Lokacija</th>
 		    				<th>Logo</th>
-		    				<th>Ocena</th>
+		    				<th>Prosečna ocena</th>
 		    				<th>Prikaz detalja</th>
 		    			</tr>
 		    			<tr v-for="(r,index) in rentACar">
@@ -74,11 +77,7 @@ Vue.component("rentACarsDisplay", {
 		    			</tr>
 		    		</table>
 	    		</div>
-	    		<div style="display: flex; align-items: center;">
-		    		<button v-if="user.role == 'ADMINISTRATOR'" v-on:click="rentACarRegistration">Registracija Rent A Car objekta</button>
-	    		</div>
 	    		<p v-if="notValid">Molimo Vas popunite bar neko polje za pretragu!</p>
-	    		<a v-bind:href="link + user.id">Prikaz profila</a>
 	    	</div>
 	    `,
 	mounted () {
@@ -426,7 +425,7 @@ Vue.component("rentACarsDisplay", {
 					}
 				});
 			}
-			else if(this.filterOption === "openRentACars"){
+			else if(this.filterOption === "WORKING"){
 				for (let i = 0; i < count - 1; i++) {
 				    if(temp[i].status == "WORKING"){
 						this.rentACar.push(temp[i]);

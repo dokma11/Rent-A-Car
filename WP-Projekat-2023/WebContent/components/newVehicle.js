@@ -37,7 +37,7 @@ Vue.component("newVehicle", {
 	    				</td>
 	    			</tr>
 	    			<tr>
-	    				<td><label>Unesite tip menjaca*: </label></td>
+	    				<td><label>Unesite tip menjača*: </label></td>
 	    				<td>
 	    					<select name="gearBoxType" v-model="vehicle.gearBoxType">
 	    						<option>MANUAL</option>
@@ -57,11 +57,11 @@ Vue.component("newVehicle", {
 	    				</td>
 	    			</tr>
 	    			<tr>
-	    				<td><label>Unesite potrosnju*: </label></td>
+	    				<td><label>Unesite potrošnju*: </label></td>
 	    				<td><input type="text" name="consumption" v-model="vehicle.consumption" /></td>
 	    			</tr>
 	    			<tr>
-	    				<td><label>Unesite Broj vrata*: </label></td>
+	    				<td><label>Unesite broj vrata*: </label></td>
 	    				<td><input type="number" min="1" name="doorsNumber" v-model="vehicle.doorsNumber" /></td>
 	    			</tr>
 	    			<tr>

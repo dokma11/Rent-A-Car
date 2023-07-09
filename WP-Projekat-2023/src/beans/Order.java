@@ -9,17 +9,16 @@ import java.util.ArrayList;
 public class Order {
 	private String id;
 	//private String uniqueId;//come back to this (do i need the regular id, maybe for json files)
-	//private ArrayList<Vehicle> rentedVehicles;
 	private ArrayList<String> idsOfRentedVehicles;
-	//private RentACar rentACarFacility;
 	private ArrayList<String> idsOfRentACarFacilities;	
+	private ArrayList<String> idsOfManagersToAccept;	
 	private LocalDate rentalDateStart; 
-	private LocalDate rentalDateEnd; //should check
+	private LocalDate rentalDateEnd;
 	private int price;
-	//private User buyer;//it says name and surname in specification only idk
 	private String userId;
 	private RentalStatus status;
 	private LocalDate cancellationDate;
+	private String refusalExplanation;
 	
 	public Order() {
 		this.idsOfRentACarFacilities = new ArrayList<String>();
@@ -27,22 +26,18 @@ public class Order {
 	}
 	
 	public Order(ArrayList<String> rentedVehicles, ArrayList<String> idsOfRentACarFacilities, LocalDate rentalDate,
-			LocalDate rentalDuration, int price, String buyer, RentalStatus status, LocalDate cancel) {
+			LocalDate rentalDuration, int price, String buyer, RentalStatus status, LocalDate cancel, String re) {
 		super();
-		//this.uniqueId = uniqueId;
-		//this.rentedVehicles = rentedVehicles;
-		//this.rentACarFacility = rentACarFacility;
 		this.rentalDateStart = rentalDate;
 		this.rentalDateEnd = rentalDuration;
 		this.price = price;
-		//this.buyer = buyer;
 		this.status = status;
-		//this.userId = buyer;
 		this.idsOfRentACarFacilities = new ArrayList<String>();
 		this.idsOfRentACarFacilities = idsOfRentACarFacilities;
 		this.idsOfRentedVehicles = new ArrayList<String>();
 		this.idsOfRentedVehicles = rentedVehicles;
 		this.cancellationDate = cancel;
+		this.refusalExplanation = re;
 	}
 
 	public String getId() {
@@ -52,31 +47,7 @@ public class Order {
 	public void setId(String id) {
 		this.id = id;
 	}
-	/*
-	public String getUniqueId() {
-		return uniqueId;
-	}
 	
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
-	
-	public ArrayList<Vehicle> getRentedVehicles() {
-		return rentedVehicles;
-	}
-	
-	public void setRentedVehicles(ArrayList<Vehicle> rentedVehicles) {
-		this.rentedVehicles = rentedVehicles;
-	}
-	
-	public RentACar getRentACarFacility() {
-		return rentACarFacility;
-	}
-	
-	public void setRentACarFacility(RentACar rentACarFacility) {
-		this.rentACarFacility = rentACarFacility;
-	}
-	*/
 	public String getRentalDateStart() {
 		return rentalDateStart.toString();
 	}
@@ -102,15 +73,7 @@ public class Order {
 	public void setPrice(int price) {
 		this.price = price;
 	}
-/*	
-	public User getBuyer() {
-		return buyer;
-	}
 	
-	public void setBuyer(User buyer) {
-		this.buyer = buyer;
-	}
-	*/
 	public RentalStatus getStatus() {
 		return status;
 	}
@@ -143,10 +106,18 @@ public class Order {
 		return idsOfRentACarFacilities;
 	}
 
+	public void setIdsOfManagersToAccept(ArrayList<String> idsOfManagersToAccept) {
+		this.idsOfManagersToAccept = idsOfManagersToAccept;
+	}
+
+	public ArrayList<String> getIdsOfManagersToAccept() {
+		return idsOfManagersToAccept;
+	}
+
 	public void setIdsOfRentACarFacilities(ArrayList<String> idsOfRentACarFacilities) {
 		this.idsOfRentACarFacilities = idsOfRentACarFacilities;
 	}
-
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -162,5 +133,13 @@ public class Order {
 	public void setCancellationDate(String cancellationDate) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	    this.cancellationDate = LocalDate.parse(cancellationDate,formatter);
+	}
+
+	public String getRefusalExplanation() {
+		return refusalExplanation;
+	}
+
+	public void setRefusalExplanation(String refusalExplanation) {
+		this.refusalExplanation = refusalExplanation;
 	}
 }

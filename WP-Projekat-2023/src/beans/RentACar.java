@@ -12,7 +12,7 @@ public class RentACar {
 	private RentACarStatus status;
 	private Location location;
 	private String logoPath;
-	private int grade;
+	private double grade;
 
 	public RentACar() {
 		this.availableVehicles = new ArrayList<Vehicle>();
@@ -98,11 +98,11 @@ public class RentACar {
 		this.logoPath = logoPath;
 	}
 
-	public int getGrade() {
+	public double getGrade() {
 		return grade;
 	}
 
-	public void setGrade(int grade) {
+	public void setGrade(double grade) {
 		this.grade = grade;
 	}
 }

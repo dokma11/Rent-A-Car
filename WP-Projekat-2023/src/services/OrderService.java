@@ -79,6 +79,15 @@ public class OrderService {
 		return dao.getRentedVehiclesInDateRange(range);
 	}
 	
+	@GET
+	@Path("/getManagerIds/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String getManagerIds(@PathParam("id") String id) {
+		OrderDAO dao = (OrderDAO) ctx.getAttribute("orderDAO");
+		return dao.getManagerIds(id);
+	}
+	
 	@POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)

@@ -13,12 +13,12 @@ Vue.component("loginScreen", {
 	  },
 	  template: `
 	    <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">	
-	      <label><b>Dobrodosli!</b></label>
+	      <label><b>Dobrodošli!</b></label>
 	      <label><b>Popunite polja kako biste se prijavili na nalog</b></label>
 	      <br></br>
 	      <table class="app">
 	        <tr>
-	          <td>Korisnicko ime: </td>
+	          <td>Korisničko ime: </td>
 	        </tr>
 	        <tr>
 	          <td><input type="text" name="username" v-model="username"/></td>
@@ -38,8 +38,8 @@ Vue.component("loginScreen", {
 	        </tr>
 	      </table>
 	      <p v-if="notValid">Molimo Vas popunite sva polja</p>
-	      <p v-if="isBlocked">Vas korisnicki nalog je blokiran samim time se vise ne mozete prijaviti na svoj nalog</p>
-	      <p v-if="notExisting">Korisnicki nalog sa unetim kredencijalima ne postoji</p>
+	      <p v-if="isBlocked">Vas korisnički nalog je blokiran samim time se više ne možete prijaviti na svoj nalog</p>
+	      <p v-if="notExisting">Korisnički nalog sa unetim kredencijalima ne postoji</p>
 	    </div>
 	  `,
 	 mounted () {

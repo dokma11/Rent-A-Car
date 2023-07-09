@@ -82,12 +82,6 @@ public class VehicleDAO {
 	            toEdit.setOwnerId(v.getOwnerId());
 	        }
 	        
-	        /*
-	         * if (v.getOwner() != null) {
-	            toEdit.setOwner(v.getOwner());
-	        	}
-	         * */
-	        
 	        if (v.getVehicleType() != null) {
 	            toEdit.setVehicleType(v.getVehicleType().toString());
 	        }
@@ -235,8 +229,13 @@ public class VehicleDAO {
         try (FileReader reader = new FileReader(contextPath + "/vehicles.txt")) {
             Type type = new TypeToken<HashMap<String, Vehicle>>(){}.getType();
             this.vehicles = gson.fromJson(reader, type);
+            
+            if (this.vehicles == null) {
+	            this.vehicles = new HashMap<>();
+	        }
         } catch (IOException e) {
+        	this.vehicles = new HashMap<>();
             e.printStackTrace();
-        } 
+        }  
 	}
 }
